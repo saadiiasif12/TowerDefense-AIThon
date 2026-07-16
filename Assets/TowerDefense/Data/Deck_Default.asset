@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ddf3e52ce8dc2b4db98c496d692ca6c, type: 3}
+  m_Name: Deck_Default
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.DeckSO
+  cards:
+  - {fileID: 11400000, guid: a804d7429b9a40c458419a28b3f29cf1, type: 2}
+  - {fileID: 11400000, guid: 77c794c7ee1b54f49aaa538030c08d60, type: 2}
+  - {fileID: 11400000, guid: 9d3e7a4211158a041994fc12e94c2e7a, type: 2}
+  - {fileID: 11400000, guid: 59b01ec75de02b1408c44a2e12538b01, type: 2}
+  - {fileID: 11400000, guid: 0c6848a4ff2885e4b93e5d905ddc9504, type: 2}
+  - {fileID: 11400000, guid: a8c16b6c2e4add74a980979d30ef726a, type: 2}
+  - {fileID: 11400000, guid: 393b92cc110b7a349853ed11a41955e0, type: 2}

@@ -1,0 +1,67 @@
+{
+  "comment": "All enemy types share one class; only these stats differ. speed in tiles/sec, range in tiles (melee = small values), bounty in Energy.",
+  "enemies": [
+    {
+      "id": "goblin",
+      "name": "Goblin",
+      "hp": 90,
+      "speed": 2.0,
+      "damage": 50,
+      "attackRate": 1.1,
+      "range": 0.5,
+      "splashRadius": 0,
+      "prefersBuildings": false,
+      "bounty": 0.2,
+      "isBoss": false
+    },
+    {
+      "id": "mage",
+      "name": "Mage",
+      "hp": 290,
+      "speed": 1.2,
+      "damage": 90,
+      "attackRate": 1.6,
+      "range": 5.0,
+      "splashRadius": 0.8,
+      "prefersBuildings": false,
+      "bounty": 0.5,
+      "projectileSpeed": 8,
+      "isBoss": false
+    },
+    {
+      "id": "ogre",
+      "name": "Ogre",
+      "hp": 950,
+      "speed": 0.8,
+      "damage": 160,
+      "attackRate": 1.5,
+      "range": 0.8,
+      "splashRadius": 0,
+      "prefersBuildings": true,
+      "bounty": 1.0,
+      "isBoss": false
+    },
+    {
+      "id": "ogre_warlord",
+      "name": "Ogre Warlord",
+      "hp": 3200,
+      "speed": 0.7,
+      "damage": 200,
+      "attackRate": 1.6,
+      "range": 1.0,
+      "splashRadius": 0,
+      "prefersBuildings": true,
+      "bounty": 3.0,
+      "isBoss": true,
+      "slamInterval": 8.0,
+      "slamDamage": 100,
+      "slamRadius": 2.5
+    }
+  ],
+  "ai": {
+    "targeting": "closest_structure",
+    "retargetHysteresis": 0.10,
+    "separationForce": 0.5,
+    "separationComment": "soft push between enemies; set 0 to disable for MVP"
+  }
+}

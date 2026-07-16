@@ -1,0 +1,71 @@
+{
+  "comment": "Global settings: Royal Tower, Energy economy, map, difficulty dial, UX constants. globalEnemyHpMultiplier is THE tuning knob from GDD section 8 — adjust it +/-10% per playtest before touching individual stats.",
+
+  "royalTower": {
+    "hp": 4000,
+    "hpRegen": 0,
+    "footprintRadius": 1.5,
+    "kingAttack": {
+      "damage": 50,
+      "attackRate": 1.0,
+      "range": 7.0,
+      "targets": "any"
+    },
+    "builtInCannon": {
+      "damage": 60,
+      "attackRate": 1.4,
+      "range": 6.0,
+      "targets": "ground"
+    }
+  },
+
+  "energy": {
+    "max": 10,
+    "starting": 6,
+    "regenPerSecondEarly": 0.5,
+    "regenPerSecondLate": 0.667,
+    "regenSwitchWave": 7,
+    "waveClearBonus": 2,
+    "waveClearBonusCondition": "wave fully killed before next wave startTime",
+    "overflowBehavior": "hard_cap",
+    "uiPulseAtCap": true
+  },
+
+  "map": {
+    "radiusTiles": 15,
+    "deploymentCircleRadius": 5.0,
+    "placementSnapGrid": 0.5,
+    "maxPlayerBuildings": 4
+  },
+
+  "difficulty": {
+    "globalEnemyHpMultiplier": 1.0,
+    "globalEnemyDamageMultiplier": 1.0,
+    "globalEnemyBountyMultiplier": 1.0
+  },
+
+  "combat": {
+    "logicTickHz": 10,
+    "projectilesAlwaysHit": true,
+    "inFlightProjectilesLandAfterSourceDies": true,
+    "markDeadImmediatelyToPreventDoubleBounty": true
+  },
+
+  "winCondition": {
+    "type": "clear_all_waves",
+    "stars": {
+      "one": "win",
+      "two": "win with towerHpPct >= 0.50",
+      "three": "win with towerHpPct >= 0.80"
+    }
+  },
+
+  "ux": {
+    "dragThresholdPx": 40,
+    "ghostOffsetTiles": 1.5,
+    "minCardTapTargetPx": 64,
+    "pauseOnBackground": true,
+    "resumeCountdownSeconds": 3,
+    "breatherBannerSeconds": 2
+  }
+}

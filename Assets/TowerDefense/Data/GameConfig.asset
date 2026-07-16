@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27ebbcff5489f90458847cc880a9361d, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.GameConfigSO
+  towerHp: 4000
+  towerFootprintRadius: 1.5
+  kingAttack:
+    damage: 50
+    attackRate: 1
+    range: 7
+    impactFraction: 0.4
+    projectile: {fileID: 11400000, guid: 329f47690fae99d4e871c48fa0c82187, type: 2}
+  builtInCannon:
+    damage: 60
+    attackRate: 1.4
+    range: 6
+    impactFraction: 0.4
+    projectile: {fileID: 11400000, guid: ee171e6d4f9c7d142b09d8dcf0c56eb5, type: 2}
+  mapRadius: 15
+  deploymentRadius: 5
+  placementSnap: 0.5
+  maxPlayerBuildings: 4
+  enemyHpMultiplier: 1
+  enemyDamageMultiplier: 0.5
+  enemyBountyMultiplier: 1
+  twoStarHpPct: 0.5
+  threeStarHpPct: 0.8
+  dragThresholdPx: 40
+  ghostOffsetTiles: 1.5
