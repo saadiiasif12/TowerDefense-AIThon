@@ -52,6 +52,11 @@ namespace RoyalSiege.Units
         /// <summary>1-based number of the latest wave that has started (0 before wave 1).</summary>
         public int CurrentWaveNumber => _nextWaveToStart;
 
+        /// <summary>Seconds until the next wave's startTime, or -1 when every wave has started. For UI.</summary>
+        public float TimeToNextWave => _nextWaveToStart < WaveCount
+            ? Mathf.Max(0f, _timeline.waves[_nextWaveToStart].startTime - _time)
+            : -1f;
+
         public WaveScheduler(WaveTimelineSO timeline, IEnemyFactory factory,
             SpawnPointProvider spawnPoints, Vector3 center, GameEvents events)
         {

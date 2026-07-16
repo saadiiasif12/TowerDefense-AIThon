@@ -4,6 +4,14 @@ Base: `Assets/TowerDefense/Documents/GDD_Royal_Siege_v2.md` (read it — it is e
 
 > ⚠ `Assets/TowerDefense/Documents/*.json` are **v1** (passive-regen economy, wave unlocks) — outdated. Do not use them. Author ScriptableObjects from the tables below.
 
+## Design deltas (17 July, verbal)
+
+6. **No ranged enemies for now.** The "Mage" slot (Skeleton Knight model) is a MELEE unit: attackRange 0.6, no projectile, no splash. Its other stats (HP 290, dmg 90, rate 1.6, speed 1.2, bounty 0.5) are unchanged.
+7. **Territory-engage rule (future-proofing):** any enemy may only ATTACK once it is within `engageRadiusFromCenter` (12) of the map center — if ranged enemies return later, they must enter the arena before throwing, never stand off at the outskirts.
+8. Balance watch: wave 9 (the "Mage-siege exam") is now melee pressure instead — X-Bow's anti-siege role is reduced; revisit if X-Bow feels dead weight.
+9. **Wave pacing compressed twice** (user: too much downtime). Current start times: **0/11/23/36/50/64/80/96/114/132/151/172** — boss at 2:52, run ≈3½–4 min. The wave table below shows the ORIGINAL v2 times; `Waves_Level1.asset` is authoritative for timing. HUD shows a live "NEXT IN Xs" countdown in the header.
+   **How to tune yourself:** select `Assets/TowerDefense/Data/Waves_Level1.asset` → Inspector → `Waves` list → each element's **Start Time** is the absolute second that wave spawns (unconditionally). Per-group `Delay After Wave Start` staggers groups inside a wave; `Unit Spawn Interval` (0.11) is the gap between units in a group; `Group Delay Multiplier` (0.7) globally scales group delays. Edits apply on the NEXT play (the schedule is built at match start).
+
 ## Meeting deltas (16 July, notebook)
 
 1. **Bomb Tower is CUT** ("Card naming: no bomb tower"). Deck is now **7 cards**.

@@ -116,7 +116,10 @@ namespace RoyalSiege.Units
             }
 
             float edgeDistance = RangeMath.PlanarDistance(_logicPosition, _target.Position) - _target.FootprintRadius;
-            bool inRange = edgeDistance <= _def.attackRange;
+            // 17-Jul rule: an enemy may only fight once it has actually ENTERED the territory
+            // (inside engageRadiusFromCenter). Stops ranged units attacking from the outskirts.
+            bool insideTerritory = RangeMath.IsInside(_deps.MapCenter, _logicPosition, _def.engageRadiusFromCenter);
+            bool inRange = insideTerritory && edgeDistance <= _def.attackRange;
             _attack.Tick(dt, inRange);
 
             Vector3 separation = ComputeSeparation();

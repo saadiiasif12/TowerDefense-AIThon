@@ -19,7 +19,7 @@ MonoBehaviour:
     attackRate: 1
     range: 7
     impactFraction: 0.4
-    projectile: {fileID: 11400000, guid: 329f47690fae99d4e871c48fa0c82187, type: 2}
+    projectile: {fileID: 11400000, guid: cc29e23a9d9fc0745b28e85e902f497e, type: 2}
   builtInCannon:
     damage: 60
     attackRate: 1.4

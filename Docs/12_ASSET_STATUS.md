@@ -20,7 +20,8 @@ Update this whenever assets are imported/replaced. Models so far are Meshy AI ge
 ## Buildings / Tower
 | Unit | Status |
 |---|---|
-| Royal Tower | ✅ real model (`Assets/Environment/Tower/Prefab/Tower.prefab`, Tripo AI) as visual child, auto-scaled; placeholder cylinder hidden |
+| Royal Tower | ✅ real model (Tripo AI, now under `Assets/TowerDefense/Environment/Tower/`) as visual child; placeholder cylinder hidden |
+| King | ✅ Golden King (Meshy, `Characters/King/`) converted to Humanoid, standing on the tower top under scale-compensating `KingRoot`; `AC_King` controller (Idle=own walk clip @0.15 sway, Attack=general throw synced to attack rate); KingView rotates him to the king-attack's target. Fires `Projectile_KingMagic` (emissive orb, dual trail, sparkle wake) with `VFX_MagicFlash` cast + `VFX_MagicImpact` big splash |
 | Cannon / Tesla / X-Bow | ✅ real models (Meshy, `Environment/Tower/Small Towers/{Canon,Tesla,Mortar}.prefab`) nested as visual children of `Building_Cannon/Tesla/XBow`; placeholder primitives removed. Gameplay/stats/GUIDs unchanged. **Not yet play-verified** — tile scale/orientation may need in-editor tweak. Drag ghost still primitive |
 | Projectiles / orbs | ✅ Proj_CannonBall (metallic + smoke trail + spin), Proj_Bolt (Meshy Arrow art + tracer), Proj_MageBolt (purple emissive + trail). Orb still magenta sphere |
 | VFX | ✅ `Prefabs/VFX/`: MuzzleFlash, Impact (tintable), Puff, Sparks, SpellBurst — all pooled via VfxSpawner. Tesla zap = ZapArcRenderer |

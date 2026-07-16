@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: Enemy_Mage
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.EnemyDefinitionSO
   id: Mage
-  displayName: Mage
+  displayName: Skeleton
   prefab: {fileID: 3087399621984602444, guid: 8e27d3a61118c724db2d22f7e2e57dbd, type: 3}
   hp: 290
   moveSpeed: 1.2
   damage: 90
   attackRate: 1.6
-  attackRange: 5
+  attackRange: 0.6
   impactFraction: 0.4
-  splashRadius: 0.8
-  projectile: {fileID: 11400000, guid: a7e579df0f775e34a950650fa79d930f, type: 2}
+  splashRadius: 0
+  projectile: {fileID: 0}
+  engageRadiusFromCenter: 12
   unitRadius: 0.5
   targetPriority: 0
   bounty: 0.5

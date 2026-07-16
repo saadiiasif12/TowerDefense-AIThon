@@ -67,6 +67,7 @@ namespace RoyalSiege.Core
 
             var enemyDeps = new EnemyRuntimeDeps
             {
+                MapCenter = center,
                 Registry = registry,
                 Launcher = launcher,
                 Events = Events,
@@ -84,7 +85,7 @@ namespace RoyalSiege.Core
             var spellCaster = new SpellCaster(registry, _gameConfig, center, Events);
             var validator = new PlacementValidator(_gameConfig, registry, center);
 
-            _royalTower.Init(_gameConfig, registry, launcher, Events, _tickSystem);
+            _royalTower.Init(_gameConfig, registry, launcher, Events, _tickSystem, _tickSystem);
             _orbSpawner.Init(Events, Energy, _economyConfig, _tickSystem);
             _placement.Init(_gameCamera, CardPlay, validator, buildingFactory, spellCaster, _gameConfig);
 

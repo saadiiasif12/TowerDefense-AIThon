@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a474eaa9432ebcc49aa2b8591bb3fd0f, type: 3}
+  m_Name: Projectile_KingMagic
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.ProjectileSettingsSO
+  prefab: {fileID: 5789659435592313190, guid: da80561da8fa562478aa5b5818fc9a1a, type: 3}
+  speed: 13
+  arcHeight: 2.2
+  spawnHeightOffset: 1.7
+  impactHeightOffset: 0.5
+  muzzleVfx: {fileID: 8137173455560979978, guid: b57b09c750e16ae4ead8c8e889642181, type: 3}
+  impactVfx: {fileID: 6508220685396708252, guid: 23564bfc05b523943b1e88fe814de3f4, type: 3}
+  impactTint: {r: 1, g: 1, b: 1, a: 1}
+  spinDegreesPerSecond: 0

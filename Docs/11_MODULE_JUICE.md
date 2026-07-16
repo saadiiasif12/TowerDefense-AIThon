@@ -3,6 +3,8 @@
 **Status: VFX CORE LIVE — 17 Jul.** Implemented: `VfxSpawner` (pooled one-shots, tint/scale per spawn), `JuiceDirector` (EnemyKilled→puff, BuildingPlaced→dust, SpellCast→tinted burst per spell), `ZapArcRenderer` (Tesla jagged additive arcs + sparks via InstantShotFired), `BuildingTurret` (yaw tracking, anticipation→recoil kick, Tesla charge-squash/pop, ease-out-back placement pop-in), projectile juice (per-settings muzzle/impact VFX, impact tint, spin; metallic cannonball + Meshy Arrow bolt + purple emissive mage bolt, all with trails). Trajectory heights raised for tower clearance. Remaining for Day 3: SFX, haptics, camera shake, hit-stop, boss-slam telegraph decal, freeze tint on enemies, music.
 Tuning knobs: BuildingTurret serialized fields per prefab; ProjectileSettingsSO juice block; `_yawModelOffsetDegrees` if a mesh's barrel axis isn't +Z.
 
+**17 Jul additions:** X-Bow nocked-arrow cycle — `BuildingTurret._loadedAmmo` (the Arrow model on the bow): hidden the instant the shot fires ("becomes" the flying bolt), pops back with a 0.12 s ease-out-back on the next windup. X-Bow mesh fires along local −X → `_yawModelOffsetDegrees = 90` on its prefab (measured live: arrow long-axis vs firing line delta 0°). Muzzle moved to the nocked-arrow position so the projectile continues from it. If Cannon's barrel ever looks misaligned, apply the same live measurement (arrow/barrel world bounds vs pivot yaw) and set its offset.
+
 ## Juice map (event → response)
 
 | Event | VFX | SFX | Haptic |

@@ -18,6 +18,8 @@ namespace RoyalSiege.Buildings
         [SerializeField] private Transform _yawPivot;
         [SerializeField] private Transform _recoilNode;
         [SerializeField] private Transform _muzzle;
+        [Tooltip("Ammo model sitting on the weapon (X-Bow's nocked arrow): hidden when the shot fires, pops back in on the next windup.")]
+        [SerializeField] private Transform _loadedAmmo;
 
         [Header("Feel")]
         [SerializeField] private float _turnDegreesPerSecond = 480f;
@@ -38,6 +40,8 @@ namespace RoyalSiege.Buildings
         private float _anticipationTarget;
         private float _scalePunch;
         private float _spawnPunchT = 1f;
+        private Vector3 _ammoBaseScale = Vector3.one;
+        private float _ammoPopT = 1f;
 
         public Vector3 MuzzlePosition => _muzzle != null ? _muzzle.position : transform.position + Vector3.up;
 
@@ -51,18 +55,28 @@ namespace RoyalSiege.Buildings
                 _recoilBasePosition = _recoilNode.localPosition;
                 _nodeBaseScale = _recoilNode.localScale;
             }
+            if (_loadedAmmo != null) _ammoBaseScale = _loadedAmmo.localScale;
             _spawnPunchT = 0f; // pop-in on placement
         }
 
-        /// <summary>Windup started — lean back slightly until the shot fires.</summary>
-        public void OnSwing() => _anticipationTarget = _anticipationDistance;
+        /// <summary>Windup started — lean back slightly; a fresh arrow pops onto the weapon.</summary>
+        public void OnSwing()
+        {
+            _anticipationTarget = _anticipationDistance;
+            if (_loadedAmmo != null && !_loadedAmmo.gameObject.activeSelf)
+            {
+                _loadedAmmo.gameObject.SetActive(true);
+                _ammoPopT = 0f; // nock-in pop
+            }
+        }
 
-        /// <summary>Shot went out — kick.</summary>
+        /// <summary>Shot went out — kick; the nocked arrow "becomes" the projectile.</summary>
         public void OnFire()
         {
             _anticipationTarget = 0f;
             _recoilOffset = _recoilDistance;
             if (_scalePunchMode) _scalePunch = 1f;
+            if (_loadedAmmo != null) _loadedAmmo.gameObject.SetActive(false);
         }
 
         private void Update()
@@ -73,6 +87,14 @@ namespace RoyalSiege.Buildings
             TickSpawnPunch(dt);
             TickYaw(dt);
             TickRecoil(dt);
+            TickAmmoPop(dt);
+        }
+
+        private void TickAmmoPop(float dt)
+        {
+            if (_loadedAmmo == null || _ammoPopT >= 1f || !_loadedAmmo.gameObject.activeSelf) return;
+            _ammoPopT = Mathf.Min(1f, _ammoPopT + dt / 0.12f);
+            _loadedAmmo.localScale = _ammoBaseScale * EaseOutBack(_ammoPopT);
         }
 
         private void TickSpawnPunch(float dt)
