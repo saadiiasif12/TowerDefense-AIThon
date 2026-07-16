@@ -60,8 +60,60 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70a977d374b72ab41aab611839f73750, type: 2}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5866666021909216657, guid: 71764fe660dca704fb3e83206d4e139c, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 71764fe660dca704fb3e83206d4e139c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -950159264815676415}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 71764fe660dca704fb3e83206d4e139c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -1809680203519333460}
   m_SourcePrefab: {fileID: 100100000, guid: 71764fe660dca704fb3e83206d4e139c, type: 3}
+--- !u!1 &7021374992222244773 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 71764fe660dca704fb3e83206d4e139c, type: 3}
+  m_PrefabInstance: {fileID: 7904246753144795892}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &-950159264815676415
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7021374992222244773}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 71764fe660dca704fb3e83206d4e139c, type: 3}
+  m_Controller: {fileID: 9100000, guid: fe1c643e42a075e4489def381d779e16, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-1809680203519333460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7021374992222244773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6aa690daa1b73514db5612a10a7a9a30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.WorldHealthBar
+  _width: 1.2
+  _thickness: 0.14
+  _yOffset: 2.3
+  _fillColor: {r: 0.25, g: 0.9, b: 0.2, a: 1}
+  _lowColor: {r: 0.95, g: 0.25, b: 0.15, a: 1}
+  _hideWhenFull: 1
