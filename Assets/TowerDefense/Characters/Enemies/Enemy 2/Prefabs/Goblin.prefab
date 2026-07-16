@@ -134,16 +134,50 @@ PrefabInstance:
       propertyPath: m_Name
       value: Goblin
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: cb0b37b2741f9f9438a06e697088e012, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: fe1c643e42a075e4489def381d779e16, type: 2}
+    - target: {fileID: 5866666021909216657, guid: cb0b37b2741f9f9438a06e697088e012, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: -639763325267172598, guid: cb0b37b2741f9f9438a06e697088e012, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5091789422199867764}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cb0b37b2741f9f9438a06e697088e012, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5472015007076934244}
   m_SourcePrefab: {fileID: 100100000, guid: cb0b37b2741f9f9438a06e697088e012, type: 3}
 --- !u!4 &193295837143202395 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -639763325267172598, guid: cb0b37b2741f9f9438a06e697088e012, type: 3}
   m_PrefabInstance: {fileID: 8480738996049926481}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8750717272417821696 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: cb0b37b2741f9f9438a06e697088e012, type: 3}
+  m_PrefabInstance: {fileID: 8480738996049926481}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5472015007076934244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8750717272417821696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6aa690daa1b73514db5612a10a7a9a30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.WorldHealthBar
+  _width: 1.2
+  _thickness: 0.14
+  _yOffset: 2.3
+  _fillColor: {r: 0.25, g: 0.9, b: 0.2, a: 1}
+  _lowColor: {r: 0.95, g: 0.25, b: 0.15, a: 1}
+  _hideWhenFull: 1
