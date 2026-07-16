@@ -22,6 +22,8 @@ namespace RoyalSiege.Combat
     {
         float CurrentHp { get; }
         bool IsBoss { get; }
+        /// <summary>Personal-space radius used for separation steering (no physics).</summary>
+        float BodyRadius { get; }
         void ApplyFreeze(float seconds);
         void ApplyStun(float seconds);
     }

@@ -30,6 +30,8 @@ namespace RoyalSiege.Data
         public ProjectileSettingsSO projectile;
 
         [Header("Behaviour")]
+        [Tooltip("Personal-space radius for separation steering and formation spacing.")]
+        public float unitRadius = 0.45f;
         public TargetPriority targetPriority = TargetPriority.ClosestStructure;
         [Tooltip("Energy orb value dropped on death.")]
         public float bounty = 0.25f;

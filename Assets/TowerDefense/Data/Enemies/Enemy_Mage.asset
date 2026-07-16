@@ -23,6 +23,7 @@ MonoBehaviour:
   impactFraction: 0.4
   splashRadius: 0.8
   projectile: {fileID: 11400000, guid: a7e579df0f775e34a950650fa79d930f, type: 2}
+  unitRadius: 0.5
   targetPriority: 0
   bounty: 0.5
   isBoss: 0

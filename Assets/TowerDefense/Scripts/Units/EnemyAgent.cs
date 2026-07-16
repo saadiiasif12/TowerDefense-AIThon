@@ -9,13 +9,17 @@ namespace RoyalSiege.Units
     /// <summary>
     /// One enemy. Logic at 10 Hz (position on the tick), visuals interpolated per frame.
     /// Composition: Health + StatusController + AttackCycle + UnitAnimator.
-    /// Targeting: per-definition priority with 10% retarget hysteresis (GDD ruling).
-    /// Attack distance is measured to the structure's EDGE (see 02_ARCHITECTURE).
+    /// Movement is straight-line seek + soft SEPARATION steering (deterministic, no physics):
+    /// neighbours inside each other's body radius push apart, so packs spread naturally and
+    /// never overlap. Walk animation is driven by the ACTUAL velocity so feet never slide;
+    /// rotation is smoothed in the view. Attack distance is measured to the structure's EDGE.
     /// </summary>
     public sealed class EnemyAgent : MonoBehaviour, ITickable, IEnemyTarget, IHealthReadout
     {
         private const float DeathDespawnSeconds = 1.5f;
-        private const float RetargetHysteresis = 0.9f; // switch only if the new target is >10% closer
+        private const float RetargetHysteresis = 0.9f;  // switch only if the new target is >10% closer
+        private const float SeparationSpring = 4f;       // push strength per unit of overlap
+        private const float TurnSharpness = 8f;          // view rotation smoothing (1/s)
 
         private static readonly List<IStructureTarget> SplashBuffer = new();
 
@@ -29,6 +33,7 @@ namespace RoyalSiege.Units
         private IStructureTarget _target;
         private Vector3 _previousPosition;
         private Vector3 _logicPosition;
+        private Vector3 _desiredForward = Vector3.forward;
         private bool _dead;
         private float _despawnTimer;
 
@@ -38,12 +43,13 @@ namespace RoyalSiege.Units
         public int WaveIndex { get; private set; }
         public EnemyDefinitionSO Definition => _def;
 
-        // ---- IEnemyTarget ----
+        // ---- IEnemyTarget / IHealthReadout ----
         public bool IsAlive => !_dead;
         public Vector3 Position => _logicPosition;
         public float CurrentHp => _health?.Current ?? 0f;
         public float HpPct => _dead ? 0f : _health?.Pct ?? 0f;
         public bool IsBoss => _def != null && _def.isBoss;
+        public float BodyRadius => _def != null ? _def.unitRadius : 0.45f;
         public void TakeDamage(float amount) => _health?.TakeDamage(amount);
         public void ApplyFreeze(float seconds) => _status.ApplyFreeze(seconds);
         public void ApplyStun(float seconds) => _status.ApplyStun(seconds);
@@ -64,12 +70,18 @@ namespace RoyalSiege.Units
             _logicPosition = spawnPosition;
             _previousPosition = spawnPosition;
             transform.position = spawnPosition;
+            _desiredForward = RangeMath.PlanarDirection(spawnPosition, Vector3.zero);
+            transform.rotation = Quaternion.LookRotation(_desiredForward);
 
             _slamTimer = def.slamInterval;
             _slamTelegraphRemaining = 0f;
 
             if (_animator == null) _animator = GetComponent<UnitAnimator>();
             _animator?.Rebind();
+            // Deterministic walk-cycle phase from the spawn position — pack members animate
+            // out of step with each other without introducing any RNG.
+            float phase = Mathf.Abs(Mathf.Sin(spawnPosition.x * 12.9898f + spawnPosition.z * 78.233f));
+            _animator?.SetWalkPhase(phase);
 
             _deps.Registry.Register(this);
             _deps.Ticker.Register(this);
@@ -95,9 +107,10 @@ namespace RoyalSiege.Units
             TickBossSlam(dt);
             AcquireTarget();
 
+            _previousPosition = _logicPosition;
+
             if (_target == null)
             {
-                _previousPosition = _logicPosition;
                 _animator?.SetMoving(false);
                 return;
             }
@@ -106,20 +119,26 @@ namespace RoyalSiege.Units
             bool inRange = edgeDistance <= _def.attackRange;
             _attack.Tick(dt, inRange);
 
+            Vector3 separation = ComputeSeparation();
+
             if (!inRange && !_attack.IsSwinging)
             {
-                Vector3 direction = RangeMath.PlanarDirection(_logicPosition, _target.Position);
-                _previousPosition = _logicPosition;
-                _logicPosition += direction * (_def.moveSpeed * dt);
-                transform.rotation = Quaternion.LookRotation(direction);
-                _animator?.SetMoving(true, _def.moveSpeed);
+                Vector3 seek = RangeMath.PlanarDirection(_logicPosition, _target.Position) * _def.moveSpeed;
+                Vector3 velocity = seek + Vector3.ClampMagnitude(separation * SeparationSpring, _def.moveSpeed);
+                velocity = Vector3.ClampMagnitude(velocity, _def.moveSpeed * 1.25f);
+
+                _logicPosition += velocity * dt;
+                _desiredForward = velocity.normalized;
+                _animator?.SetMoving(true, velocity.magnitude);
             }
             else
             {
-                _previousPosition = _logicPosition;
+                // Attacking: hold position but still gently resolve overlaps so crowds
+                // ring around the target instead of standing inside each other.
+                Vector3 shuffle = Vector3.ClampMagnitude(separation * SeparationSpring * 0.5f, _def.moveSpeed * 0.4f);
+                _logicPosition += shuffle * dt;
+                _desiredForward = RangeMath.PlanarDirection(_logicPosition, _target.Position);
                 _animator?.SetMoving(false);
-                Vector3 face = RangeMath.PlanarDirection(_logicPosition, _target.Position);
-                transform.rotation = Quaternion.LookRotation(face);
             }
         }
 
@@ -127,7 +146,39 @@ namespace RoyalSiege.Units
         {
             if (_dead) return;
             transform.position = Vector3.Lerp(_previousPosition, _logicPosition, _deps.Clock.InterpolationAlpha);
+
+            float viewDt = _deps.Clock.ScaledDeltaTime;
+            if (_desiredForward.sqrMagnitude > 0.001f && viewDt > 0f)
+            {
+                var targetRot = Quaternion.LookRotation(_desiredForward);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot,
+                    1f - Mathf.Exp(-TurnSharpness * viewDt));
+            }
             _animator?.SetPlaybackSpeed(_deps.Clock.IsPaused ? 0f : _deps.Clock.SpeedMultiplier);
+        }
+
+        /// <summary>Push away from overlapping neighbours (sum of overlap vectors).</summary>
+        private Vector3 ComputeSeparation()
+        {
+            Vector3 push = Vector3.zero;
+            var enemies = _deps.Registry.Enemies;
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                var other = enemies[i];
+                if (ReferenceEquals(other, this) || !other.IsAlive) continue;
+
+                float minDistance = BodyRadius + other.BodyRadius;
+                Vector3 delta = RangeMath.Flatten(_logicPosition - other.Position);
+                float distance = delta.magnitude;
+                if (distance >= minDistance) continue;
+
+                // Coincident spawn safety: nudge along a deterministic tangent.
+                Vector3 away = distance > 0.001f
+                    ? delta / distance
+                    : Vector3.Cross(Vector3.up, RangeMath.PlanarDirection(_logicPosition, Vector3.zero));
+                push += away * (minDistance - distance);
+            }
+            return push;
         }
 
         private void AcquireTarget()

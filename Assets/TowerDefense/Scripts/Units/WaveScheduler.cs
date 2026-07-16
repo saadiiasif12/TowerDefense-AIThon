@@ -103,7 +103,7 @@ namespace RoyalSiege.Units
             {
                 var evt = _spawnQueue[_nextSpawnIndex];
                 _nextSpawnIndex++;
-                Vector3 position = _spawnPoints.GetWithFormationOffset(evt.SpawnPointIndex, evt.UnitIndexInGroup, _center);
+                Vector3 position = _spawnPoints.GetWithFormationOffset(evt.SpawnPointIndex, evt.UnitIndexInGroup, evt.Enemy.unitRadius);
                 _factory.Spawn(evt.Enemy, position, evt.WaveIndex);
                 _spawnedPerWave[evt.WaveIndex]++;
             }

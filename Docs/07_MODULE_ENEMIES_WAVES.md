@@ -19,4 +19,4 @@
 - Wave 1 spawns 5 goblins at N at t=0; goblins walk to tower and hit it; ogre bypasses tower for a placed cannon; mage stops at range 5 and sieges; killing a full wave fires WaveCleared exactly once.
 
 ## Notes / changes
-- (log changes here)
+- **16 Jul (crowd polish):** `unitRadius` added to EnemyDefinitionSO (Goblin 0.4 / Mage 0.5 / Ogre 0.85 / Boss 1.1). Spawn formations fan out along the map-edge ARC in staggered quincunx ranks spaced by body radius. EnemyAgent got soft separation steering (overlap-spring, deterministic, no physics; gentle shuffle continues while attacking so crowds ring the target). Walk anim is driven by ACTUAL velocity vs the clip's root-motion speed (fallback 0.9 for the in-place shared clip) with damped params; walk phases de-synced per unit via a position hash; view rotation slerps (TurnSharpness 8). Controller transitions blended (attack→walk 0.3 over last 15%). Verified: 0 overlapping pairs in live crowd audits.

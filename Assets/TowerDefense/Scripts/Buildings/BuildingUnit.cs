@@ -49,8 +49,14 @@ namespace RoyalSiege.Buildings
                 card.projectile, card.retargetDelay,
                 _animator != null ? _animator.PlayAttack : (System.Action<float>)null);
 
+            // Range ring is configured but stays HIDDEN once placed — the drag ghost is the
+            // range preview. (Otherwise it doubles up with the deployment ring on screen.)
             _ring = GetComponentInChildren<RangeRing>();
-            _ring?.SetRadius(card.range);
+            if (_ring != null)
+            {
+                _ring.SetRadius(card.range);
+                _ring.SetVisible(false);
+            }
 
             registry.Register(this);
             ticker.Register(this);
