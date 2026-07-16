@@ -28,4 +28,10 @@ Entry format: `| time | tool | task | prompt/workflow (summary) | output & adopt
 
 | session | Claude Code + Unity MCP | "Two white circles" bug | Diagnosed LIVE in the user's running session by enumerating all LineRenderers: the second circle was the placed Cannon's permanent range ring (r=5.5) overlapping the deployment ring (r=5.0). Fix: building range rings stay hidden after placement (the drag ghost is the range preview). Re-verified live incl. the rare all-spell opening hand (cycled a spell → drew Cannon → placed): only the deployment ring renders | ✅ Adopted | Ring still configurable — can re-show on tap-select later |
 
-<!-- Append new entries above this line, newest last within the day. Add "## Day 2 — Friday 17 July 2026" heading when Day 2 starts. -->
+## Day 2 — Friday 17 July 2026
+
+| Time | Tool | Task | Prompt / workflow | Output & adopted? | Notes |
+|---|---|---|---|---|---|
+| session | Claude Code (Opus 4.8) — direct prefab edit | Integrate new building art (Meshy) — replace placeholder buildings | Unity MCP was not exposing tools this session, so edited prefab YAML directly: stripped the placeholder primitive mesh (MeshFilter + MeshRenderer) from `Building_Cannon/Tesla/XBow`, reset each root scale to (1,1,1), and nested the new `Environment/Tower/Small Towers/{Canon,Tesla,Mortar}` art prefabs as visual children (local pos/rot zeroed; art's own 1.3 platform scale kept). All gameplay (BuildingUnit/StructureAttack/Health/RangeRing/WorldHealthBar), balance (BuildingCardSO stats), and card→prefab GUID references left untouched | ✅ Adopted — 3 building prefabs now use real art. Mapping: Cannon→Canon, Tesla→Tesla, X-Bow→Mortar (Arrow.prefab treated as projectile art) | ⚠️ Not yet play-verified (no editor access this session); art scale/orientation on the tile may need an in-editor tweak. Drag ghost (`Ghost_Building`) still uses a primitive |
+
+<!-- Append new entries above this line, newest last within the day. Add "## Day 3 — Saturday 18 July 2026" heading when Day 3 starts. -->

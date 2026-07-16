@@ -21,7 +21,7 @@ Update this whenever assets are imported/replaced. Models so far are Meshy AI ge
 | Unit | Status |
 |---|---|
 | Royal Tower | ✅ real model (`Assets/Environment/Tower/Prefab/Tower.prefab`, Tripo AI) as visual child, auto-scaled; placeholder cylinder hidden |
-| Cannon / Tesla / X-Bow | ❌ DUMMY primitives with distinct colors + runtime range rings + health bars |
+| Cannon / Tesla / X-Bow | ✅ real models (Meshy, `Environment/Tower/Small Towers/{Canon,Tesla,Mortar}.prefab`) nested as visual children of `Building_Cannon/Tesla/XBow`; placeholder primitives removed. Gameplay/stats/GUIDs unchanged. **Not yet play-verified** — tile scale/orientation may need in-editor tweak. Drag ghost still primitive |
 | Projectiles / orbs | ❌ DUMMY (small spheres; orb = magenta) |
 
 ## Environment
