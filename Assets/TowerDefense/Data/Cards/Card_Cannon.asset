@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d009ccf97aecbf14fa3cab79d796e7fc, type: 3}
+  m_Name: Card_Cannon
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.BuildingCardSO
+  id: Cannon
+  displayName: Cannon
+  description: 
+  icon: {fileID: 0}
+  cost: 3
+  cooldown: 8
+  buildingPrefab: {fileID: 2147769655540901295, guid: 407dcf8e610d3814bb7b6be13f4569c1, type: 3}
+  hp: 700
+  footprintRadius: 0.75
+  damage: 85
+  attackRate: 1
+  range: 5.5
+  impactFraction: 0.4
+  retargetDelay: 0
+  projectile: {fileID: 11400000, guid: 507dbd25928552a408d98f9d3e44dff0, type: 2}

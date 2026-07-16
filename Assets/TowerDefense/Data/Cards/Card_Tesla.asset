@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d009ccf97aecbf14fa3cab79d796e7fc, type: 3}
+  m_Name: Card_Tesla
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.BuildingCardSO
+  id: Tesla
+  displayName: Tesla
+  description: 
+  icon: {fileID: 0}
+  cost: 4
+  cooldown: 10
+  buildingPrefab: {fileID: 3138221973509297826, guid: dea7dfde06aa5144c87652a4fbcb7645, type: 3}
+  hp: 600
+  footprintRadius: 0.75
+  damage: 110
+  attackRate: 1.1
+  range: 5
+  impactFraction: 0.4
+  retargetDelay: 0.2
+  projectile: {fileID: 0}

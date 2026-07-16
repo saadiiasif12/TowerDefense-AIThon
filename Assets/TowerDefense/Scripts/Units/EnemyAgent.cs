@@ -1,0 +1,273 @@
+using System.Collections.Generic;
+using UnityEngine;
+using RoyalSiege.Combat;
+using RoyalSiege.Core;
+using RoyalSiege.Data;
+
+namespace RoyalSiege.Units
+{
+    /// <summary>
+    /// One enemy. Logic at 10 Hz (position on the tick), visuals interpolated per frame.
+    /// Composition: Health + StatusController + AttackCycle + UnitAnimator.
+    /// Movement is straight-line seek + soft SEPARATION steering (deterministic, no physics):
+    /// neighbours inside each other's body radius push apart, so packs spread naturally and
+    /// never overlap. Walk animation is driven by the ACTUAL velocity so feet never slide;
+    /// rotation is smoothed in the view. Attack distance is measured to the structure's EDGE.
+    /// </summary>
+    public sealed class EnemyAgent : MonoBehaviour, ITickable, IEnemyTarget, IHealthReadout
+    {
+        private const float DeathDespawnSeconds = 1.5f;
+        private const float RetargetHysteresis = 0.9f;  // switch only if the new target is >10% closer
+        private const float SeparationSpring = 4f;       // push strength per unit of overlap
+        private const float TurnSharpness = 8f;          // view rotation smoothing (1/s)
+
+        private static readonly List<IStructureTarget> SplashBuffer = new();
+
+        private EnemyDefinitionSO _def;
+        private EnemyRuntimeDeps _deps;
+        private Health _health;
+        private readonly StatusController _status = new();
+        private AttackCycle _attack;
+        private UnitAnimator _animator;
+
+        private IStructureTarget _target;
+        private Vector3 _previousPosition;
+        private Vector3 _logicPosition;
+        private Vector3 _desiredForward = Vector3.forward;
+        private bool _dead;
+        private float _despawnTimer;
+
+        private float _slamTimer;
+        private float _slamTelegraphRemaining;
+
+        public int WaveIndex { get; private set; }
+        public EnemyDefinitionSO Definition => _def;
+
+        // ---- IEnemyTarget / IHealthReadout ----
+        public bool IsAlive => !_dead;
+        public Vector3 Position => _logicPosition;
+        public float CurrentHp => _health?.Current ?? 0f;
+        public float HpPct => _dead ? 0f : _health?.Pct ?? 0f;
+        public bool IsBoss => _def != null && _def.isBoss;
+        public float BodyRadius => _def != null ? _def.unitRadius : 0.45f;
+        public void TakeDamage(float amount) => _health?.TakeDamage(amount);
+        public void ApplyFreeze(float seconds) => _status.ApplyFreeze(seconds);
+        public void ApplyStun(float seconds) => _status.ApplyStun(seconds);
+
+        public void Init(EnemyDefinitionSO def, Vector3 spawnPosition, int waveIndex, EnemyRuntimeDeps deps)
+        {
+            _def = def;
+            _deps = deps;
+            WaveIndex = waveIndex;
+
+            _dead = false;
+            _target = null;
+            _status.Reset();
+            _health = new Health(def.hp * deps.HpMultiplier);
+            _health.Died += OnDied;
+            _attack = new AttackCycle(def.attackRate, def.impactFraction, OnAttackImpact, OnAttackSwing);
+
+            _logicPosition = spawnPosition;
+            _previousPosition = spawnPosition;
+            transform.position = spawnPosition;
+            _desiredForward = RangeMath.PlanarDirection(spawnPosition, Vector3.zero);
+            transform.rotation = Quaternion.LookRotation(_desiredForward);
+
+            _slamTimer = def.slamInterval;
+            _slamTelegraphRemaining = 0f;
+
+            if (_animator == null) _animator = GetComponent<UnitAnimator>();
+            _animator?.Rebind();
+            // Deterministic walk-cycle phase from the spawn position — pack members animate
+            // out of step with each other without introducing any RNG.
+            float phase = Mathf.Abs(Mathf.Sin(spawnPosition.x * 12.9898f + spawnPosition.z * 78.233f));
+            _animator?.SetWalkPhase(phase);
+
+            _deps.Registry.Register(this);
+            _deps.Ticker.Register(this);
+        }
+
+        public void Tick(float dt)
+        {
+            if (_dead)
+            {
+                _despawnTimer -= dt;
+                if (_despawnTimer <= 0f) Despawn();
+                return;
+            }
+
+            _status.Tick(dt);
+            if (_status.IsBlocked)
+            {
+                _previousPosition = _logicPosition;
+                _animator?.SetMoving(false);
+                return; // frozen/stunned: no movement, no attacks; still damageable
+            }
+
+            TickBossSlam(dt);
+            AcquireTarget();
+
+            _previousPosition = _logicPosition;
+
+            if (_target == null)
+            {
+                _animator?.SetMoving(false);
+                return;
+            }
+
+            float edgeDistance = RangeMath.PlanarDistance(_logicPosition, _target.Position) - _target.FootprintRadius;
+            bool inRange = edgeDistance <= _def.attackRange;
+            _attack.Tick(dt, inRange);
+
+            Vector3 separation = ComputeSeparation();
+
+            if (!inRange && !_attack.IsSwinging)
+            {
+                Vector3 seek = RangeMath.PlanarDirection(_logicPosition, _target.Position) * _def.moveSpeed;
+                Vector3 velocity = seek + Vector3.ClampMagnitude(separation * SeparationSpring, _def.moveSpeed);
+                velocity = Vector3.ClampMagnitude(velocity, _def.moveSpeed * 1.25f);
+
+                _logicPosition += velocity * dt;
+                _desiredForward = velocity.normalized;
+                _animator?.SetMoving(true, velocity.magnitude);
+            }
+            else
+            {
+                // Attacking: hold position but still gently resolve overlaps so crowds
+                // ring around the target instead of standing inside each other.
+                Vector3 shuffle = Vector3.ClampMagnitude(separation * SeparationSpring * 0.5f, _def.moveSpeed * 0.4f);
+                _logicPosition += shuffle * dt;
+                _desiredForward = RangeMath.PlanarDirection(_logicPosition, _target.Position);
+                _animator?.SetMoving(false);
+            }
+        }
+
+        private void Update()
+        {
+            if (_dead) return;
+            transform.position = Vector3.Lerp(_previousPosition, _logicPosition, _deps.Clock.InterpolationAlpha);
+
+            float viewDt = _deps.Clock.ScaledDeltaTime;
+            if (_desiredForward.sqrMagnitude > 0.001f && viewDt > 0f)
+            {
+                var targetRot = Quaternion.LookRotation(_desiredForward);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot,
+                    1f - Mathf.Exp(-TurnSharpness * viewDt));
+            }
+            _animator?.SetPlaybackSpeed(_deps.Clock.IsPaused ? 0f : _deps.Clock.SpeedMultiplier);
+        }
+
+        /// <summary>Push away from overlapping neighbours (sum of overlap vectors).</summary>
+        private Vector3 ComputeSeparation()
+        {
+            Vector3 push = Vector3.zero;
+            var enemies = _deps.Registry.Enemies;
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                var other = enemies[i];
+                if (ReferenceEquals(other, this) || !other.IsAlive) continue;
+
+                float minDistance = BodyRadius + other.BodyRadius;
+                Vector3 delta = RangeMath.Flatten(_logicPosition - other.Position);
+                float distance = delta.magnitude;
+                if (distance >= minDistance) continue;
+
+                // Coincident spawn safety: nudge along a deterministic tangent.
+                Vector3 away = distance > 0.001f
+                    ? delta / distance
+                    : Vector3.Cross(Vector3.up, RangeMath.PlanarDirection(_logicPosition, Vector3.zero));
+                push += away * (minDistance - distance);
+            }
+            return push;
+        }
+
+        private void AcquireTarget()
+        {
+            IStructureTarget best = _def.targetPriority == TargetPriority.BuildingsFirst
+                ? _deps.Registry.ClosestBuilding(_logicPosition) ?? _deps.Registry.ClosestStructure(_logicPosition)
+                : _deps.Registry.ClosestStructure(_logicPosition);
+
+            if (_target == null || !_target.IsAlive)
+            {
+                _target = best;
+                return;
+            }
+
+            if (best != null && !ReferenceEquals(best, _target))
+            {
+                float currentDist = RangeMath.PlanarDistance(_logicPosition, _target.Position);
+                float bestDist = RangeMath.PlanarDistance(_logicPosition, best.Position);
+                if (bestDist < currentDist * RetargetHysteresis) _target = best;
+            }
+        }
+
+        private void OnAttackSwing() => _animator?.PlayAttack(_def.attackRate);
+
+        private void OnAttackImpact()
+        {
+            if (_dead || _target == null || !_target.IsAlive) return;
+
+            float damage = _def.damage * _deps.DamageMultiplier;
+            if (_def.projectile != null)
+                _deps.Launcher.Fire(_logicPosition, _target, damage, _def.projectile, OnProjectileImpact);
+            else
+                _target.TakeDamage(damage);
+        }
+
+        /// <summary>Mage-style splash: full damage to OTHER structures near the impact.</summary>
+        private void OnProjectileImpact(Vector3 point, IDamageable primary)
+        {
+            if (_def.splashRadius <= 0f) return;
+            float damage = _def.damage * _deps.DamageMultiplier;
+            _deps.Registry.StructuresInRadius(point, _def.splashRadius, SplashBuffer);
+            for (int i = 0; i < SplashBuffer.Count; i++)
+                if (!ReferenceEquals(SplashBuffer[i], primary))
+                    SplashBuffer[i].TakeDamage(damage);
+        }
+
+        private void TickBossSlam(float dt)
+        {
+            if (!_def.isBoss || _def.slamInterval <= 0f) return;
+
+            if (_slamTelegraphRemaining > 0f)
+            {
+                _slamTelegraphRemaining -= dt;
+                if (_slamTelegraphRemaining <= 0f)
+                {
+                    _deps.Registry.StructuresInRadius(_logicPosition, _def.slamRadius, SplashBuffer);
+                    float damage = _def.slamDamage * _deps.DamageMultiplier;
+                    for (int i = 0; i < SplashBuffer.Count; i++)
+                        SplashBuffer[i].TakeDamage(damage);
+                }
+                return;
+            }
+
+            _slamTimer -= dt;
+            if (_slamTimer <= 0f)
+            {
+                _slamTimer = _def.slamInterval;
+                _slamTelegraphRemaining = _def.slamTelegraphSeconds;
+            }
+        }
+
+        private void OnDied()
+        {
+            if (_dead) return;
+            _dead = true;
+            _despawnTimer = DeathDespawnSeconds;
+
+            // Unregister IMMEDIATELY: no targeting, no double bounty (GDD ruling).
+            _deps.Registry.Unregister(this);
+            _deps.Events.RaiseEnemyKilled(new EnemyKilledArgs(
+                _def, WaveIndex, _def.bounty * _deps.BountyMultiplier, _logicPosition));
+            _animator?.PlayDie();
+        }
+
+        private void Despawn()
+        {
+            _deps.Ticker.Unregister(this);
+            _health.Died -= OnDied;
+            _deps.Release(this);
+        }
+    }
+}
