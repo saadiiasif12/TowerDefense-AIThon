@@ -4,6 +4,7 @@ using RoyalSiege.Cards;
 using RoyalSiege.Combat;
 using RoyalSiege.Data;
 using RoyalSiege.Economy;
+using RoyalSiege.Juice;
 using RoyalSiege.Placement;
 using RoyalSiege.Spells;
 using RoyalSiege.Units;
@@ -45,6 +46,7 @@ namespace RoyalSiege.Core
         public ICardPlayService CardPlay { get; private set; }
         public ITargetQuery Targets { get; private set; }
         public WaveScheduler Waves { get; private set; }
+        public IVfxSpawner Vfx { get; private set; }
         public GameConfigSO GameConfig => _gameConfig;
 
         private void Awake()
@@ -56,7 +58,8 @@ namespace RoyalSiege.Core
             var registry = new TargetRegistry();
             Targets = registry;
 
-            var launcher = new ProjectileLauncher(_projectileRoot, _tickSystem);
+            Vfx = new VfxSpawner(_projectileRoot);
+            var launcher = new ProjectileLauncher(_projectileRoot, _tickSystem, Vfx);
             Energy = new EnergyBank(_economyConfig, Events);
             Deck = new DeckService(_deck, Events, _shuffleSeed);
             Cooldowns = new CardCooldowns();
@@ -77,7 +80,7 @@ namespace RoyalSiege.Core
             var spawnPoints = new SpawnPointProvider(center, _gameConfig.mapRadius);
             Waves = new WaveScheduler(_waveTimeline, enemyFactory, spawnPoints, center, Events);
 
-            var buildingFactory = new BuildingFactory(_buildingRoot, registry, launcher, Events, _tickSystem);
+            var buildingFactory = new BuildingFactory(_buildingRoot, registry, launcher, Events, _tickSystem, _tickSystem);
             var spellCaster = new SpellCaster(registry, _gameConfig, center, Events);
             var validator = new PlacementValidator(_gameConfig, registry, center);
 

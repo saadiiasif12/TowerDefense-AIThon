@@ -901,6 +901,71 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 249304622}
   m_CullTransparentMesh: 1
+--- !u!1 &300827901
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 300827904}
+  - component: {fileID: 300827903}
+  - component: {fileID: 300827902}
+  m_Layer: 0
+  m_Name: Juice
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &300827902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300827901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b163c0cfb237e9e499c950e77b1cc323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.JuiceDirector
+  _context: {fileID: 1247799767}
+  _deathPuff: {fileID: 6791656653965077214, guid: a12e16938bf406a45a2f75a161d291fd, type: 3}
+  _placementDust: {fileID: 6791656653965077214, guid: a12e16938bf406a45a2f75a161d291fd, type: 3}
+  _spellBurst: {fileID: 3545189036054417965, guid: 8b24acb25d92a0f4892ec2b6ffd6fd0d, type: 3}
+--- !u!114 &300827903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300827901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e0323788511b9b4f9d80af42c007d37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.ZapArcRenderer
+  _context: {fileID: 1247799767}
+  _arcMaterial: {fileID: 2100000, guid: ff30c846934d709499878285cfd44201, type: 2}
+  _impactSparks: {fileID: 781277473990021009, guid: 2203716810d5c8241b8d65dbed6cfbd3, type: 3}
+  _arcColor: {r: 0.55, g: 0.9, b: 1, a: 1}
+--- !u!4 &300827904
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300827901}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &324120706
 GameObject:
   m_ObjectHideFlags: 0
@@ -1683,7 +1748,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -60.00006}
+  m_AnchoredPosition: {x: 0, y: -60}
   m_SizeDelta: {x: 0, y: -120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &787831483
@@ -4789,3 +4854,4 @@ SceneRoots:
   - {fileID: 1247799772}
   - {fileID: 131760748}
   - {fileID: 1564541632}
+  - {fileID: 300827904}

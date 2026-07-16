@@ -22,7 +22,8 @@ Update this whenever assets are imported/replaced. Models so far are Meshy AI ge
 |---|---|
 | Royal Tower | ✅ real model (`Assets/Environment/Tower/Prefab/Tower.prefab`, Tripo AI) as visual child, auto-scaled; placeholder cylinder hidden |
 | Cannon / Tesla / X-Bow | ✅ real models (Meshy, `Environment/Tower/Small Towers/{Canon,Tesla,Mortar}.prefab`) nested as visual children of `Building_Cannon/Tesla/XBow`; placeholder primitives removed. Gameplay/stats/GUIDs unchanged. **Not yet play-verified** — tile scale/orientation may need in-editor tweak. Drag ghost still primitive |
-| Projectiles / orbs | ❌ DUMMY (small spheres; orb = magenta) |
+| Projectiles / orbs | ✅ Proj_CannonBall (metallic + smoke trail + spin), Proj_Bolt (Meshy Arrow art + tracer), Proj_MageBolt (purple emissive + trail). Orb still magenta sphere |
+| VFX | ✅ `Prefabs/VFX/`: MuzzleFlash, Impact (tintable), Puff, Sparks, SpellBurst — all pooled via VfxSpawner. Tesla zap = ZapArcRenderer |
 
 ## Environment
 - ✅ Ground: `Assets/Ground/Texture/grass pattern.png` tiled 9×9 on a 36×36 plane (wrap=repeat) — mock direction.

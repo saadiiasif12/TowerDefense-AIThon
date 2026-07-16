@@ -1,6 +1,7 @@
 # 11 · Module: Juice — VFX/SFX/Haptics/Audio (RoyalSiege.Juice / RoyalSiege.Audio)
 
-**Status: NOT STARTED** · Day 3 focus, but hooks (events) exist from Day 1. Haptics + SFX + VFX are SCORED requirements.
+**Status: VFX CORE LIVE — 17 Jul.** Implemented: `VfxSpawner` (pooled one-shots, tint/scale per spawn), `JuiceDirector` (EnemyKilled→puff, BuildingPlaced→dust, SpellCast→tinted burst per spell), `ZapArcRenderer` (Tesla jagged additive arcs + sparks via InstantShotFired), `BuildingTurret` (yaw tracking, anticipation→recoil kick, Tesla charge-squash/pop, ease-out-back placement pop-in), projectile juice (per-settings muzzle/impact VFX, impact tint, spin; metallic cannonball + Meshy Arrow bolt + purple emissive mage bolt, all with trails). Trajectory heights raised for tower clearance. Remaining for Day 3: SFX, haptics, camera shake, hit-stop, boss-slam telegraph decal, freeze tint on enemies, music.
+Tuning knobs: BuildingTurret serialized fields per prefab; ProjectileSettingsSO juice block; `_yawModelOffsetDegrees` if a mesh's barrel axis isn't +Z.
 
 ## Juice map (event → response)
 

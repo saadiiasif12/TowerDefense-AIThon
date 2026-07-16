@@ -28,6 +28,10 @@ Legend: ⬜ todo · 🔄 in progress · ✅ done · Update after EVERY task. Kee
 
 ## Day 2 (17 July) — CONTENT
 
+- ✅ Building attack juice: BuildingTurret (cannon Octagone yaw-tracks target 420°/s, Body anticipation+recoil; X-Bow fast swivel 720°/s + snappy recoil; Tesla charge-squash→discharge-pop; all buildings ease-out-back pop-in on placement)
+- ✅ Projectile art + juice: metallic cannonball (spin+smoke trail), Meshy Arrow bolt (tracer), purple emissive mage bolt; per-settings muzzle flash + impact burst (tintable); trajectory heights/arcs raised so nothing clips the tower
+- ✅ VFX pipeline: pooled VfxSpawner + JuiceDirector (death puffs, placement dust, per-spell tinted bursts) + Tesla ZapArcRenderer (animated jagged arcs + sparks). All verified live: pools show MuzzleFlash/Impact/Puff/SpellBurst/Sparks all spawning, turret yaws confirmed tracking, 0 console errors
+
 - ⬜ All 7 cards implemented (Tesla instant, X-Bow, Fireball, Freeze, Lightning + statuses)
 - ⬜ All 4 enemies (Mage ranged+splash, Ogre buildings-first, Boss + slam) with priority/hysteresis rules
 - ⬜ Full 12-wave timeline + WaveCleared/victory/stars/defeat + end screens
