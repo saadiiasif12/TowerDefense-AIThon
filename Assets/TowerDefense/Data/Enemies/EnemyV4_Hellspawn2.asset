@@ -22,7 +22,7 @@ MonoBehaviour:
   attackRange: 5
   impactFraction: 0.4
   splashRadius: 1
-  projectile: {fileID: 11400000, guid: a7e579df0f775e34a950650fa79d930f, type: 2}
+  projectile: {fileID: 11400000, guid: 732099c54dadfa14e861daac744e432a, type: 2}
   engageRadiusFromCenter: 12
   deathVfx: {fileID: 0}
   hurtStaggerSeconds: 0.35

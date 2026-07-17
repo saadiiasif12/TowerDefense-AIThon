@@ -38,6 +38,7 @@ namespace RoyalSiege.Units
         private UnitAnimator _animator;
         private HitReaction _hitReaction;
         private EnemyLifecycleView _lifecycle;
+        private EnemyThrowView _throwView;
 
         private IStructureTarget _target;
         private Vector3 _previousPosition;
@@ -141,6 +142,10 @@ namespace RoyalSiege.Units
                 _hitReaction = GetComponent<HitReaction>() ?? gameObject.AddComponent<HitReaction>();
             _hitReaction.Cancel();
             _lifecycle.ResetForSpawn();
+            // Throwing enemies (Hellspawn): held-ammo visual in the hand. Enabled only when
+            // this def actually fires a projectile — a melee def sharing the prefab stays empty.
+            if (_throwView == null) _throwView = GetComponent<EnemyThrowView>();
+            _throwView?.Init(_deps.Clock, _def.projectile != null);
             _animator?.Rebind();
             // Deterministic walk-cycle phase from the spawn position — pack members animate
             // out of step with each other without introducing any RNG.
@@ -324,7 +329,19 @@ namespace RoyalSiege.Units
 
             float damage = _def.damage * _deps.DamageMultiplier;
             if (_def.projectile != null)
-                _deps.Launcher.Fire(_logicPosition, _target, damage, _def.projectile, OnProjectileImpact);
+            {
+                // Launch from the held object in the hand (visual origin); the throw view then
+                // hides it and respawns a fresh one. Subtract the settings' spawn-height offset
+                // so the launcher re-adds it back to exactly the hand point.
+                Vector3 from = _logicPosition;
+                if (_throwView != null)
+                {
+                    Vector3 hand = _throwView.ThrowPoint;
+                    from = new Vector3(hand.x, hand.y - _def.projectile.spawnHeightOffset, hand.z);
+                    _throwView.OnThrow();
+                }
+                _deps.Launcher.Fire(from, _target, damage, _def.projectile, OnProjectileImpact);
+            }
             else
                 _target.TakeDamage(damage);
         }
