@@ -40,7 +40,7 @@ Base: `Assets/TowerDefense/Documents/GDD_Royal_Siege_v2.md` (read it — it is e
 | Arrows | Spell | 3 | 6 s | 80 area | 4.0 | instant | — | Leaves Goblins at 10 HP — buildings finish |
 | Fireball | Spell | 4 | 9 s | 260 area | 2.5 | instant | — | Leaves Mage at 30 HP |
 | Freeze | Spell | 4 | 14 s | 0 | 3.0 | 4 s (boss 2 s) | — | Stops move+attack; refreshes, never stacks |
-| Lightning | Spell | 6 | 16 s | 275 ×3 | 3.5 | instant +0.5 s stun | — | Hits 3 highest-HP in radius |
+| Lightning | Spell | 6 | 16 s | 275 ×3 | 3.5 | 0.35 s storm delay +0.5 s stun | — | Hits 3 highest-HP in radius; 17-Jul juice delta: ThunderSplash HUD pulse on cast (no lighting change), off-screen sky-bolts strike at 0.35 s (targets captured at cast, radius re-checked at strike — same rule as Arrows/Fireball) |
 
 **Placement:** buildings inside deployment circle (radius 5.0, snap 0.5, max 4 on field, no overlap, cost validated at release). Spells anywhere on map (radius 15). Green/red ghost preview, drag threshold 40 px, ghost 1.5 tiles above fingertip.
 
