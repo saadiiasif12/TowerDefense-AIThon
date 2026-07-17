@@ -67,6 +67,7 @@ namespace RoyalSiege.Testing
                 var f = fx;
                 AddButton(right, "FX: " + f.name, new Color(0.6f, 0.9f, 0.9f), () => _context.PlayGalleryVfx(f));
             }
+            AddCycleButton(right, "Tesla VFX", () => _context.TeslaQualityLabel, _context.CycleTeslaQuality);
             AddButton(right, "Speed 0.25x (trails)", new Color(0.7f, 0.8f, 1f), () => _context.SetGameSpeed(0.25f));
             AddButton(right, "Speed 1x", new Color(0.7f, 0.8f, 1f), () => _context.SetGameSpeed(1f));
             AddButton(right, "Speed 3x", new Color(0.7f, 0.8f, 1f), () => _context.SetGameSpeed(3f));
@@ -111,6 +112,15 @@ namespace RoyalSiege.Testing
             layout.childControlWidth = true;
             layout.childForceExpandHeight = false;
             return column.transform;
+        }
+
+        /// <summary>A button that cycles a multi-state setting; label shows the current state.</summary>
+        private void AddCycleButton(Transform parent, string label, System.Func<string> getState, UnityEngine.Events.UnityAction cycle)
+        {
+            Text text = null;
+            AddButton(parent, label, new Color(0.95f, 0.9f, 0.6f), () => { cycle(); text.text = $"{label}: {getState()}"; });
+            text = parent.GetChild(parent.childCount - 1).GetComponentInChildren<Text>();
+            text.text = $"{label}: {getState()}";
         }
 
         /// <summary>A button whose label + color reflect a live ON/OFF state (green = on, grey = off).</summary>

@@ -58,7 +58,7 @@ namespace RoyalSiege.Core
         public event Action<SpellCardSO, Vector3, IReadOnlyList<Vector3>> SpellResolved; // damage landed (+ struck positions)
         public event Action<EnemyDefinitionSO, Vector3> EnemySpawned;
         public event Action<Vector3> BossSlammed;
-        public event Action<Vector3, Vector3> InstantShotFired;           // from, to (Tesla zap)
+        public event Action<Vector3, IEnemyTarget> InstantShotFired;      // muzzle, victim (Tesla zap — target ref so VFX can track/attach)
         public event Action<MatchResult> MatchEnded;
 
         public void RaiseEnemyKilled(EnemyKilledArgs args) => EnemyKilled?.Invoke(args);
@@ -75,7 +75,7 @@ namespace RoyalSiege.Core
         public void RaiseSpellResolved(SpellCardSO card, Vector3 point, IReadOnlyList<Vector3> hits) => SpellResolved?.Invoke(card, point, hits);
         public void RaiseEnemySpawned(EnemyDefinitionSO def, Vector3 position) => EnemySpawned?.Invoke(def, position);
         public void RaiseBossSlammed(Vector3 position) => BossSlammed?.Invoke(position);
-        public void RaiseInstantShotFired(Vector3 from, Vector3 to) => InstantShotFired?.Invoke(from, to);
+        public void RaiseInstantShotFired(Vector3 from, IEnemyTarget target) => InstantShotFired?.Invoke(from, target);
         public void RaiseMatchEnded(MatchResult result) => MatchEnded?.Invoke(result);
     }
 }
