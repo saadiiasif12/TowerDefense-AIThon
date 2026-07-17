@@ -67,14 +67,16 @@ namespace RoyalSiege.Units
 
         /// <summary>
         /// Hit-stagger: a MOVING enemy briefly stops and plays the hurt flinch, then resumes.
-        /// Never fires while attacking, frozen/stunned, already staggered, or on cooldown —
-        /// the cooldown is what stops rapid hitters (Tesla) from stun-locking a unit forever.
+        /// EVERY hit re-flinches (a hit landing mid-stagger restarts it) unless the per-enemy
+        /// hurtCooldownSeconds says otherwise — the boss keeps a long cooldown so sustained
+        /// fire can't flinch-lock it. Never fires while attacking or frozen/stunned.
         /// </summary>
         private void TryHurtStagger()
         {
             if (_def == null || _def.hurtStaggerSeconds <= 0f) return;
-            if (!_isMoving || _status.IsBlocked) return;
-            if (_hurtStaggerRemaining > 0f || _hurtCooldownRemaining > 0f) return;
+            if (!_isMoving && _hurtStaggerRemaining <= 0f) return; // moving, or already mid-flinch
+            if (_status.IsBlocked) return;
+            if (_hurtCooldownRemaining > 0f) return;
 
             _hurtStaggerRemaining = _def.hurtStaggerSeconds;
             _hurtCooldownRemaining = _def.hurtCooldownSeconds;

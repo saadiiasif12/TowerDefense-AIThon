@@ -328,7 +328,7 @@ AnimatorStateTransition:
   m_HasFixedDuration: 1
   m_InterruptionSource: 1
   m_OrderedInterruption: 1
-  m_CanTransitionToSelf: 0
+  m_CanTransitionToSelf: 1
 --- !u!206 &8500000000000000001
 BlendTree:
   m_ObjectHideFlags: 1
