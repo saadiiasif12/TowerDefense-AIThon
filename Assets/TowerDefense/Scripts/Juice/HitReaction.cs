@@ -13,7 +13,7 @@ namespace RoyalSiege.Juice
     {
         private const float DurationSeconds = 0.22f;
         private const float RecoilDistance = 0.16f;
-        private static readonly Color GlowColor = new(1.45f, 1.6f, 2f); // cold overbright star-blue (kept subtle — rapid hits stack visually)
+        private static readonly Color GlowColor = new(1.2f, 1.3f, 1.55f); // cold star-blue; kept under the bloom threshold so flashes never blow out
         private static readonly int ColorId = Shader.PropertyToID("_Color");
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 

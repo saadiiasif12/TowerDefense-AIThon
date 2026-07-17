@@ -34,7 +34,8 @@ namespace RoyalSiege.Placement
         public bool IsDragging => _slot >= 0;
 
         public void Init(Camera camera, ICardPlayService playService, PlacementValidator validator,
-            IBuildingFactory buildingFactory, ISpellCaster spellCaster, GameConfigSO config)
+            IBuildingFactory buildingFactory, ISpellCaster spellCaster, GameConfigSO config,
+            Vector3 mapCenter)
         {
             _camera = camera;
             _playService = playService;
@@ -44,6 +45,8 @@ namespace RoyalSiege.Placement
             _config = config;
             _buildingGhost?.Hide();
             _spellGhost?.Hide();
+            _buildingGhost?.SetMapClip(mapCenter, config.mapRadius);
+            _spellGhost?.SetMapClip(mapCenter, config.mapRadius);
             _gridOverlay?.Init(config.deploymentRadius, config.placementSnap);
         }
 

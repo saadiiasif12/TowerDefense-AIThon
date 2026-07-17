@@ -18,7 +18,7 @@ namespace RoyalSiege.Juice
         private const float SpawnPopSeconds = 0.32f;
         private const float DissolveSeconds = 0.7f;
         private static readonly Color FreezeTint = new(0.55f, 0.78f, 1.25f);
-        private static readonly Color GlowColor = new(1.45f, 1.6f, 2f);
+        private static readonly Color GlowColor = new(1.2f, 1.3f, 1.55f);
         private static readonly int ColorId = Shader.PropertyToID("_Color");
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly int BaseMapId = Shader.PropertyToID("_BaseMap");

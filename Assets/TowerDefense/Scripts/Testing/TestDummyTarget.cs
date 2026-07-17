@@ -32,9 +32,31 @@ namespace RoyalSiege.Testing
         public float LastMeasuredDps { get; private set; }
         public bool Wander { get => _wander; set => _wander = value; }
 
+        private bool _movementEnabled = true;
+
+        /// <summary>OFF = the dummy stops driving its own transform so you can DRAG IT
+        /// MANUALLY in the scene view (targeting follows live). Re-enabling adopts wherever
+        /// you left it as the new logic position.</summary>
+        public bool MovementEnabled
+        {
+            get => _movementEnabled;
+            set
+            {
+                if (_movementEnabled == value) return;
+                _movementEnabled = value;
+                if (value)
+                {
+                    _position = transform.position;
+                    _home = _position;
+                    _destination = _position;
+                }
+            }
+        }
+
         // ---- IEnemyTarget / IHealthReadout ----
         public bool IsAlive => true; // never dies — projectiles never fizzle on it
-        public Vector3 Position => _position; // logic position, ignores HitReaction recoil offset
+        // Logic position (ignores HitReaction recoil); while manually positioned, the transform IS the truth.
+        public Vector3 Position => _movementEnabled ? _position : transform.position;
         public float CurrentHp => _hp;
         public float HpPct => _hp / _maxHp;
         public bool IsBoss => _isBoss;
@@ -46,7 +68,9 @@ namespace RoyalSiege.Testing
         {
             _hp -= amount;
             _damageThisSecond += amount;
-            _hitReaction?.Play();
+            // No recoil while manually positioned — nothing rewrites the transform then, so
+            // the recoil offsets would accumulate and walk the dummy backwards.
+            if (_movementEnabled) _hitReaction?.Play();
             if (_hp < _maxHp * 0.2f) _hp = _maxHp; // auto-heal, testing never stops
         }
 
@@ -71,6 +95,8 @@ namespace RoyalSiege.Testing
                 _damageThisSecond = 0f;
                 _dpsTimer = 0f;
             }
+
+            if (!_movementEnabled) return; // manual mode: hands off the transform entirely
 
             if (_freezeRemaining > 0f)
             {

@@ -48,7 +48,7 @@ MonoBehaviour:
   _template: {fileID: 1805904884696680822}
   _count: 1
   _dropHeight: 7
-  _lateralOffset: {x: -5, y: -2.5}
+  _lateralOffset: {x: -0.8, y: -0.4}
   _fallSeconds: 0.5
   _staggerSeconds: 0
   _stickSeconds: 0.02

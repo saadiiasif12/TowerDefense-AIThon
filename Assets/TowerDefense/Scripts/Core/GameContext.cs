@@ -55,7 +55,9 @@ namespace RoyalSiege.Core
             Vector3 center = RangeMath.Flatten(_royalTower.transform.position);
 
             Events = new GameEvents();
-            var registry = new TargetRegistry();
+            // Map bounds on the registry: attacks may only target enemies whose center is
+            // inside the map circle (QA 17-Jul DT-004 — spawn-formation units are off-limits).
+            var registry = new TargetRegistry(center, _gameConfig.mapRadius);
             Targets = registry;
 
             Vfx = new VfxSpawner(_projectileRoot);
@@ -87,7 +89,7 @@ namespace RoyalSiege.Core
 
             _royalTower.Init(_gameConfig, registry, launcher, Events, _tickSystem, _tickSystem);
             _orbSpawner.Init(Events, Energy, _economyConfig, _tickSystem);
-            _placement.Init(_gameCamera, CardPlay, validator, buildingFactory, spellCaster, _gameConfig);
+            _placement.Init(_gameCamera, CardPlay, validator, buildingFactory, spellCaster, _gameConfig, center);
 
             var evaluator = new WinLoseEvaluator(_royalTower, Waves, registry, _gameConfig, Events, _tickSystem);
 
