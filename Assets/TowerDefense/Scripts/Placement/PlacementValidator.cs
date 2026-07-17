@@ -15,8 +15,6 @@ namespace RoyalSiege.Placement
     /// </summary>
     public sealed class PlacementValidator
     {
-        private static readonly List<IEnemyTarget> EnemyBuffer = new();
-
         private readonly GameConfigSO _config;
         private readonly ITargetQuery _query;
         private readonly Vector3 _center;
@@ -49,9 +47,10 @@ namespace RoyalSiege.Placement
         public bool IsValidSpellSpot(SpellCardSO card, Vector3 point)
         {
             if (!RangeMath.IsInside(_center, point, _config.mapRadius)) return false;
-            // A spell needs at least one live enemy inside its radius at placement time.
-            _query.EnemiesInRadius(point, card.radius, EnemyBuffer);
-            return EnemyBuffer.Count > 0;
+            // A spell needs at least one live enemy in the area it actually connects with.
+            // The effect decides that shape: point-AoE checks the drawn radius, while the
+            // Log checks its outward roll lane (its drop radius is far too small to gate on).
+            return card.effect != null && card.effect.HasTargets(card, point, _query, _center);
         }
 
         /// <summary>v4 Knights: anywhere inside the deployment circle (units — no overlap rule).</summary>

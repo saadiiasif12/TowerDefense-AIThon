@@ -115,10 +115,8 @@ namespace RoyalSiege.Juice
                 case "Log":
                     if (card.effect is LogEffectSO log)
                     {
-                        // Match the sim exactly: outward from the map center through the point.
-                        Vector3 direction = RangeMath.PlanarDirection(
-                            _context != null ? _context.MapCenter : Vector3.zero, point);
-                        StartLog(point, direction, log.rollDistance, log.rollSpeed);
+                        // Fixed forward roll (18-Jul) — read the SAME direction the sim uses.
+                        StartLog(point, log.RollDirection, log.rollDistance, log.rollSpeed);
                     }
                     break;
             }

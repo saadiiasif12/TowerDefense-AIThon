@@ -8,9 +8,11 @@ namespace RoyalSiege.Units
 {
     /// <summary>
     /// v4 Knights (13_PROGRESSION_V4 §5.3, 17-Jul user delta): GUARDS of the Royal Tower's
-    /// circle. A knight only targets enemies whose center is INSIDE the guard radius (=
-    /// the white deployment circle, same reach as the tower), never steps outside it, and
-    /// waits in place until a target enters. Fights at melee edge-distance, body-blocks —
+    /// circle. A knight targets enemies whose center is INSIDE the guard radius (= the white
+    /// deployment circle, same reach as the tower) AND always retaliates against any enemy
+    /// already within its own melee reach (18-Jul fix: an attacker poking the knight from
+    /// just OUTSIDE the ring no longer gets a free hit). It never steps outside the circle to
+    /// chase — retaliation is struck in place. Fights at melee edge-distance, body-blocks —
     /// enemies treat knights as targets because a knight registers as an IStructureTarget
     /// (IsBuilding = false, so the Ogre still prefers buildings). Never decays, persists
     /// across waves, dies only to damage. Logic on the 10 Hz tick, visuals interpolated.
@@ -162,14 +164,13 @@ namespace RoyalSiege.Units
         }
 
         /// <summary>
-        /// Nearest living enemy INSIDE the guard circle. A target that retreats past the
-        /// circle is dropped — the knight waits for it to come back under the radius.
+        /// Nearest valid enemy (see IsValidPrey): inside the guard circle, OR — new 18-Jul —
+        /// any enemy already in melee reach, so a knight always hits back at an attacker poking
+        /// it from just outside the ring. A target that is neither is dropped.
         /// </summary>
         private void AcquireTarget()
         {
-            if (_target != null && (!_target.IsAlive ||
-                !RangeMath.IsInside(_deps.MapCenter, _target.Position, _deps.GuardRadius)))
-                _target = null;
+            if (_target != null && !IsValidPrey(_target)) _target = null;
 
             if (_target != null && _target.IsAlive)
             {
@@ -194,13 +195,26 @@ namespace RoyalSiege.Units
             for (int i = 0; i < enemies.Count; i++)
             {
                 var e = enemies[i];
-                if (!e.IsAlive) continue;
-                // Guard rule: only enemies already inside the circle are valid prey.
-                if (!RangeMath.IsInside(_deps.MapCenter, e.Position, _deps.GuardRadius)) continue;
+                if (!IsValidPrey(e)) continue;
                 float d = RangeMath.PlanarDistance(_logicPosition, e.Position);
                 if (d < bestDist) { best = e; bestDist = d; }
             }
             return best;
+        }
+
+        /// <summary>
+        /// Valid prey for a guarding knight: any live enemy INSIDE the guard circle (chased
+        /// within the ring) OR any enemy already within the knight's melee reach — so an
+        /// attacker just OUTSIDE the ring is hit back instead of poking the knight for free
+        /// (18-Jul trap fix). Retaliation is struck in place; the leash is untouched, and
+        /// because the knight's footprint (unitRadius) is smaller than its attackRange, an
+        /// enemy pinned at its standoff is always within reach.
+        /// </summary>
+        private bool IsValidPrey(IEnemyTarget e)
+        {
+            if (e == null || !e.IsAlive) return false;
+            if (RangeMath.IsInside(_deps.MapCenter, e.Position, _deps.GuardRadius)) return true;
+            return RangeMath.PlanarDistance(_logicPosition, e.Position) - e.BodyRadius <= _card.attackRange;
         }
 
         /// <summary>Gentle push off fellow knights so a pair doesn't stack on one enemy.</summary>
