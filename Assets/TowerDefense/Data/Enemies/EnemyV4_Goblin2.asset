@@ -19,7 +19,7 @@ MonoBehaviour:
   moveSpeed: 1.6
   damage: 70
   attackRate: 1.4
-  attackRange: 4.5
+  attackRange: 0.5
   impactFraction: 0.4
   splashRadius: 0
   projectile: {fileID: 0}

@@ -48,6 +48,18 @@ namespace RoyalSiege.Units
                 foreach (var t in GetComponentsInChildren<Transform>(true))
                     if (t.name.Contains(HandBoneName)) { _holdAnchor = t; break; }
 
+            // Fallback for rigs whose bones aren't named "RightHand" (e.g. tripo models):
+            // ask the humanoid avatar directly. Resolves at runtime when the animator is live.
+            if (_holdAnchor == null)
+            {
+                var anim = GetComponentInChildren<Animator>();
+                if (anim != null && anim.isHuman)
+                {
+                    var bone = anim.GetBoneTransform(HumanBodyBones.RightHand);
+                    if (bone != null) _holdAnchor = bone;
+                }
+            }
+
             if (_held == null && _heldVisualPrefab != null && _holdAnchor != null)
             {
                 _held = Instantiate(_heldVisualPrefab, _holdAnchor);

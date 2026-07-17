@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.EnemyDefinitionSO
   id: Hellspawn2
   displayName: Hellspawn Artillery
-  prefab: {fileID: 7265747158914281454, guid: 06e16ed6a5668bc41a77cf15cf2c9e5f, type: 3}
+  prefab: {fileID: 7226527311606813120, guid: 94bf2d3599f87ab4cb224b1856a56ea1, type: 3}
   hp: 800
   moveSpeed: 1
   damage: 90

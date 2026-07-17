@@ -1,0 +1,159 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7226527311606813120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4998655643822498883}
+  - component: {fileID: 6785536229431967403}
+  - component: {fileID: 7417066405778407099}
+  m_Layer: 0
+  m_Name: Double Horn Variant 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4998655643822498883
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7226527311606813120}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4321047132636674240}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6785536229431967403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7226527311606813120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6aa690daa1b73514db5612a10a7a9a30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.WorldHealthBar
+  _width: 1.2
+  _thickness: 0.14
+  _yOffset: 3.3700001
+  _fillColor: {r: 0.25, g: 0.9, b: 0.2, a: 1}
+  _lowColor: {r: 0.95, g: 0.25, b: 0.15, a: 1}
+  _hideWhenFull: 1
+--- !u!114 &7417066405778407099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7226527311606813120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44cca7bd101870429b8e2f56f7ddec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Units.EnemyThrowView
+  _holdAnchor: {fileID: 2722536810962084067}
+  _heldVisualPrefab: {fileID: 3118196265061972592, guid: 5d2d9116c64abf5429bb1082d4e69856, type: 3}
+  _localPosition: {x: 0, y: 0.02, z: 0.04}
+  _localEuler: {x: 0, y: 0, z: 0}
+  _localScale: 0.12
+  _respawnDelay: 0.35
+--- !u!1001 &4358859935350136619
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4998655643822498883}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 3.4355001
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3.4355001
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3.4355001
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_Name
+      value: DoubleHornV2Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: aef2b87466cf4153802297be5a4d9a4b, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+--- !u!4 &2722536810962084067 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1852576806548013000, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+  m_PrefabInstance: {fileID: 4358859935350136619}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4321047132636674240 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+  m_PrefabInstance: {fileID: 4358859935350136619}
+  m_PrefabAsset: {fileID: 0}
