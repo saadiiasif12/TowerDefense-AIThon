@@ -24,6 +24,8 @@ MonoBehaviour:
   splashRadius: 0
   projectile: {fileID: 0}
   engageRadiusFromCenter: 12
+  hurtStaggerSeconds: 0.35
+  hurtCooldownSeconds: 2.5
   unitRadius: 0.85
   targetPriority: 1
   bounty: 1
