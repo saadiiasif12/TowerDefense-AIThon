@@ -38,6 +38,8 @@ namespace RoyalSiege.Units
 
         private float _attackClipLength = 1f;
         private float _walkClipNaturalSpeed = 1.2f;
+        private float _moveBlendTarget;
+        private float _moveSpeedTarget = 1f;
 
         private void Awake()
         {
@@ -70,15 +72,24 @@ namespace RoyalSiege.Units
 
             // Blend-tree position: crossfades the pose between the near-still sway (0) and
             // the walk cycle (1) — no more hard mid-stride freeze on stop.
-            _animator.SetFloat(MoveBlendHash, moving ? 1f : 0f, BlendDampSeconds, Time.deltaTime);
+            _moveBlendTarget = moving ? 1f : 0f;
 
             // State speed multiplier keeps feet matched to actual ground speed while walking.
             // While stopped it parks at 1 (NOT 0 — that would freeze the sway too): the tree's
             // idle child carries its own 0.08 timescale.
-            float target = moving
+            _moveSpeedTarget = moving
                 ? Mathf.Clamp(groundSpeed / _walkClipNaturalSpeed, 0.4f, 2.5f)
                 : 1f;
-            _animator.SetFloat(MoveSpeedHash, target, MoveDampSeconds, Time.deltaTime);
+        }
+
+        private void Update()
+        {
+            // Damping must integrate every FRAME. SetMoving arrives at the 10 Hz logic tick;
+            // damping there only advances ~10 frame-deltas per second (~0.16 s of progress
+            // per real second), which parks MoveBlend near 0 — the near-static sway pose.
+            if (_animator == null || Time.deltaTime <= 0f) return;
+            _animator.SetFloat(MoveBlendHash, _moveBlendTarget, BlendDampSeconds, Time.deltaTime);
+            _animator.SetFloat(MoveSpeedHash, _moveSpeedTarget, MoveDampSeconds, Time.deltaTime);
         }
 
         public void PlayAttack(float attackPeriod)
@@ -106,6 +117,12 @@ namespace RoyalSiege.Units
         {
             if (_animator == null) return;
             _animator.Rebind();
+            // Snap params to sane spawn values — Rebind resets them to controller defaults,
+            // and damping from a stale/zero value would leave the unit posed wrong for a beat.
+            _moveBlendTarget = 0f;
+            _moveSpeedTarget = 1f;
+            _animator.SetFloat(MoveBlendHash, 0f);
+            _animator.SetFloat(MoveSpeedHash, 1f);
             _animator.Update(0f);
         }
 

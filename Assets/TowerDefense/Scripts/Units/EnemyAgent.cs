@@ -282,6 +282,9 @@ namespace RoyalSiege.Units
             _deps.Registry.Unregister(this);
             _deps.Events.RaiseEnemyKilled(new EnemyKilledArgs(
                 _def, WaveIndex, _def.bounty * _deps.BountyMultiplier, _logicPosition));
+            // Update() stops driving playback speed once dead — restore it here so a unit
+            // killed while frozen/stunned (speed parked at 0) still plays its death anim.
+            _animator?.SetPlaybackSpeed(_deps.Clock.IsPaused ? 0f : _deps.Clock.SpeedMultiplier);
             _animator?.PlayDie();
         }
 

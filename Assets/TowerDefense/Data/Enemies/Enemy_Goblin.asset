@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Goblin
   prefab: {fileID: 7021374992222244773, guid: b0c48ab80fb01b944b6fec33f1bcfd31, type: 3}
   hp: 90
-  moveSpeed: 2
+  moveSpeed: 1.5
   damage: 50
   attackRate: 1.1
   attackRange: 0.5
@@ -24,6 +24,7 @@ MonoBehaviour:
   splashRadius: 0
   projectile: {fileID: 0}
   engageRadiusFromCenter: 12
+  deathVfx: {fileID: 0}
   unitRadius: 0.4
   targetPriority: 0
   bounty: 0.25
