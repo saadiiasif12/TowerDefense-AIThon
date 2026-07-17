@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using RoyalSiege.Combat;
 using RoyalSiege.Core;
@@ -42,7 +43,10 @@ namespace RoyalSiege.Buildings
             var king = config.kingAttack;
             _kingAttack = new StructureAttack(registry, launcher, events,
                 king.damage, king.attackRate, king.range, king.impactFraction, king.projectile,
-                onSwing: period => kingView?.OnSwing(period));
+                onSwing: period => kingView?.OnSwing(period),
+                // Bolt leaves from the king's casting hand, read at the exact fire moment
+                // (impactFraction lands on the hand-extended release pose of the throw anim).
+                firePoint: kingView == null ? (Func<Vector3>)null : () => kingView.CastPoint);
             kingView?.Init(clock, () => _kingAttack.CurrentTarget);
 
             _cannonAttack = CreateAttack(config.builtInCannon, registry, launcher, events);

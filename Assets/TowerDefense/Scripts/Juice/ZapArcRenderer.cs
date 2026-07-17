@@ -29,12 +29,28 @@ namespace RoyalSiege.Juice
         }
 
         private readonly List<Arc> _arcs = new();
+        private GameEvents _events;
+        private IClock _clock;
+        private IVfxSpawner _vfx;
 
-        private void Start() => _context.Events.InstantShotFired += OnZap;
+        private void Start()
+        {
+            // Normal path: wired to the game's context. Test scenes call Init() manually instead.
+            if (_events == null && _context != null && _context.Events != null)
+                Init(_context.Events, _context.Clock, _context.Vfx);
+        }
+
+        public void Init(GameEvents events, IClock clock, IVfxSpawner vfx)
+        {
+            _events = events;
+            _clock = clock;
+            _vfx = vfx;
+            _events.InstantShotFired += OnZap;
+        }
 
         private void OnDestroy()
         {
-            if (_context != null && _context.Events != null) _context.Events.InstantShotFired -= OnZap;
+            if (_events != null) _events.InstantShotFired -= OnZap;
         }
 
         private void OnZap(Vector3 from, Vector3 to)
@@ -53,12 +69,13 @@ namespace RoyalSiege.Juice
             arc.Life = ArcLifetime;
             arc.Line.enabled = true;
 
-            _context.Vfx.Spawn(_impactSparks, to, Quaternion.identity, 1f, _arcColor);
+            _vfx.Spawn(_impactSparks, to, Quaternion.identity, 1f, _arcColor);
         }
 
         private void Update()
         {
-            float dt = _context.Clock.ScaledDeltaTime;
+            if (_clock == null) return;
+            float dt = _clock.ScaledDeltaTime;
             for (int i = 0; i < _arcs.Count; i++)
             {
                 var arc = _arcs[i];

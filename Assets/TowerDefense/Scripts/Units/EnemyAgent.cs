@@ -3,6 +3,7 @@ using UnityEngine;
 using RoyalSiege.Combat;
 using RoyalSiege.Core;
 using RoyalSiege.Data;
+using RoyalSiege.Juice;
 
 namespace RoyalSiege.Units
 {
@@ -29,6 +30,7 @@ namespace RoyalSiege.Units
         private readonly StatusController _status = new();
         private AttackCycle _attack;
         private UnitAnimator _animator;
+        private HitReaction _hitReaction;
 
         private IStructureTarget _target;
         private Vector3 _previousPosition;
@@ -50,7 +52,11 @@ namespace RoyalSiege.Units
         public float HpPct => _dead ? 0f : _health?.Pct ?? 0f;
         public bool IsBoss => _def != null && _def.isBoss;
         public float BodyRadius => _def != null ? _def.unitRadius : 0.45f;
-        public void TakeDamage(float amount) => _health?.TakeDamage(amount);
+        public void TakeDamage(float amount)
+        {
+            _health?.TakeDamage(amount);
+            if (!_dead) _hitReaction?.Play(); // fatal hits skip the flash — death anim takes over
+        }
         public void ApplyFreeze(float seconds) => _status.ApplyFreeze(seconds);
         public void ApplyStun(float seconds) => _status.ApplyStun(seconds);
 
@@ -77,6 +83,9 @@ namespace RoyalSiege.Units
             _slamTelegraphRemaining = 0f;
 
             if (_animator == null) _animator = GetComponent<UnitAnimator>();
+            if (_hitReaction == null)
+                _hitReaction = GetComponent<HitReaction>() ?? gameObject.AddComponent<HitReaction>();
+            _hitReaction.Cancel();
             _animator?.Rebind();
             // Deterministic walk-cycle phase from the spawn position — pack members animate
             // out of step with each other without introducing any RNG.
@@ -258,6 +267,7 @@ namespace RoyalSiege.Units
             if (_dead) return;
             _dead = true;
             _despawnTimer = DeathDespawnSeconds;
+            _hitReaction?.Cancel();
 
             // Unregister IMMEDIATELY: no targeting, no double bounty (GDD ruling).
             _deps.Registry.Unregister(this);

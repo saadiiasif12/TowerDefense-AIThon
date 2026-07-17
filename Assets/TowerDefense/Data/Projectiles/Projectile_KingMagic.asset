@@ -15,9 +15,9 @@ MonoBehaviour:
   prefab: {fileID: 5789659435592313190, guid: da80561da8fa562478aa5b5818fc9a1a, type: 3}
   speed: 13
   arcHeight: 2.2
-  spawnHeightOffset: 1.7
+  spawnHeightOffset: 0
   impactHeightOffset: 0.5
-  muzzleVfx: {fileID: 8137173455560979978, guid: b57b09c750e16ae4ead8c8e889642181, type: 3}
-  impactVfx: {fileID: 6508220685396708252, guid: 23564bfc05b523943b1e88fe814de3f4, type: 3}
+  muzzleVfx: {fileID: 7914528912044350750, guid: ebb9c4d7d911d034cb67ca32d2a5bca7, type: 3}
+  impactVfx: {fileID: 1496472033527240478, guid: 77a6fc23066fd8c4484d66ac2961a04c, type: 3}
   impactTint: {r: 1, g: 1, b: 1, a: 1}
   spinDegreesPerSecond: 0

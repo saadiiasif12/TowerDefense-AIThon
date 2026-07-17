@@ -71,13 +71,15 @@ namespace RoyalSiege.Juice
         }
     }
 
-    /// <summary>Plays a pooled one-shot system and returns itself to the pool when finished.</summary>
+    /// <summary>Plays a pooled one-shot system (and its AudioSource, if any) and returns itself to the pool when finished.</summary>
     public sealed class VfxInstance : MonoBehaviour
     {
         public ParticleSystem System;
 
         private float _remaining;
         private Action<VfxInstance> _onDone;
+        private AudioSource _audio;
+        private bool _audioChecked;
 
         public void Play(float duration, Action<VfxInstance> onDone)
         {
@@ -85,6 +87,9 @@ namespace RoyalSiege.Juice
             _onDone = onDone;
             System.Clear(true);
             System.Play(true);
+
+            if (!_audioChecked) { _audio = GetComponent<AudioSource>(); _audioChecked = true; }
+            if (_audio != null && _audio.clip != null) _audio.Play();
         }
 
         private void Update()

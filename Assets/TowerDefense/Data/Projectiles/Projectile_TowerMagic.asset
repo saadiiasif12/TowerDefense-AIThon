@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a474eaa9432ebcc49aa2b8591bb3fd0f, type: 3}
+  m_Name: Projectile_TowerMagic
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.ProjectileSettingsSO
+  prefab: {fileID: 5780497435744626235, guid: 1f89e80e4aa977e4fb8f3a7992a51725, type: 3}
+  speed: 14
+  arcHeight: 1.6
+  spawnHeightOffset: 1
+  impactHeightOffset: 0.5
+  muzzleVfx: {fileID: 0}
+  impactVfx: {fileID: 218727571838634123, guid: e433b9813be623542b7fd1056406b02f, type: 3}
+  impactTint: {r: 1, g: 1, b: 1, a: 1}
+  spinDegreesPerSecond: 0

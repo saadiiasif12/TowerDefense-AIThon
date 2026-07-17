@@ -33,5 +33,8 @@ Update this whenever assets are imported/replaced. Models so far are Meshy AI ge
 ## UI
 - ✅ Greybox HUD live (hand bar + NEXT, energy bar, wave banner, end panel, world health bars). No art skin yet — AI-generate card frames/icons on Day 3 (Scenario/Ludo.ai). Mock `IMG-20260716-WA0006.jpg` remains the layout reference.
 
+## Third-party FX
+- ✅ `ThirdParty/MagicArsenal/` — dependency-closure subset (26 files, 3.7 MB) of the Arcane projectile/impact/muzzle triplet from the local Particles-Library project. Materials auto-converted Legacy-Additive → URP Particles Unlit. Pool-safe copies (lights + MagicLightFade stripped) live in `Prefabs/VFX/VFX_Arcane*`. Full library (6600+ prefabs, 30+ packs) at `D:\GameDevelopment\Assets\ParticlesLibrary\Particles-Library` + its `particles-skill.md` reference — pull more via the same closure-copy recipe (see AI Log).
+
 ## Audio
-- Nothing yet. Day 3: Suno (music), ElevenLabs (SFX).
+- ✅ First SFX: `arcaneimpact.wav` on the king's impact (VfxInstance now auto-plays an AudioSource if present). More Day 3: Suno (music), ElevenLabs (SFX).

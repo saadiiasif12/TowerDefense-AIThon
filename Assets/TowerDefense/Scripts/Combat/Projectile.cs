@@ -29,6 +29,20 @@ namespace RoyalSiege.Combat
         private Vector3 _lastPosition;
         private bool _active;
 
+        private TrailRenderer[] _trails;
+        private ParticleSystem[] _systems;
+        private Light[] _lights;
+        private float _fadeSeconds;
+        private float _fadeRemaining;
+
+        private void Awake()
+        {
+            _trails = GetComponentsInChildren<TrailRenderer>(true);
+            _systems = GetComponentsInChildren<ParticleSystem>(true);
+            _lights = GetComponentsInChildren<Light>(true);
+            foreach (var trail in _trails) _fadeSeconds = Mathf.Max(_fadeSeconds, trail.time);
+        }
+
         public void Launch(Vector3 from, IDamageable target, float damage,
             ProjectileSettingsSO settings, IClock clock, IVfxSpawner vfx,
             Action<Projectile> release, Action<Vector3, IDamageable> onImpact = null)
@@ -49,14 +63,26 @@ namespace RoyalSiege.Combat
             _lastPosition = _start;
             _active = true;
 
-            // Clear any pooled trail so it doesn't streak from the previous shot's position.
-            foreach (var trail in GetComponentsInChildren<TrailRenderer>())
-                trail.Clear();
+            // Hard-reset every pooled FX at the new spawn point: no stale trail segments,
+            // no leftover particles from the previous flight flashing on reuse.
+            foreach (var trail in _trails) trail.Clear();
+            foreach (var ps in _systems) { ps.Clear(false); ps.Play(false); }
+            foreach (var light in _lights) light.enabled = true;
         }
 
         private void Update()
         {
-            if (!_active) return;
+            if (!_active)
+            {
+                // Impact/fizzle happened: hold in place until the trail ribbon has faded,
+                // otherwise releasing to the pool cuts the streak mid-air on the hit frame.
+                if (_fadeRemaining > 0f)
+                {
+                    _fadeRemaining -= _clock.ScaledDeltaTime;
+                    if (_fadeRemaining <= 0f) _release?.Invoke(this);
+                }
+                return;
+            }
 
             // Target died mid-flight → fizzle: no damage, no impact callback, no VFX.
             if (_target == null || !_target.IsAlive)
@@ -96,7 +122,10 @@ namespace RoyalSiege.Combat
         {
             _active = false;
             _target = null;
-            _release?.Invoke(this);
+            foreach (var ps in _systems) ps.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+            foreach (var light in _lights) light.enabled = false;
+            _fadeRemaining = _fadeSeconds;
+            if (_fadeRemaining <= 0f) _release?.Invoke(this);
         }
     }
 }

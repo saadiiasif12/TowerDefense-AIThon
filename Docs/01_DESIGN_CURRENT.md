@@ -12,6 +12,8 @@ Base: `Assets/TowerDefense/Documents/GDD_Royal_Siege_v2.md` (read it — it is e
 9. **Wave pacing compressed twice** (user: too much downtime). Current start times: **0/11/23/36/50/64/80/96/114/132/151/172** — boss at 2:52, run ≈3½–4 min. The wave table below shows the ORIGINAL v2 times; `Waves_Level1.asset` is authoritative for timing. HUD shows a live "NEXT IN Xs" countdown in the header.
    **How to tune yourself:** select `Assets/TowerDefense/Data/Waves_Level1.asset` → Inspector → `Waves` list → each element's **Start Time** is the absolute second that wave spawns (unconditionally). Per-group `Delay After Wave Start` staggers groups inside a wave; `Unit Spawn Interval` (0.11) is the gap between units in a group; `Group Delay Multiplier` (0.7) globally scales group delays. Edits apply on the NEXT play (the schedule is built at match start).
 
+10. **Royal Tower fires ONE attack (17 Jul):** the built-in cannon is disabled (damage 0, range 0.01 in GameConfig) and its DPS folded into the king attack — **king: 93 dmg / 1.0 s / range 7** (total tower DPS ≈93, unchanged; idle-dies-wave-4 invariant preserved). Side effect: goblins (90 HP) die to one king hit instead of two — acceptable, tower attacks were never under the no-one-shot rule (spells only).
+
 ## Meeting deltas (16 July, notebook)
 
 1. **Bomb Tower is CUT** ("Card naming: no bomb tower"). Deck is now **7 cards**.

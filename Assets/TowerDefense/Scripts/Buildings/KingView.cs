@@ -17,10 +17,26 @@ namespace RoyalSiege.Buildings
         [SerializeField] private float _yawModelOffsetDegrees;
         [Tooltip("Facing when idle (no target) — default: toward the camera/south.")]
         [SerializeField] private Vector3 _idleFacing = Vector3.back;
+        [Tooltip("Bone the magic bolt is cast from. Auto-found by name if left empty.")]
+        [SerializeField] private Transform _castHand;
+
+        private const string CastHandBoneName = "RightHand";
 
         private IClock _clock;
         private Func<IEnemyTarget> _targetGetter;
         private UnitAnimator _animator;
+
+        /// <summary>World-space point the projectile should leave from (the casting hand).</summary>
+        public Vector3 CastPoint => _castHand != null
+            ? _castHand.position
+            : transform.position + Vector3.up * 1.5f;
+
+        private void Awake()
+        {
+            if (_castHand != null) return;
+            foreach (var t in GetComponentsInChildren<Transform>())
+                if (t.name == CastHandBoneName) { _castHand = t; break; }
+        }
 
         public void Init(IClock clock, Func<IEnemyTarget> targetGetter)
         {

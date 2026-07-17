@@ -15,17 +15,17 @@ MonoBehaviour:
   towerHp: 4000
   towerFootprintRadius: 1.5
   kingAttack:
-    damage: 50
+    damage: 93
     attackRate: 1
     range: 7
     impactFraction: 0.4
     projectile: {fileID: 11400000, guid: cc29e23a9d9fc0745b28e85e902f497e, type: 2}
   builtInCannon:
-    damage: 60
+    damage: 0
     attackRate: 1.4
-    range: 6
+    range: 0.01
     impactFraction: 0.4
-    projectile: {fileID: 11400000, guid: ee171e6d4f9c7d142b09d8dcf0c56eb5, type: 2}
+    projectile: {fileID: 11400000, guid: 928e0418155ae7241b984ae9e8e12fc2, type: 2}
   mapRadius: 15
   deploymentRadius: 5
   placementSnap: 0.5

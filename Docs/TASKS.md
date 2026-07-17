@@ -41,6 +41,10 @@ Legend: ⬜ todo · 🔄 in progress · ✅ done · Update after EVERY task. Kee
 - ⬜ Balance pass 1: full runs; check idle-dies-wave-4, winners at 40–70% tower HP
 - ⬜ Mobile build on device; touch + performance check
 
+- ✅ **TestRange scene** (`Scenes/TestRange.unity`): isolated tuning sandbox — grass floor, full tower+king, wandering auto-heal dummy target with health bar, runtime button column (spawn each building/enemy, clear, kill all, wander toggle, HP reset, 0.25×/1×/3× speed for eyeballing trails), live Target DPS readout. `TestRangeContext` is a minimal composition root (no waves/economy) — spawnable lists are inspector-editable. Odin Inspector 3.1.14.2 imported for nicer inspectors
+- ✅ King on the Royal Tower: Golden King (default scale) with AC_King (idle sway + speed-synced throw), turns to target, fires magic orb (dual trail + sparkle wake) with 5-layer arcane impact splash
+- ✅ King spell "shooting star" pass: trail is one continuous ribbon (star head + distance-emitted dust tracing the path), pooled projectile FX hard-reset on launch + trail fades out at impact instead of cutting; new view-only `HitReaction` on all enemies/dummy (backward recoil that settles + glow flash on every hit); king casts from the actual RightHand bone (`KingView.CastPoint` → `firePoint`, spawnHeightOffset 0) with release timing verified against the throw clip (impactFraction 0.4 = hand-extended pose)
+
 ## Day 3 (18 July) — POLISH & SUBMISSION
 
 - ⬜ Juice map implemented (11_MODULE_JUICE): VFX, SFX, haptics, camera shake, hit-stop
