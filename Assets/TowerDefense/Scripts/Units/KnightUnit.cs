@@ -104,6 +104,7 @@ namespace RoyalSiege.Units
             {
                 _attack.Tick(dt, false);
                 _animator?.SetMoving(false);
+                _animator?.SetAttacking(false);
             }
             else
             {
@@ -120,11 +121,13 @@ namespace RoyalSiege.Units
                     _logicPosition += velocity * dt;
                     _desiredForward = velocity.sqrMagnitude > 0.001f ? velocity.normalized : _desiredForward;
                     _animator?.SetMoving(true, velocity.magnitude);
+                    _animator?.SetAttacking(false);
                 }
                 else
                 {
                     _desiredForward = RangeMath.PlanarDirection(_logicPosition, _target.Position);
                     _animator?.SetMoving(false);
+                    _animator?.SetAttacking(true);
                 }
             }
 

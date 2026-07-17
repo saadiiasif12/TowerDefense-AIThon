@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Skeleton
   prefab: {fileID: 3087399621984602444, guid: 8e27d3a61118c724db2d22f7e2e57dbd, type: 3}
   hp: 55
-  moveSpeed: 2.2
+  moveSpeed: 1.5
   damage: 30
   attackRate: 1
   attackRange: 0.5
@@ -27,6 +27,7 @@ MonoBehaviour:
   deathVfx: {fileID: 4273496347337167337, guid: 4b0f0db536de97c499c1e15fc2ecf7d2, type: 3}
   hurtStaggerSeconds: 0.35
   hurtCooldownSeconds: 0
+  walkAnimSpeedMultiplier: 2
   unitRadius: 0.5
   targetPriority: 0
   bounty: 1
