@@ -10,6 +10,9 @@ namespace RoyalSiege.Data
         public GameObject buildingPrefab;
         public float hp = 700f;
         public float footprintRadius = 0.75f;
+        [Tooltip("v4 lifetime: max HP drains to zero over this many seconds even unattacked " +
+                 "(decay = maxHP/lifetime per second; enemy damage stacks on top). 0 = no decay.")]
+        public float lifetimeSeconds = 35f;
 
         [Header("Attack")]
         public float damage = 85f;

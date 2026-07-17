@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d557539dd84ec44580ae8e89cb8f251, type: 3}
   m_Name: EconomyConfig
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.EconomyConfigSO
-  startingEnergy: 9
+  startingEnergy: 5
   maxEnergy: 10
-  waveClearBonus: 3
+  passiveRegenSeconds: 3.5
+  waveClearBonus: 0
   orbFlightSeconds: 0.55

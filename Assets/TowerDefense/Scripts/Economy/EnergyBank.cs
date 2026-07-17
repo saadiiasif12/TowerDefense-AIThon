@@ -14,13 +14,16 @@ namespace RoyalSiege.Economy
     }
 
     /// <summary>
-    /// The Energy bar. Kill-collection economy: credits come ONLY from orbs and wave
-    /// bonuses — there is no passive regen anywhere in the codebase, by design (GDD v2 §4).
-    /// Hard cap: overflow is wasted (and reported, so UI can nudge spending).
+    /// The elixir bar. v4 hybrid economy (13_PROGRESSION_V4 §6): kill bounties (orbs,
+    /// credit on arrival) + a slow always-on passive regen (1 per 3.5 s — the
+    /// anti-frustration floor, not the income engine). Hard cap: overflow is wasted
+    /// (and reported, so UI can nudge spending). Regen ticks the 10 Hz sim clock.
     /// </summary>
-    public sealed class EnergyBank : IEnergyBank
+    public sealed class EnergyBank : IEnergyBank, ITickable
     {
         private readonly GameEvents _events;
+        private readonly float _regenSeconds;
+        private float _regenTimer;
 
         public float Current { get; private set; }
         public float Max { get; }
@@ -30,6 +33,18 @@ namespace RoyalSiege.Economy
             _events = events;
             Max = config.maxEnergy;
             Current = Mathf.Min(config.startingEnergy, Max);
+            _regenSeconds = config.passiveRegenSeconds;
+        }
+
+        public void Tick(float dt)
+        {
+            if (_regenSeconds <= 0f || Current >= Max) { _regenTimer = 0f; return; }
+            _regenTimer += dt;
+            if (_regenTimer >= _regenSeconds)
+            {
+                _regenTimer -= _regenSeconds;
+                Credit(1f);
+            }
         }
 
         public bool CanAfford(float cost) => Current >= cost;

@@ -90,6 +90,22 @@ namespace RoyalSiege.Units
         }
         public void ApplyFreeze(float seconds) => _status.ApplyFreeze(seconds);
         public void ApplyStun(float seconds) => _status.ApplyStun(seconds);
+        public void ApplySlow(float strength, float seconds) => _status.ApplySlow(strength, seconds);
+
+        /// <summary>
+        /// v4 (Log/Fireball): planar shove scaled by the def's knockbackFactor (heavies 0.5,
+        /// Ogre 0). Clamped to the map circle so a push can never shove a unit outside the
+        /// playable area (where it would become untargetable).
+        /// </summary>
+        public void ApplyKnockback(Vector3 displacement)
+        {
+            if (_dead || _def == null || _def.knockbackFactor <= 0f) return;
+            Vector3 pushed = _logicPosition + RangeMath.Flatten(displacement) * _def.knockbackFactor;
+            Vector3 fromCenter = RangeMath.Flatten(pushed - _deps.MapCenter);
+            float maxR = _def.engageRadiusFromCenter + 3f; // generous clamp; targeting map filter stays safe
+            if (fromCenter.magnitude > maxR) pushed = _deps.MapCenter + fromCenter.normalized * maxR;
+            _logicPosition = pushed;
+        }
 
         public void Init(EnemyDefinitionSO def, Vector3 spawnPosition, int waveIndex, EnemyRuntimeDeps deps)
         {
@@ -189,9 +205,10 @@ namespace RoyalSiege.Units
 
             if (!inRange && !_attack.IsSwinging)
             {
-                Vector3 seek = RangeMath.PlanarDirection(_logicPosition, _target.Position) * _def.moveSpeed;
-                Vector3 velocity = seek + Vector3.ClampMagnitude(separation * SeparationSpring, _def.moveSpeed);
-                velocity = Vector3.ClampMagnitude(velocity, _def.moveSpeed * 1.25f);
+                float speed = _def.moveSpeed * _status.MoveFactor; // v4: Earthquake slow
+                Vector3 seek = RangeMath.PlanarDirection(_logicPosition, _target.Position) * speed;
+                Vector3 velocity = seek + Vector3.ClampMagnitude(separation * SeparationSpring, speed);
+                velocity = Vector3.ClampMagnitude(velocity, speed * 1.25f);
 
                 _logicPosition += velocity * dt;
                 _desiredForward = velocity.normalized;

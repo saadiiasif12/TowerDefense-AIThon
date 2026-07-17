@@ -83,7 +83,7 @@ namespace RoyalSiege.Juice
                     break;
 
                 case "Fireball":
-                    _vfx.Spawn(_fireBlast, point + Vector3.up * 0.15f, Quaternion.identity, Mathf.Max(1f, card.radius * 0.5f));
+                    _vfx.Spawn(_fireBlast, point + Vector3.up * 0.15f, Quaternion.identity, Mathf.Max(1.2f, card.radius * 0.6f));
                     _shaker?.AddTrauma(_fireShake);
                     break;
 

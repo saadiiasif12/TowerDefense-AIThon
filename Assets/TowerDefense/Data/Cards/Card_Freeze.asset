@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Card_Freeze
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.SpellCardSO
   id: Freeze
-  displayName: Freeze
+  displayName: Frost-ball
   description: 
   icon: {fileID: 0}
   cost: 4
   cooldown: 14
   radius: 3
   effect: {fileID: 11400000, guid: 3d89357092ac4b34e8ecd6ceadbd1b40, type: 2}
+  fallDelaySeconds: 0

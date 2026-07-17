@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf1c451239db144d9dbe655ee3421cb, type: 3}
   m_Name: Effect_Arrows
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.AreaDamageEffectSO
-  damage: 80
+  damage: 90
+  knockback: 0

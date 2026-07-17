@@ -17,7 +17,7 @@ MonoBehaviour:
   kingAttack:
     damage: 93
     attackRate: 1
-    range: 7
+    range: 5
     impactFraction: 0.4
     projectile: {fileID: 11400000, guid: cc29e23a9d9fc0745b28e85e902f497e, type: 2}
   builtInCannon:
@@ -29,7 +29,7 @@ MonoBehaviour:
   mapRadius: 15
   deploymentRadius: 5
   placementSnap: 0.5
-  maxPlayerBuildings: 4
+  maxPlayerBuildings: 0
   enemyHpMultiplier: 1
   enemyDamageMultiplier: 0.5
   enemyBountyMultiplier: 1
