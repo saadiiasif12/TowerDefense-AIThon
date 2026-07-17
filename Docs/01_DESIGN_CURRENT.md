@@ -44,6 +44,13 @@ Base: `Assets/TowerDefense/Documents/GDD_Royal_Siege_v2.md` (read it — it is e
 
 **Placement:** buildings inside deployment circle (radius 5.0, snap 0.5, max 4 on field, no overlap, cost validated at release). Spells anywhere on map (radius 15). Green/red ghost preview, drag threshold 40 px, ghost 1.5 tiles above fingertip.
 
+**QA deltas (17 Jul, bug sheet build 17-07-2026):**
+- An unaffordable / cooling-down card can no longer ENTER the placement state (DT-010) — the tap shakes as before; cost is still re-validated at release for a drag that legitimately started.
+- Strict range extended to the map boundary: towers/king may only target enemies whose center is inside the map circle (DT-004 — spells already had this rule); player projectiles never fly past their attack radius (impact clamps to the ring edge, hit still lands — DT-002); range rings clip to the map circle (DT-001).
+- Sky-fall spells (Arrows/Fireball): targets are still captured at cast, but the damage RE-CHECKS the radius at landing — a unit that walked out of the circle during the fall is spared (DT-005/006). "The drawn ring never lies" now holds at the damage moment too.
+- Match end deselects/cancels any live card interaction and locks the hand (DT-009).
+- DT-003 ("only 4 towers placeable") confirmed **by design** — cap stays.
+
 ## Enemies (unchanged from GDD v2 §6)
 
 | Enemy | HP | Speed | Damage* | Rate | Range | Priority | Drop⚡ |

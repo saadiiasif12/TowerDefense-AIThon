@@ -79,7 +79,10 @@ namespace RoyalSiege.Spells
         private void Resolve(SpellCardSO card, Vector3 point, List<IEnemyTarget> targets)
         {
             // Targets killed during the fall are skipped (Health ignores the dead anyway).
-            targets.RemoveAll(t => t == null || !t.IsAlive);
+            // QA 17-Jul (DT-005/006): targets that WALKED OUT of the radius during the fall
+            // are spared too — damage may only ever land inside the drawn circle.
+            targets.RemoveAll(t => t == null || !t.IsAlive ||
+                !RangeMath.IsInside(point, t.Position, card.radius));
 
             _hitReport.Clear();
             card.effect.Apply(new SpellContext(point, card.radius, targets, _hitReport));

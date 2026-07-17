@@ -9,8 +9,11 @@ namespace RoyalSiege.Combat
 {
     public interface IProjectileLauncher
     {
+        /// <param name="rangeOrigin">With <paramref name="maxRange"/> &gt; 0, flight and
+        /// impact are clamped to that radius around this point (QA 17-Jul DT-002).</param>
         void Fire(Vector3 from, IDamageable target, float damage,
-            ProjectileSettingsSO settings, Action<Vector3, IDamageable> onImpact = null);
+            ProjectileSettingsSO settings, Action<Vector3, IDamageable> onImpact = null,
+            Vector3 rangeOrigin = default, float maxRange = 0f);
     }
 
     /// <summary>Factory + pool: one pool per ProjectileSettingsSO asset. Plays muzzle VFX.</summary>
@@ -29,7 +32,8 @@ namespace RoyalSiege.Combat
         }
 
         public void Fire(Vector3 from, IDamageable target, float damage,
-            ProjectileSettingsSO settings, Action<Vector3, IDamageable> onImpact = null)
+            ProjectileSettingsSO settings, Action<Vector3, IDamageable> onImpact = null,
+            Vector3 rangeOrigin = default, float maxRange = 0f)
         {
             if (settings == null || settings.prefab == null || target == null || !target.IsAlive)
                 return;
@@ -47,7 +51,8 @@ namespace RoyalSiege.Combat
                 _vfx.Spawn(settings.muzzleVfx, muzzlePos, Quaternion.LookRotation(dir));
             }
 
-            pool.Get().Launch(from, target, damage, settings, _clock, _vfx, pool.Release, onImpact);
+            pool.Get().Launch(from, target, damage, settings, _clock, _vfx, pool.Release, onImpact,
+                rangeOrigin, maxRange);
         }
     }
 }

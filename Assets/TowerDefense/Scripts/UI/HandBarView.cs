@@ -27,6 +27,7 @@ namespace RoyalSiege.UI
         private int _pressedSlot = -1;
         private bool _dragStarted;
         private bool _playCommitted;
+        private bool _matchOver;
 
         private readonly CardDefinitionSO[] _lastHand = new CardDefinitionSO[DeckService.HandSize];
         private bool _firstRefresh = true;
@@ -45,6 +46,7 @@ namespace RoyalSiege.UI
 
             _context.Events.HandChanged += Refresh;
             _context.Events.CardPlayed += OnCardPlayed;
+            _context.Events.MatchEnded += OnMatchEnded;
             Refresh();
         }
 
@@ -53,6 +55,28 @@ namespace RoyalSiege.UI
             if (_context == null || _context.Events == null) return;
             _context.Events.HandChanged -= Refresh;
             _context.Events.CardPlayed -= OnCardPlayed;
+            _context.Events.MatchEnded -= OnMatchEnded;
+        }
+
+        /// <summary>
+        /// QA 17-Jul (DT-009): the battle is over — abort any live selection/drag so the
+        /// victory/defeat panel takes the screen cleanly, and ignore hand input from now on.
+        /// </summary>
+        private void OnMatchEnded(MatchResult result)
+        {
+            _matchOver = true;
+            if (_dragStarted)
+            {
+                _placement.CancelDrag();
+                _proxy.HideImmediate();
+                if (_pressedSlot >= 0) _slots[_pressedSlot].SetCarried(false);
+            }
+            else if (_pressedSlot >= 0)
+            {
+                _slots[_pressedSlot].Deselect();
+            }
+            _pressedSlot = -1;
+            _dragStarted = false;
         }
 
         private void OnCardPlayed(CardDefinitionSO card)
@@ -90,6 +114,7 @@ namespace RoyalSiege.UI
 
         public void OnSlotPointerDown(int slot, Vector2 position)
         {
+            if (_matchOver) return;
             _pressedSlot = slot;
             _pressPosition = position;
             _dragStarted = false;
@@ -101,10 +126,15 @@ namespace RoyalSiege.UI
 
         public void OnSlotDrag(int slot, Vector2 position)
         {
-            if (slot != _pressedSlot) return;
+            if (_matchOver || slot != _pressedSlot) return;
 
             if (!_dragStarted && Vector2.Distance(position, _pressPosition) >= _context.GameConfig.dragThresholdPx)
             {
+                // QA 17-Jul (DT-010): an unaffordable/cooling card never enters the
+                // placement state — it already shook on the tap. Cost is still re-validated
+                // at release (GDD ruling) for the affordable card that started the drag.
+                if (!_context.CardPlay.CanPlay(slot)) return;
+
                 bool wasDragging = _placement.IsDragging;
                 _placement.BeginDrag(slot);
                 if (!wasDragging && _placement.IsDragging)
@@ -128,6 +158,7 @@ namespace RoyalSiege.UI
 
         public void OnSlotPointerUp(int slot, Vector2 position)
         {
+            if (_matchOver) return;
             if (_dragStarted)
             {
                 var played = _context.Deck.Hand[slot]; // capture BEFORE the hand cycles

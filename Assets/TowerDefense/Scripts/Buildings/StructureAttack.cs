@@ -67,7 +67,10 @@ namespace RoyalSiege.Buildings
 
             if (_projectile != null)
             {
-                _launcher.Fire(origin, target, _damage, _projectile);
+                // Clamp the flight to this attack's radius: a target that leaves the ring
+                // mid-flight can't pull the shot beyond it (QA 17-Jul DT-002).
+                _launcher.Fire(origin, target, _damage, _projectile,
+                    rangeOrigin: _position, maxRange: _range);
             }
             else
             {
