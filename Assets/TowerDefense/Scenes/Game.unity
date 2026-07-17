@@ -751,9 +751,9 @@ RectTransform:
   - {fileID: 1247063703}
   m_Father: {fileID: 376502451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 634, y: -125}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &164265827
@@ -1046,6 +1046,7 @@ MonoBehaviour:
   _context: {fileID: 1247799767}
   _softMaterial: {fileID: 2100000, guid: 7d36cef4162e55a4fb4774f3e3cf08ba, type: 2}
   _quakeShakePulse: 0.12
+  _logPrefab: {fileID: 5467130179978715683, guid: 6d1a18af5c08b154585aed70b28b45aa, type: 3}
 --- !u!1 &324120706
 GameObject:
   m_ObjectHideFlags: 0
@@ -1708,9 +1709,9 @@ RectTransform:
   - {fileID: 1204636316}
   m_Father: {fileID: 376502451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 748, y: -125}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &707285817
@@ -2929,9 +2930,9 @@ RectTransform:
   - {fileID: 833745165}
   m_Father: {fileID: 376502451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 292, y: -125}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1228863164
@@ -3962,9 +3963,9 @@ RectTransform:
   - {fileID: 2035587455}
   m_Father: {fileID: 376502451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 520, y: -125}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1549684120
@@ -5208,9 +5209,9 @@ RectTransform:
   - {fileID: 2001343613}
   m_Father: {fileID: 376502451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 406, y: -125}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2123944639
@@ -5300,6 +5301,67 @@ MonoBehaviour:
   _costLabel: {fileID: 334462443}
   _cooldownOverlay: {fileID: 2001343614}
   _group: {fileID: 2123944640}
+--- !u!1001 &2142342689
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 392655515533119483, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+      propertyPath: m_Name
+      value: Proj_MageBolt
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516356201539337171, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516356201539337171, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516356201539337171, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516356201539337171, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516356201539337171, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516356201539337171, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516356201539337171, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516356201539337171, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516356201539337171, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516356201539337171, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8981898223026388005, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+      propertyPath: m_Name
+      value: Held_MageBolt
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -5316,3 +5378,4 @@ SceneRoots:
   - {fileID: 300827904}
   - {fileID: 1247945087}
   - {fileID: 1231567873}
+  - {fileID: 2142342689}
