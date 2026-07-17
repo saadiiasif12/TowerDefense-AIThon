@@ -132,6 +132,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TowerModel
       objectReference: {fileID: 0}
+    - target: {fileID: 3177439609047596991, guid: 6d29942b6b956124e9026bd6f314291d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -254,11 +258,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 85e4caaa86985564bb8d53a0af93dc5b, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 85e4caaa86985564bb8d53a0af93dc5b, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 85e4caaa86985564bb8d53a0af93dc5b, type: 3}
       propertyPath: m_LocalRotation.y
@@ -270,7 +274,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 85e4caaa86985564bb8d53a0af93dc5b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 85e4caaa86985564bb8d53a0af93dc5b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -280,6 +284,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 85e4caaa86985564bb8d53a0af93dc5b, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c3da9c5135669ef47a3423357a82451e, type: 2}
     - target: {fileID: 919132149155446097, guid: 85e4caaa86985564bb8d53a0af93dc5b, type: 3}
       propertyPath: m_Name
       value: TowerLevel3
@@ -332,11 +340,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8737a214bbefa0341b5902233147c7da, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8737a214bbefa0341b5902233147c7da, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8737a214bbefa0341b5902233147c7da, type: 3}
       propertyPath: m_LocalRotation.y
@@ -348,7 +356,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8737a214bbefa0341b5902233147c7da, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8737a214bbefa0341b5902233147c7da, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -358,6 +366,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 8737a214bbefa0341b5902233147c7da, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b3ce3d8a674d1c84192d564ab04ed82a, type: 2}
     - target: {fileID: 919132149155446097, guid: 8737a214bbefa0341b5902233147c7da, type: 3}
       propertyPath: m_Name
       value: TowerLevel2
@@ -549,11 +561,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a8ae189a9dfe5844a98bd117fecd255e, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a8ae189a9dfe5844a98bd117fecd255e, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a8ae189a9dfe5844a98bd117fecd255e, type: 3}
       propertyPath: m_LocalRotation.y
@@ -565,7 +577,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a8ae189a9dfe5844a98bd117fecd255e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a8ae189a9dfe5844a98bd117fecd255e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -575,6 +587,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: a8ae189a9dfe5844a98bd117fecd255e, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e8310a6d6e34e2b49b864638839ef990, type: 2}
     - target: {fileID: 919132149155446097, guid: a8ae189a9dfe5844a98bd117fecd255e, type: 3}
       propertyPath: m_Name
       value: TowerLevel4
@@ -619,7 +635,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fabb2934ed0368c43b412113a982a87c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.5949999
+      value: -0.27
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fabb2934ed0368c43b412113a982a87c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -627,11 +643,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fabb2934ed0368c43b412113a982a87c, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fabb2934ed0368c43b412113a982a87c, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fabb2934ed0368c43b412113a982a87c, type: 3}
       propertyPath: m_LocalRotation.y
@@ -643,7 +659,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fabb2934ed0368c43b412113a982a87c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fabb2934ed0368c43b412113a982a87c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -653,6 +669,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: fabb2934ed0368c43b412113a982a87c, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 30fd3cff28c5eca4ca2a55b2c0a43b51, type: 2}
     - target: {fileID: 919132149155446097, guid: fabb2934ed0368c43b412113a982a87c, type: 3}
       propertyPath: m_Name
       value: TowerLevel1
