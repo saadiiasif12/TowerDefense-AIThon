@@ -40,6 +40,9 @@ namespace RoyalSiege.UI
 
         private void Start()
         {
+            // The HUD is a prefab, so the serialized _context can't hold a scene reference —
+            // resolve the single GameContext at runtime (GameContext runs first, order -100).
+            if (_context == null) _context = FindFirstObjectByType<GameContext>();
             for (int i = 0; i < _slots.Length; i++) _slots[i].Init(i, this);
             _nextSlot.Init(-1, this);
 

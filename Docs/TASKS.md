@@ -79,6 +79,8 @@ Legend: ⬜ todo · 🔄 in progress · ✅ done · Update after EVERY task. Kee
 
 ## Change log (newest first)
 
+- **18 Jul** — Fixed 7 console NREs from the HUD views (HandBarView / EnergyBarView / WaveBannerView / CheckpointScreenView / MatchEndView). The HUD is a prefab, so its serialized `_context` (GameContext) couldn't be baked — a prefab can't reference a scene object — and nothing wired it → null → NRE in each `Start`. Each view now falls back to `FindFirstObjectByType<GameContext>()` when `_context` is null (GameContext runs first at order −100). Live-verified: all views resolve, console 0 errors/warnings, HUD fully functional. This was the root of the "editor-session artifact" NREs from prior turns.
+
 - **18 Jul** — Energy is now TIME-ONLY (user ruling): enemy kills no longer drop energy/orbs; the elixir bar fills solely from passive time regen. `EconomyConfigSO.killDropsEnergy` (= false) gates `OrbSpawner.OnEnemyKilled`; `EnergyBank` passive regen unchanged. Live-verified (3 kills add 0 energy, 0 orbs; +1 per 3.5 s regen). Flip `killDropsEnergy` on to restore the old kill-bounty hybrid. ⚠️ 3.5 s/elixir is now the only income — may want a faster rate. See 13_PROGRESSION_V4 §6.
 
 - **18 Jul** — Deployment ring is now a DASHED white circle (matches the user mock). Rendered as 40 opaque white mesh dashes (`Art/Meshes/DeployRingDash.mesh` + `Art/Materials/Mat_DeployRingDash.mat`) on the `Arena/DeploymentRing` object with its LineRenderer disabled — URP wouldn't render a transparent/textured LineRenderer, so opaque mesh geometry was the reliable path. Scene diff is ring-only; play-verified. (Retune: regen the mesh — count/length/width.)

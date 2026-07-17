@@ -23,6 +23,8 @@ namespace RoyalSiege.UI
 
         private void Start()
         {
+            // HUD prefab can't serialize a scene ref — resolve the GameContext at runtime.
+            if (_context == null) _context = FindFirstObjectByType<GameContext>();
             _bonusLabel.text = "";
             _context.Events.WaveCleared += OnWaveCleared;
             _context.Events.WaveProgressChanged += OnWaveProgress;

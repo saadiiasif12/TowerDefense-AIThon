@@ -30,6 +30,8 @@ namespace RoyalSiege.UI
 
         private void Start()
         {
+            // HUD prefab can't serialize a scene ref — resolve the GameContext at runtime.
+            if (_context == null) _context = FindFirstObjectByType<GameContext>();
             BuildSegments();
             _context.Events.EnergyChanged += OnEnergyChanged;
             OnEnergyChanged(_context.Energy.Current, _context.Energy.Max);

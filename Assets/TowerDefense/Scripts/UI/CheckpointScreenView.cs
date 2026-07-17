@@ -22,6 +22,8 @@ namespace RoyalSiege.UI
 
         private void Start()
         {
+            // HUD prefab can't serialize a scene ref — resolve the GameContext at runtime.
+            if (_context == null) _context = FindFirstObjectByType<GameContext>();
             BuildUi();
             _context.Events.CheckpointReached += OnCheckpoint;
         }
