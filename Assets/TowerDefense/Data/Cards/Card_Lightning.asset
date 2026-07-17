@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Lightning
   displayName: Lightning
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 28ec336b16805e24cb9f4a7baaccf6e5, type: 3}
   cost: 6
   cooldown: 16
   radius: 3.5
