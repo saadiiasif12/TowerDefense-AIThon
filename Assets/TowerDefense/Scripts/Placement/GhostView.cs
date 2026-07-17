@@ -26,7 +26,15 @@ namespace RoyalSiege.Placement
 
         public void Hide() => gameObject.SetActive(false);
 
-        public void SetPosition(Vector3 position) => transform.position = position;
+        /// <summary>The drawn ring never leaves the playable circle (QA 17-Jul DT-001).</summary>
+        public void SetMapClip(Vector3 mapCenter, float mapRadius) =>
+            _rangeRing?.SetMapClip(mapCenter, mapRadius);
+
+        public void SetPosition(Vector3 position)
+        {
+            transform.position = position;
+            _rangeRing?.Rebuild(); // re-clip against the map circle at the new spot
+        }
 
         public void SetValid(bool valid)
         {

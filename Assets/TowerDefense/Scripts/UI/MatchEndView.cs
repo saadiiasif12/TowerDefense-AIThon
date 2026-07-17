@@ -25,6 +25,8 @@ namespace RoyalSiege.UI
 
         private void OnMatchEnded(MatchResult result)
         {
+            // Always render above every other UI element (QA 17-Jul DT-009).
+            _panel.transform.SetAsLastSibling();
             _panel.SetActive(true);
             if (result.Victory)
             {

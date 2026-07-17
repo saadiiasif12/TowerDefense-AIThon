@@ -22,6 +22,10 @@ namespace RoyalSiege.Buildings
         public float HpPct => _health?.Pct ?? 0f;
         public float CurrentHp => _health?.Current ?? 0f;
 
+        /// <summary>TEST hook: the test range silences the tower with this to isolate other
+        /// systems (e.g. watch Tesla alone). Always true in the real game — nothing sets it.</summary>
+        public bool AttacksEnabled { get; set; } = true;
+
         // ---- IStructureTarget ----
         public bool IsAlive => _health != null && _health.IsAlive;
         public Vector3 Position => transform.position;
@@ -64,7 +68,7 @@ namespace RoyalSiege.Buildings
 
         public void Tick(float dt)
         {
-            if (!IsAlive) return;
+            if (!IsAlive || !AttacksEnabled) return;
             _kingAttack.Tick(dt, transform.position);
             _cannonAttack.Tick(dt, transform.position);
         }

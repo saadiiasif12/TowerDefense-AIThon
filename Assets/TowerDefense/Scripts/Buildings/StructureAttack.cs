@@ -67,13 +67,16 @@ namespace RoyalSiege.Buildings
 
             if (_projectile != null)
             {
-                _launcher.Fire(origin, target, _damage, _projectile);
+                // Clamp the flight to this attack's radius: a target that leaves the ring
+                // mid-flight can't pull the shot beyond it (QA 17-Jul DT-002).
+                _launcher.Fire(origin, target, _damage, _projectile,
+                    rangeOrigin: _position, maxRange: _range);
             }
             else
             {
                 // A firePoint override IS the muzzle (Tesla coil top) — no extra height fudge.
                 Vector3 zapFrom = _firePoint != null ? origin : origin + Vector3.up;
-                _events.RaiseInstantShotFired(zapFrom, target.Position + Vector3.up * 0.5f);
+                _events.RaiseInstantShotFired(zapFrom, target);
                 target.TakeDamage(_damage);
             }
             _onFire?.Invoke();

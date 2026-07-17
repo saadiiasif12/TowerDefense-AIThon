@@ -7,11 +7,26 @@ namespace RoyalSiege.Combat
     /// <summary>
     /// Spatial source of truth. Plain list scans — at ≤4 buildings and ≤~40 alive enemies
     /// this beats any spatial structure in both speed and simplicity.
+    /// QA 17-Jul (DT-004): enemy queries honour the map circle — units still marching in
+    /// from their spawn formation (center outside mapRadius) are NOT valid targets, matching
+    /// the strict-range rule spells already enforce.
     /// </summary>
     public sealed class TargetRegistry : ITargetRegistry
     {
         private readonly List<IEnemyTarget> _enemies = new();
         private readonly List<IStructureTarget> _structures = new();
+        private readonly Vector3 _mapCenter;
+        private readonly float _mapRadius;
+
+        /// <param name="mapRadius">0 = no map filtering (test range sandbox).</param>
+        public TargetRegistry(Vector3 mapCenter = default, float mapRadius = 0f)
+        {
+            _mapCenter = mapCenter;
+            _mapRadius = mapRadius;
+        }
+
+        private bool OnMap(Vector3 position) =>
+            _mapRadius <= 0f || RangeMath.IsInside(_mapCenter, position, _mapRadius);
 
         public IReadOnlyList<IEnemyTarget> Enemies => _enemies;
         public IReadOnlyList<IStructureTarget> Structures => _structures;
@@ -39,7 +54,7 @@ namespace RoyalSiege.Combat
             for (int i = 0; i < _enemies.Count; i++)
             {
                 var e = _enemies[i];
-                if (!e.IsAlive) continue;
+                if (!e.IsAlive || !OnMap(e.Position)) continue;
                 float d = RangeMath.PlanarDistance(position, e.Position);
                 if (d <= range && d < bestDist) { best = e; bestDist = d; }
             }
@@ -52,7 +67,7 @@ namespace RoyalSiege.Combat
             for (int i = 0; i < _enemies.Count; i++)
             {
                 var e = _enemies[i];
-                if (e.IsAlive && RangeMath.IsInside(point, e.Position, radius)) results.Add(e);
+                if (e.IsAlive && OnMap(e.Position) && RangeMath.IsInside(point, e.Position, radius)) results.Add(e);
             }
         }
 
