@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8026250712916438719}
   - component: {fileID: 7691584455609134376}
   m_Layer: 0
-  m_Name: Proj_MageBolt
+  m_Name: Proj_MageBolt 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -192,12 +192,12 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 6284461759538110252}
+  - {fileID: 7634902707404559000}
   m_Father: {fileID: 8516356201539337171}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &5817627970943514823
+--- !u!1001 &7961844015940842867
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -207,15 +207,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 9c21ed6794e0a9a48bda5992d2efe029, type: 3}
       propertyPath: m_LocalScale.x
-      value: 191.80762
+      value: 191.80765
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9c21ed6794e0a9a48bda5992d2efe029, type: 3}
       propertyPath: m_LocalScale.y
-      value: 191.8076
+      value: 191.80765
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9c21ed6794e0a9a48bda5992d2efe029, type: 3}
       propertyPath: m_LocalScale.z
-      value: 191.8076
+      value: 191.80759
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9c21ed6794e0a9a48bda5992d2efe029, type: 3}
       propertyPath: m_LocalPosition.x
@@ -239,7 +239,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9c21ed6794e0a9a48bda5992d2efe029, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9c21ed6794e0a9a48bda5992d2efe029, type: 3}
       propertyPath: m_LocalRotation.z
@@ -274,8 +274,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9c21ed6794e0a9a48bda5992d2efe029, type: 3}
---- !u!4 &6284461759538110252 stripped
+--- !u!4 &7634902707404559000 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9c21ed6794e0a9a48bda5992d2efe029, type: 3}
-  m_PrefabInstance: {fileID: 5817627970943514823}
+  m_PrefabInstance: {fileID: 7961844015940842867}
   m_PrefabAsset: {fileID: 0}
