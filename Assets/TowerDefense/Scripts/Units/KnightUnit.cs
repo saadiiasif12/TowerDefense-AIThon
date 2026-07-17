@@ -113,7 +113,9 @@ namespace RoyalSiege.Units
 
                 if (!inRange && !_attack.IsSwinging)
                 {
-                    Vector3 seek = RangeMath.PlanarDirection(_logicPosition, _target.Position) * _card.moveSpeed;
+                    Vector3 seekDir = SteerAroundStructures(
+                        RangeMath.PlanarDirection(_logicPosition, _target.Position), _target.Position);
+                    Vector3 seek = seekDir * _card.moveSpeed;
                     Vector3 velocity = Vector3.ClampMagnitude(seek + ComputeSeparation() * SeparationSpring, _card.moveSpeed * 1.2f);
                     _logicPosition += velocity * dt;
                     _desiredForward = velocity.sqrMagnitude > 0.001f ? velocity.normalized : _desiredForward;
@@ -161,6 +163,43 @@ namespace RoyalSiege.Units
                 if (away.sqrMagnitude < 0.001f) away = Vector3.forward;
                 _logicPosition = center + away * standoff;
             }
+        }
+
+        /// <summary>
+        /// Steer AROUND solid structures instead of grinding into them: if the straight line to
+        /// the target passes through the Royal Tower or a building, slide along the tangent on
+        /// the side that makes progress toward the target (deterministic geometry, no navmesh).
+        /// Fixes knights pressing into the tower when their target sits on the far side (18-Jul).
+        /// </summary>
+        private Vector3 SteerAroundStructures(Vector3 desiredDir, Vector3 targetPos)
+        {
+            Vector3 toTarget = RangeMath.Flatten(targetPos - _logicPosition);
+            float targetDist = toTarget.magnitude;
+            if (targetDist < 0.001f) return desiredDir;
+            Vector3 dirToTarget = toTarget / targetDist;
+
+            _deps.Registry.StructuresInRadius(_logicPosition, 4f, StructureBuffer);
+            for (int i = 0; i < StructureBuffer.Count; i++)
+            {
+                var s = StructureBuffer[i];
+                if (ReferenceEquals(s, this) || !s.BlocksPlacement || !s.IsAlive) continue;
+
+                Vector3 toObstacle = RangeMath.Flatten(s.Position - _logicPosition);
+                float along = Vector3.Dot(toObstacle, dirToTarget);
+                if (along <= 0f || along >= targetDist) continue;   // obstacle behind us, or target is nearer than it
+
+                float clearance = s.FootprintRadius + FootprintRadius + 0.35f;
+                Vector3 perp = toObstacle - dirToTarget * along;
+                if (perp.magnitude >= clearance) continue;          // the straight path already clears the obstacle
+
+                // Blocked: head along the tangent (perpendicular to the obstacle line) on the
+                // side that still makes progress toward the target — the knight circles it.
+                Vector3 n = toObstacle.sqrMagnitude > 1e-4f ? toObstacle.normalized : dirToTarget;
+                Vector3 tangent = new Vector3(-n.z, 0f, n.x);
+                if (Vector3.Dot(tangent, dirToTarget) < 0f) tangent = -tangent;
+                return tangent;
+            }
+            return desiredDir;
         }
 
         /// <summary>
