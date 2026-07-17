@@ -20,3 +20,4 @@ MonoBehaviour:
   cooldown: 16
   radius: 3.5
   effect: {fileID: 11400000, guid: 0e26431012f703448bfcfad949b0d8b2, type: 2}
+  fallDelaySeconds: 0.35
