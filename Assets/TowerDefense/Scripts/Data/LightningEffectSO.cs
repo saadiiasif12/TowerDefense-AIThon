@@ -23,6 +23,7 @@ namespace RoyalSiege.Data
             int hits = Mathf.Min(targetCount, Sorted.Count);
             for (int i = 0; i < hits; i++)
             {
+                context.HitReport?.Add(Sorted[i].Position);
                 Sorted[i].TakeDamage(damage);
                 if (Sorted[i].IsAlive) Sorted[i].ApplyStun(stunSeconds);
             }

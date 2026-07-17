@@ -3,6 +3,7 @@ using UnityEngine;
 using RoyalSiege.Combat;
 using RoyalSiege.Core;
 using RoyalSiege.Data;
+using RoyalSiege.Juice;
 
 namespace RoyalSiege.Units
 {
@@ -29,6 +30,8 @@ namespace RoyalSiege.Units
         private readonly StatusController _status = new();
         private AttackCycle _attack;
         private UnitAnimator _animator;
+        private HitReaction _hitReaction;
+        private EnemyLifecycleView _lifecycle;
 
         private IStructureTarget _target;
         private Vector3 _previousPosition;
@@ -50,7 +53,11 @@ namespace RoyalSiege.Units
         public float HpPct => _dead ? 0f : _health?.Pct ?? 0f;
         public bool IsBoss => _def != null && _def.isBoss;
         public float BodyRadius => _def != null ? _def.unitRadius : 0.45f;
-        public void TakeDamage(float amount) => _health?.TakeDamage(amount);
+        public void TakeDamage(float amount)
+        {
+            _health?.TakeDamage(amount);
+            if (!_dead) _hitReaction?.Play(); // fatal hits skip the flash — death anim takes over
+        }
         public void ApplyFreeze(float seconds) => _status.ApplyFreeze(seconds);
         public void ApplyStun(float seconds) => _status.ApplyStun(seconds);
 
@@ -77,6 +84,13 @@ namespace RoyalSiege.Units
             _slamTelegraphRemaining = 0f;
 
             if (_animator == null) _animator = GetComponent<UnitAnimator>();
+            // Lifecycle view FIRST — HitReaction discovers it in Awake and routes its glow there.
+            if (_lifecycle == null)
+                _lifecycle = GetComponent<EnemyLifecycleView>() ?? gameObject.AddComponent<EnemyLifecycleView>();
+            if (_hitReaction == null)
+                _hitReaction = GetComponent<HitReaction>() ?? gameObject.AddComponent<HitReaction>();
+            _hitReaction.Cancel();
+            _lifecycle.ResetForSpawn();
             _animator?.Rebind();
             // Deterministic walk-cycle phase from the spawn position — pack members animate
             // out of step with each other without introducing any RNG.
@@ -97,6 +111,7 @@ namespace RoyalSiege.Units
             }
 
             _status.Tick(dt);
+            _lifecycle?.SetFrozen(_status.IsFrozen);
             if (_status.IsBlocked)
             {
                 _previousPosition = _logicPosition;
@@ -116,7 +131,10 @@ namespace RoyalSiege.Units
             }
 
             float edgeDistance = RangeMath.PlanarDistance(_logicPosition, _target.Position) - _target.FootprintRadius;
-            bool inRange = edgeDistance <= _def.attackRange;
+            // 17-Jul rule: an enemy may only fight once it has actually ENTERED the territory
+            // (inside engageRadiusFromCenter). Stops ranged units attacking from the outskirts.
+            bool insideTerritory = RangeMath.IsInside(_deps.MapCenter, _logicPosition, _def.engageRadiusFromCenter);
+            bool inRange = insideTerritory && edgeDistance <= _def.attackRange;
             _attack.Tick(dt, inRange);
 
             Vector3 separation = ComputeSeparation();
@@ -154,7 +172,8 @@ namespace RoyalSiege.Units
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRot,
                     1f - Mathf.Exp(-TurnSharpness * viewDt));
             }
-            _animator?.SetPlaybackSpeed(_deps.Clock.IsPaused ? 0f : _deps.Clock.SpeedMultiplier);
+            // Frozen/stunned units hold their pose — sells the ice block far better than idling.
+            _animator?.SetPlaybackSpeed(_deps.Clock.IsPaused || _status.IsBlocked ? 0f : _deps.Clock.SpeedMultiplier);
         }
 
         /// <summary>Push away from overlapping neighbours (sum of overlap vectors).</summary>
@@ -238,6 +257,7 @@ namespace RoyalSiege.Units
                     float damage = _def.slamDamage * _deps.DamageMultiplier;
                     for (int i = 0; i < SplashBuffer.Count; i++)
                         SplashBuffer[i].TakeDamage(damage);
+                    _deps.Events.RaiseBossSlammed(_logicPosition);
                 }
                 return;
             }
@@ -255,6 +275,8 @@ namespace RoyalSiege.Units
             if (_dead) return;
             _dead = true;
             _despawnTimer = DeathDespawnSeconds;
+            _hitReaction?.Cancel();
+            _lifecycle?.BeginDeath(DeathDespawnSeconds);
 
             // Unregister IMMEDIATELY: no targeting, no double bounty (GDD ruling).
             _deps.Registry.Unregister(this);

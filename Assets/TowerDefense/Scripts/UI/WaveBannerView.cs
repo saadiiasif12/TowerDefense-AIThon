@@ -4,7 +4,10 @@ using RoyalSiege.Core;
 
 namespace RoyalSiege.UI
 {
-    /// <summary>Top banner: "WAVE n/12", plus a brief wave-cleared bonus flash.</summary>
+    /// <summary>
+    /// Top banner: "WAVE n/12 · NEXT IN Xs" live countdown, plus a brief wave-cleared
+    /// bonus flash. Countdown reads WaveScheduler.TimeToNextWave every frame.
+    /// </summary>
     public sealed class WaveBannerView : MonoBehaviour
     {
         [SerializeField] private GameContext _context;
@@ -15,20 +18,14 @@ namespace RoyalSiege.UI
 
         private void Start()
         {
-            _waveLabel.text = "GET READY";
             _bonusLabel.text = "";
-            _context.Events.WaveStarted += OnWaveStarted;
             _context.Events.WaveCleared += OnWaveCleared;
         }
 
         private void OnDestroy()
         {
-            if (_context == null || _context.Events == null) return;
-            _context.Events.WaveStarted -= OnWaveStarted;
-            _context.Events.WaveCleared -= OnWaveCleared;
+            if (_context != null && _context.Events != null) _context.Events.WaveCleared -= OnWaveCleared;
         }
-
-        private void OnWaveStarted(int wave) => _waveLabel.text = "WAVE " + wave + "/" + _context.Waves.WaveCount;
 
         private void OnWaveCleared(int wave)
         {
@@ -42,6 +39,23 @@ namespace RoyalSiege.UI
             {
                 _bonusLabel.text = "";
                 _bonusHideAt = -1f;
+            }
+
+            if (_context.Waves == null) return;
+            int current = _context.Waves.CurrentWaveNumber;
+            int total = _context.Waves.WaveCount;
+            float toNext = _context.Waves.TimeToNextWave;
+
+            if (toNext >= 0f)
+            {
+                string countdown = "NEXT IN " + Mathf.CeilToInt(toNext) + "s";
+                _waveLabel.text = current > 0
+                    ? "WAVE " + current + "/" + total + "    " + countdown
+                    : countdown;
+            }
+            else
+            {
+                _waveLabel.text = "WAVE " + current + "/" + total + "    FINAL WAVE";
             }
         }
     }

@@ -21,9 +21,11 @@ Update this whenever assets are imported/replaced. Models so far are Meshy AI ge
 ## Buildings / Tower
 | Unit | Status |
 |---|---|
-| Royal Tower | ✅ real model (`Assets/Environment/Tower/Prefab/Tower.prefab`, Tripo AI) as visual child, auto-scaled; placeholder cylinder hidden |
+| Royal Tower | ✅ real model (Tripo AI, now under `Assets/TowerDefense/Environment/Tower/`) as visual child; placeholder cylinder hidden |
+| King | ✅ Golden King (Meshy, `Characters/King/`) converted to Humanoid, standing on the tower top under scale-compensating `KingRoot`; `AC_King` controller (Idle=own walk clip @0.15 sway, Attack=general throw synced to attack rate); KingView rotates him to the king-attack's target. Fires `Projectile_KingMagic` (emissive orb, dual trail, sparkle wake) with `VFX_MagicFlash` cast + `VFX_MagicImpact` big splash |
 | Cannon / Tesla / X-Bow | ✅ real models (Meshy, `Environment/Tower/Small Towers/{Canon,Tesla,Mortar}.prefab`) nested as visual children of `Building_Cannon/Tesla/XBow`; placeholder primitives removed. Gameplay/stats/GUIDs unchanged. **Not yet play-verified** — tile scale/orientation may need in-editor tweak. Drag ghost still primitive |
-| Projectiles / orbs | ❌ DUMMY (small spheres; orb = magenta) |
+| Projectiles / orbs | ✅ Proj_CannonBall (metallic + smoke trail + spin), Proj_Bolt (Meshy Arrow art + tracer), Proj_MageBolt (purple emissive + trail). Orb still magenta sphere |
+| VFX | ✅ `Prefabs/VFX/`: MuzzleFlash, Impact (tintable), Puff, Sparks, SpellBurst — all pooled via VfxSpawner. Tesla zap = ZapArcRenderer |
 
 ## Environment
 - ✅ Ground: `Assets/Ground/Texture/grass pattern.png` tiled 9×9 on a 36×36 plane (wrap=repeat) — mock direction.
@@ -32,5 +34,16 @@ Update this whenever assets are imported/replaced. Models so far are Meshy AI ge
 ## UI
 - ✅ Greybox HUD live (hand bar + NEXT, energy bar, wave banner, end panel, world health bars). No art skin yet — AI-generate card frames/icons on Day 3 (Scenario/Ludo.ai). Mock `IMG-20260716-WA0006.jpg` remains the layout reference.
 
+## Third-party FX
+- ✅ `ThirdParty/MagicArsenal/` — dependency-closure subset (26 files, 3.7 MB) of the Arcane projectile/impact/muzzle triplet from the local Particles-Library project. Materials auto-converted Legacy-Additive → URP Particles Unlit. Pool-safe copies (lights + MagicLightFade stripped) live in `Prefabs/VFX/VFX_Arcane*`. Full library (6600+ prefabs, 30+ packs) at `D:\GameDevelopment\Assets\ParticlesLibrary\Particles-Library` + its `particles-skill.md` reference — pull more via the same closure-copy recipe (see AI Log).
+
 ## Audio
-- Nothing yet. Day 3: Suno (music), ElevenLabs (SFX).
+- ✅ First SFX: `arcaneimpact.wav` on the king's impact (VfxInstance now auto-plays an AudioSource if present). More Day 3: Suno (music), ElevenLabs (SFX).
+
+## Overnight juice pass additions (17→18 Jul)
+- ✅ New spell VFX prefabs in `Prefabs/VFX/`: `FX_ArrowRain` (15 Meshy-arrow skyfall volley), `FX_Meteor` (fire projectile + trail skyfall), `VFX_FireballBlast` (+fireimpact.wav), `VFX_LightningPillar` (+lightningimpact.wav), `VFX_FreezeNova` (+frostimpact02.wav), `VFX_GroundFrost` (lingering ice patch), `VFX_BoneBurst` (skeleton death bones, capsule mesh particles + `Mat_Bone`).
+- ✅ MagicArsenal subset extended (+28 files: Fire/Lightning/FrostV2/GroundFrost sets) via `Tools/import-magic-arsenal.ps1` (reusable GUID closure copier); 9 more materials URP-converted. All library blasts shrunk to arena scale (they ship huge).
+- ✅ `Shaders/RS_Dissolve.shader` — URP unlit UV-noise dissolve with ember edge (enemy deaths). Mobile-cheap, one pass.
+- ✅ X-Bow: bow string LineRenderer (`Mat_BowString`) + limb-tip anchors in `Building_XBow`; Tesla: coil-top `Muzzle` in `Building_Tesla`.
+- ✅ TestRange is now the artist sandbox: serialized `spellCards` + `vfxGallery` lists on TestRangeContext generate "Cast X" and "FX: Y" replay buttons at runtime — add/tune assets with zero code.
+- Audio note: TestRange camera now has an AudioListener (spell SFX audible there).

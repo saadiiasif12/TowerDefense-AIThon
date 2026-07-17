@@ -10,6 +10,8 @@ namespace RoyalSiege.Buildings
     /// One complete attack unit (targeter + cycle + delivery), reused by buildings and by
     /// BOTH Royal Tower attacks. Delivery is projectile (via the shared launcher) or
     /// instant (Tesla) — decided purely by whether a ProjectileSettingsSO is assigned.
+    /// Visual hooks: onSwing (windup started), onFire (shot actually left), firePoint
+    /// (muzzle position override) — all optional, all view-only.
     /// </summary>
     public sealed class StructureAttack
     {
@@ -20,21 +22,28 @@ namespace RoyalSiege.Buildings
         private readonly float _damage;
         private readonly float _range;
         private readonly ProjectileSettingsSO _projectile;
+        private readonly Action _onFire;
+        private readonly Func<Vector3> _firePoint;
 
         private Vector3 _position;
 
         public IEnemyTarget CurrentTarget => _targeter.Current;
 
         /// <param name="onSwing">Optional anim hook, called with the attack period at swing start.</param>
+        /// <param name="onFire">Optional hook fired when a shot actually goes out (recoil, flashes).</param>
+        /// <param name="firePoint">Optional world-space muzzle override for projectile spawns.</param>
         public StructureAttack(ITargetQuery query, IProjectileLauncher launcher, GameEvents events,
             float damage, float attackRate, float range, float impactFraction,
-            ProjectileSettingsSO projectile, float retargetDelay = 0f, Action<float> onSwing = null)
+            ProjectileSettingsSO projectile, float retargetDelay = 0f, Action<float> onSwing = null,
+            Action onFire = null, Func<Vector3> firePoint = null)
         {
             _launcher = launcher;
             _events = events;
             _damage = damage;
             _range = range;
             _projectile = projectile;
+            _onFire = onFire;
+            _firePoint = firePoint;
             _targeter = new RangeTargeter(query, range, retargetDelay);
             _cycle = new AttackCycle(attackRate, impactFraction, OnImpact,
                 onSwing == null ? null : () => onSwing(attackRate));
@@ -54,15 +63,20 @@ namespace RoyalSiege.Buildings
             if (target == null || !target.IsAlive || !RangeMath.IsInside(_position, target.Position, _range))
                 return;
 
+            Vector3 origin = _firePoint != null ? _firePoint() : _position;
+
             if (_projectile != null)
             {
-                _launcher.Fire(_position, target, _damage, _projectile);
+                _launcher.Fire(origin, target, _damage, _projectile);
             }
             else
             {
-                _events.RaiseInstantShotFired(_position + Vector3.up, target.Position + Vector3.up * 0.5f);
+                // A firePoint override IS the muzzle (Tesla coil top) — no extra height fudge.
+                Vector3 zapFrom = _firePoint != null ? origin : origin + Vector3.up;
+                _events.RaiseInstantShotFired(zapFrom, target.Position + Vector3.up * 0.5f);
                 target.TakeDamage(_damage);
             }
+            _onFire?.Invoke();
         }
     }
 }

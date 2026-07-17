@@ -23,5 +23,15 @@ namespace RoyalSiege.Data
 
         [Tooltip("Height above the target's origin where the projectile lands.")]
         public float impactHeightOffset = 0.5f;
+
+        [Header("Juice")]
+        [Tooltip("Played at the muzzle when this projectile fires. Optional.")]
+        public ParticleSystem muzzleVfx;
+        [Tooltip("Played at the impact point on a successful hit (not on fizzle). Optional.")]
+        public ParticleSystem impactVfx;
+        [Tooltip("Tint applied to the impact VFX (e.g. purple for mage bolts).")]
+        public Color impactTint = Color.white;
+        [Tooltip("Visual tumble around the flight axis (cannonballs). 0 = face velocity (bolts).")]
+        public float spinDegreesPerSecond;
     }
 }

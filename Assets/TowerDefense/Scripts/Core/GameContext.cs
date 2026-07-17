@@ -4,6 +4,7 @@ using RoyalSiege.Cards;
 using RoyalSiege.Combat;
 using RoyalSiege.Data;
 using RoyalSiege.Economy;
+using RoyalSiege.Juice;
 using RoyalSiege.Placement;
 using RoyalSiege.Spells;
 using RoyalSiege.Units;
@@ -45,6 +46,7 @@ namespace RoyalSiege.Core
         public ICardPlayService CardPlay { get; private set; }
         public ITargetQuery Targets { get; private set; }
         public WaveScheduler Waves { get; private set; }
+        public IVfxSpawner Vfx { get; private set; }
         public GameConfigSO GameConfig => _gameConfig;
 
         private void Awake()
@@ -56,7 +58,8 @@ namespace RoyalSiege.Core
             var registry = new TargetRegistry();
             Targets = registry;
 
-            var launcher = new ProjectileLauncher(_projectileRoot, _tickSystem);
+            Vfx = new VfxSpawner(_projectileRoot);
+            var launcher = new ProjectileLauncher(_projectileRoot, _tickSystem, Vfx);
             Energy = new EnergyBank(_economyConfig, Events);
             Deck = new DeckService(_deck, Events, _shuffleSeed);
             Cooldowns = new CardCooldowns();
@@ -64,6 +67,7 @@ namespace RoyalSiege.Core
 
             var enemyDeps = new EnemyRuntimeDeps
             {
+                MapCenter = center,
                 Registry = registry,
                 Launcher = launcher,
                 Events = Events,
@@ -77,11 +81,11 @@ namespace RoyalSiege.Core
             var spawnPoints = new SpawnPointProvider(center, _gameConfig.mapRadius);
             Waves = new WaveScheduler(_waveTimeline, enemyFactory, spawnPoints, center, Events);
 
-            var buildingFactory = new BuildingFactory(_buildingRoot, registry, launcher, Events, _tickSystem);
+            var buildingFactory = new BuildingFactory(_buildingRoot, registry, launcher, Events, _tickSystem, _tickSystem);
             var spellCaster = new SpellCaster(registry, _gameConfig, center, Events);
             var validator = new PlacementValidator(_gameConfig, registry, center);
 
-            _royalTower.Init(_gameConfig, registry, launcher, Events, _tickSystem);
+            _royalTower.Init(_gameConfig, registry, launcher, Events, _tickSystem, _tickSystem);
             _orbSpawner.Init(Events, Energy, _economyConfig, _tickSystem);
             _placement.Init(_gameCamera, CardPlay, validator, buildingFactory, spellCaster, _gameConfig);
 
@@ -90,6 +94,7 @@ namespace RoyalSiege.Core
             _tickSystem.Register(Waves);
             _tickSystem.Register(Cooldowns);
             _tickSystem.Register(evaluator);
+            _tickSystem.Register(spellCaster); // sky-fall spells resolve on the tick (fallDelaySeconds)
 
             // Initial UI push
             Events.RaiseEnergyChanged(Energy.Current, Energy.Max);

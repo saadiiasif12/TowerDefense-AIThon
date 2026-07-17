@@ -17,6 +17,8 @@ namespace RoyalSiege.Placement
     {
         [SerializeField] private GhostView _buildingGhost;
         [SerializeField] private GhostView _spellGhost;
+        [Tooltip("Optional: snap-grid overlay shown while dragging a building.")]
+        [SerializeField] private GridOverlayView _gridOverlay;
 
         private Camera _camera;
         private ICardPlayService _playService;
@@ -42,6 +44,7 @@ namespace RoyalSiege.Placement
             _config = config;
             _buildingGhost?.Hide();
             _spellGhost?.Hide();
+            _gridOverlay?.Init(config.deploymentRadius, config.placementSnap);
         }
 
         public void BeginDrag(int slot)
@@ -54,6 +57,7 @@ namespace RoyalSiege.Placement
             var ghost = GhostFor(card);
             float radius = card is BuildingCardSO b ? b.range : ((SpellCardSO)card).radius;
             ghost?.Show(radius);
+            if (card is BuildingCardSO) _gridOverlay?.Show();
         }
 
         public void UpdateDrag(Vector2 screenPosition)
@@ -100,6 +104,7 @@ namespace RoyalSiege.Placement
             _slot = -1;
             _buildingGhost?.Hide();
             _spellGhost?.Hide();
+            _gridOverlay?.Hide();
         }
 
         private GhostView GhostFor(CardDefinitionSO card) =>

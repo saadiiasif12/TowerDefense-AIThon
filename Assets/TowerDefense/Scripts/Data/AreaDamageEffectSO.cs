@@ -11,7 +11,10 @@ namespace RoyalSiege.Data
         public override void Apply(in SpellContext context)
         {
             for (int i = 0; i < context.Targets.Count; i++)
+            {
                 context.Targets[i].TakeDamage(damage);
+                context.HitReport?.Add(context.Targets[i].Position);
+            }
         }
     }
 }
