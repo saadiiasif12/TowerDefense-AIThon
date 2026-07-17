@@ -1,4 +1,4 @@
-# 13 · Royal Defense — Player Journey & Progression (Design v4.0)
+﻿# 13 · Royal Defense — Player Journey & Progression (Design v4.0)
 
 **Supersedes** the v2 wave/economy/roster sections of `01_DESIGN_CURRENT.md` (waves, economy, card list, enemy list). Strict-range, determinism, SOLID and zero-hardcoded-stats rules all still apply. Received from design 17-Jul (evening); implemented same day.
 
@@ -34,7 +34,7 @@ Starting six from wave 1: **Cannon, Log, Arrows, Earthquake, Frost-ball, Knights
 | 9 | X-Bow 🔓3 | Building | 6 | 20s | 35 / 0.25s | 9.0 | 900 | 40s |
 | 10 | Lightning 🔓4 | Spell | 6 | 16s | 300 ×3 + 0.5s stun | r 3.5, 3 highest-HP | — | — |
 
-Deck grows 6→7→8→9→10; hand 4 + Next Up; single opening shuffle; per-card cooldowns. Placement: buildings + Knights inside deployment circle (r5, snap 0.5, max 4 buildings); spells anywhere in territory.
+Deck grows 6→7→8→9→10; hand 4 + Next Up; single opening shuffle; per-card cooldowns. Placement: buildings + Knights inside deployment circle (r5, snap 0.5); spells anywhere in territory. **17-Jul user delta: NO building count cap** (supersedes "max 4 on field" + QA DT-003 by-design ruling) - space, overlap, elixir and lifetime decay are the only limits (config maxPlayerBuildings 0 = unlimited).
 
 ## 3. Enemies (7)
 | Enemy | HP | Speed | Dmg | Rate | Range | Bounty | Threat | Debut |
@@ -50,7 +50,7 @@ Deck grows 6→7→8→9→10; hand 4 + Next Up; single opening shuffle; per-car
 Ogre: slam every 8s (120, r2.5, telegraphed), Frost-ball 2s only, prefers buildings, knockback-immune. Heavies take half knockback.
 
 ## 4. Building HP decay
-Buildings drain `maxHP ÷ lifetime` per second from placement (Cannon 20/s, Tesla 20/s, X-Bow 22.5/s). Enemy damage stacks on top; no healing. Decayed death = crumble (no explosion). HP bar doubles as lifetime bar. Max 4 buildings.
+Buildings drain `maxHP ÷ lifetime` per second from placement (Cannon 20/s, Tesla 20/s, X-Bow 22.5/s). Enemy damage stacks on top; no healing. Decayed death = crumble (no explosion). HP bar doubles as lifetime bar. No count cap (17-Jul delta).
 
 ## 5. Combat rulings
 - **5.1** Tiered no-one-shot (see §0.4). Re-check the Lightning 300 < G2 320 line after ANY tuning.

@@ -63,6 +63,8 @@ Legend: ⬜ todo · 🔄 in progress · ✅ done · Update after EVERY task. Kee
 
 - ✅ **Tower range honesty + Fireball VFX rework (17 Jul, user pass)** — king range 7→5 so the Royal Tower can never hit outside the drawn white circle (live-verified: worst target 4.71 across 61 combat samples; buildings keep card ranges; balance warning in 13 §7). Fireball root cause: MagicArsenal fire materials carried the legacy 0.5-gray tint (legacy shaders doubled it, URP doesn't) + premultiply blend → everything at half brightness = the "missing texture" look. All 5 fire mats fixed (additive full-bright / smoke alpha full), tinted hot-orange, meteor 1.4× from height 9.5 with white-hot→deep-orange trail, blast ×1.5 + heavy 14–20-plume ember smoke lingering ~2.5 s. Screenshot-verified fall/blast/smoke; 0 errors.
 
+- ✅ **Knights guard rules + no building cap (17 Jul, user passes)** — knights: guard the tower's white circle (target only enemies inside it, hard leash every tick, wait for targets to enter — verified max dist 4.05, zero out-of-circle chasing) and can't walk through the tower/buildings (standoff clamp; forced-inside knight ejected to exactly 1.90). Building count cap REMOVED (`maxPlayerBuildings` 0 = unlimited; supersedes max-4 + QA DT-003 — Coda updated; verified 6 towers placed). Space/overlap/elixir/decay are the only placement limits now.
+
 ## Day 3 (18 July) — POLISH & SUBMISSION
 
 - ⬜ Juice map implemented (11_MODULE_JUICE): VFX, SFX, haptics, camera shake, hit-stop — **large part done overnight (VFX + shake + first SFX); remaining: haptics, hit-stop, music, full SFX set**

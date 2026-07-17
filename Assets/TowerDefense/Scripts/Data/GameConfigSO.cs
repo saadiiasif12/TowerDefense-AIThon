@@ -28,7 +28,8 @@ namespace RoyalSiege.Data
         public float mapRadius = 15f;
         public float deploymentRadius = 5f;
         public float placementSnap = 0.5f;
-        public int maxPlayerBuildings = 4;
+        [Tooltip("0 = UNLIMITED (17-Jul ruling) — space/overlap/elixir/decay are the real limits.")]
+        public int maxPlayerBuildings = 0;
 
         [Header("Difficulty (THE tuning knobs — GDD §8)")]
         public float enemyHpMultiplier = 1f;

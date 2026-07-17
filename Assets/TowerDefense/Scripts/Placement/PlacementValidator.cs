@@ -35,7 +35,9 @@ namespace RoyalSiege.Placement
         public bool IsValidBuildingSpot(BuildingCardSO card, Vector3 snappedPoint)
         {
             if (!RangeMath.IsInside(_center, snappedPoint, _config.deploymentRadius)) return false;
-            if (_query.BuildingCount >= _config.maxPlayerBuildings) return false;
+            // 17-Jul user ruling (supersedes the max-4 rule / QA DT-003): no count cap —
+            // space, overlap, elixir and lifetime decay are the only limits. 0 = unlimited.
+            if (_config.maxPlayerBuildings > 0 && _query.BuildingCount >= _config.maxPlayerBuildings) return false;
             return !Overlaps(snappedPoint, card.footprintRadius);
         }
 

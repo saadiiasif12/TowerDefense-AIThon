@@ -29,7 +29,7 @@ MonoBehaviour:
   mapRadius: 15
   deploymentRadius: 5
   placementSnap: 0.5
-  maxPlayerBuildings: 4
+  maxPlayerBuildings: 0
   enemyHpMultiplier: 1
   enemyDamageMultiplier: 0.5
   enemyBountyMultiplier: 1
