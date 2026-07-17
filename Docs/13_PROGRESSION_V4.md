@@ -87,6 +87,7 @@ Tuning levers in order: `passiveRegenSeconds` (3.5 — the sole income knob now)
 
 Leveling fully heals. Ranges never change. Idle player must still die within ~4 waves of any checkpoint.
 NOTE (implementation): current build has the cannon folded into the king (93 combined at L1) — v4 keeps that fold: king damage per level = combined DPS × 1.0s (93/107/121/137/155), built-in cannon stays disabled.
+**Tower ARTS (18 Jul):** 4 real tower models (`RoyalTower_Full.prefab` → `TowerLevel1..4`, from `Environment/Tower/Model/Tower Levels/`). L1 = art 1 (default, active in the edit scene), L2 → art 2, L3 → art 3, L4 **and** L5 → art 4 (only 4 arts exist — `TowerLevelView` clamps; a 5th art later is one `_levelModels` entry). The King auto-aligns to the ACTIVE art's measured roof (`TowerLevelView.AlignKing` — roofs differ: 3.09/2.52/2.28/2.38 world Y) and glides onto the new roof during the upgrade surge. `TowerFail` ruin still shows on defeat.
 **USER DELTA (17 Jul, post-implementation):** king range **7.0 → 5.0** — the Royal Tower may never hit outside the drawn white circle (= deploymentRadius); "the ring never lies" now applies to the tower itself. Placed buildings keep their own card ranges. Live-verified: 61 targeting samples in combat, worst target distance 4.71. ⚠️ This cuts tower coverage — the §10 idle-loss/balance targets must be re-tuned against r5.
 
 ## 8. Waves (44) — budgets & compositions
