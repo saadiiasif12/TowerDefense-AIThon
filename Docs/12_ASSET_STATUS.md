@@ -14,8 +14,9 @@ Update this whenever assets are imported/replaced. Models so far are Meshy AI ge
 
 ## Animations — ✅ WORKING (16 Jul)
 - All 6 general clips are **humanoid**. Goblin + Skeleton FBXs converted Generic→Humanoid (avatars verified `isHuman`).
-- Shared `Characters/GeneralAnimations/AC_Unit.controller`: Walk (speed=MoveSpeed param) / Attack (speed=AttackSpeed param) / Die, AnyState triggers. Assigned to all 3 enemy prefabs.
-- Per-character animations later → swap via AnimatorOverrideController, no code change (UnitAnimator auto-detects attack clip length).
+- Shared `Characters/GeneralAnimations/AC_Unit.controller`: Walk (motion = 1D "Locomotion" blend tree on `MoveBlend`: 0 = Walk@0.08× idle-sway stand-in, 1 = full walk; state speed = MoveSpeed param for exact foot matching) / Attack (speed=AttackSpeed param) / Die, AnyState triggers. Assigned to all 3 enemy prefabs. No dedicated Idle clip in the pack — sway is the stand-in until one arrives.
+- Per-enemy AnimatorOverrideControllers (17 Jul) — each enemy prefab now runs its own AOC over `AC_Unit`: `Enemy 1/AOC_Ogre`, `Enemy 2/AOC_Goblin`, `Enemy 3/AOC_Skeleton`, `Enemy 4/AOC_DoubleHorn` (`.overrideController`). All four currently override Walk 1/Attack 1/Die 1 with **Enemy 2's mixamo clips** (`Enemy 2/Animations/Walk|Attack|Death.anim`, humanoid) as a stand-in — swap each AOC's 3 clip slots when per-character clips arrive, no code change (UnitAnimator auto-detects attack clip length via the override).
+- Enemy 4 (Double Horn / Twin-Headed Orc) rig flipped Generic→Humanoid (`animationType: 3`, `avatarSetup: 1`) + Animator wired to AOC_DoubleHorn with root motion off — ⚠️ auto-mapped avatar not yet verified in editor.
 
 ## Buildings / Tower
 | Unit | Status |

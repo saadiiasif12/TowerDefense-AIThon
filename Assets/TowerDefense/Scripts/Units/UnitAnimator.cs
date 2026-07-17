@@ -6,12 +6,17 @@ namespace RoyalSiege.Units
     /// Thin Animator wrapper keeping animation synchronized with combat and movement:
     /// - Walk playback is scaled by ACTUAL ground speed against the clip's own root-motion
     ///   speed (read from clip.averageSpeed), so feet grip the ground — no sliding.
+    /// - Start/stop is pose-blended through the "Locomotion" 1D blend tree on "MoveBlend"
+    ///   (0 = near-still sway stand-in for the missing idle clip, 1 = full walk) instead of
+    ///   freezing the walk clip mid-stride.
     /// - PlayAttack scales the clip so exactly one swing fits the attack period; AttackCycle
     ///   fires damage at impactFraction of that same period.
     /// - Float params are damped for smooth accelerate/stop blends.
     /// All methods are safe on prefabs with no Animator (dummy placeholders).
     /// Animator contract: bool "Moving", trigger "Attack", trigger "Die", float "AttackSpeed"
-    /// (attack state speed multiplier), float "MoveSpeed" (walk state speed multiplier).
+    /// (attack state speed multiplier), float "MoveSpeed" (walk state speed multiplier —
+    /// parked at 1 while stopped so the sway keeps playing), float "MoveBlend" (blend-tree
+    /// position, 0 stopped → 1 walking).
     /// </summary>
     public sealed class UnitAnimator : MonoBehaviour
     {
@@ -20,9 +25,12 @@ namespace RoyalSiege.Units
         private static readonly int DieHash = Animator.StringToHash("Die");
         private static readonly int AttackSpeedHash = Animator.StringToHash("AttackSpeed");
         private static readonly int MoveSpeedHash = Animator.StringToHash("MoveSpeed");
+        private static readonly int MoveBlendHash = Animator.StringToHash("MoveBlend");
         private static readonly int WalkStateHash = Animator.StringToHash("Walk");
 
         private const float MoveDampSeconds = 0.15f;
+        // Slightly softer than the speed damp: this is the visible idle<->walk crossfade.
+        private const float BlendDampSeconds = 0.22f;
 
         [SerializeField] private Animator _animator;
         [Tooltip("Fallback if the walk clip has no root motion: tiles/s the clip visually covers at speed 1. The shared Meshy walk cycle is a slow 3.7 s amble, so this is biased low — fast units cycle their legs faster.")]
@@ -59,9 +67,17 @@ namespace RoyalSiege.Units
         {
             if (_animator == null) return;
             _animator.SetBool(MovingHash, moving);
+
+            // Blend-tree position: crossfades the pose between the near-still sway (0) and
+            // the walk cycle (1) — no more hard mid-stride freeze on stop.
+            _animator.SetFloat(MoveBlendHash, moving ? 1f : 0f, BlendDampSeconds, Time.deltaTime);
+
+            // State speed multiplier keeps feet matched to actual ground speed while walking.
+            // While stopped it parks at 1 (NOT 0 — that would freeze the sway too): the tree's
+            // idle child carries its own 0.08 timescale.
             float target = moving
                 ? Mathf.Clamp(groundSpeed / _walkClipNaturalSpeed, 0.4f, 2.5f)
-                : 0f;
+                : 1f;
             _animator.SetFloat(MoveSpeedHash, target, MoveDampSeconds, Time.deltaTime);
         }
 
