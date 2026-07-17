@@ -29,9 +29,7 @@ namespace RoyalSiege.Juice
         [SerializeField] private ParticleSystem _frostGroundPatch;
         [SerializeField] private float _freezeShake = 0.15f;
 
-        [Header("Lightning")]
-        [SerializeField] private ParticleSystem _lightningPillar;
-        [SerializeField] private float _lightningShake = 0.35f;
+        // Lightning is choreographed by LightningStormView (night dim + sky bolts + smoke).
 
         private GameEvents _events;
         private IVfxSpawner _vfx;
@@ -93,15 +91,6 @@ namespace RoyalSiege.Juice
                     _vfx.Spawn(_freezeNova, point + Vector3.up * 0.2f, Quaternion.identity, Mathf.Max(1f, card.radius * 0.45f));
                     _vfx.Spawn(_frostGroundPatch, point + Vector3.up * 0.05f, Quaternion.identity, Mathf.Max(1f, card.radius * 0.5f));
                     _shaker?.AddTrauma(_freezeShake);
-                    break;
-
-                case "Lightning":
-                    if (hits != null && hits.Count > 0)
-                        for (int i = 0; i < hits.Count; i++)
-                            _vfx.Spawn(_lightningPillar, hits[i], Quaternion.identity);
-                    else
-                        _vfx.Spawn(_lightningPillar, point, Quaternion.identity); // whiffed cast still cracks
-                    _shaker?.AddTrauma(_lightningShake);
                     break;
             }
         }
