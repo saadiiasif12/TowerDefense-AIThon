@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.EnemyDefinitionSO
   id: OgreWarlord
   displayName: Ogre Warlord
-  prefab: {fileID: 7720359947094939964, guid: d6a3affd378e7684184d14e719ebeb86, type: 3}
+  prefab: {fileID: 7265747158914281454, guid: 06e16ed6a5668bc41a77cf15cf2c9e5f, type: 3}
   hp: 3200
   moveSpeed: 0.7
   damage: 200
@@ -24,6 +24,7 @@ MonoBehaviour:
   splashRadius: 0
   projectile: {fileID: 0}
   engageRadiusFromCenter: 12
+  deathVfx: {fileID: 0}
   hurtStaggerSeconds: 0.3
   hurtCooldownSeconds: 6
   unitRadius: 1.1
