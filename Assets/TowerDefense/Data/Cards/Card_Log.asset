@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Log
   description: Rolls 9 tiles outward, damaging and knocking back everything in its
     lane.
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: ae2774bed7aac4d4b8fe99a2d95bc3ad, type: 3}
   cost: 2
   cooldown: 5
   radius: 0.8

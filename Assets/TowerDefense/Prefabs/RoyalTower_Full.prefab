@@ -509,13 +509,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Buildings.TowerLevelView
   _levelModels:
+  - {fileID: 3586164213123138887}
   - {fileID: 6145865776123665108}
   - {fileID: 3992981283579155717}
   - {fileID: 1947799372287183633}
   - {fileID: 6271447148172470046}
   _upgradeVfx: {fileID: 8137173455560979978, guid: b57b09c750e16ae4ead8c8e889642181, type: 3}
   _hideOnInit:
-  - {fileID: 3586164213123138887}
   - {fileID: 2467080259100477992}
   _failModel: {fileID: 2190460699821857975}
   _hideOnFail:

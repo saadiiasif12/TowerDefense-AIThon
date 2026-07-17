@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Fireball
   displayName: Fireball
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f8345d573addb5e4b9f3980eeefb11be, type: 3}
   cost: 4
   cooldown: 9
   radius: 2.5

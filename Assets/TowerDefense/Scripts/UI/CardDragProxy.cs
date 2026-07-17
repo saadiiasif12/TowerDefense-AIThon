@@ -7,7 +7,8 @@ namespace RoyalSiege.UI
     /// <summary>
     /// The mini card that follows the finger during a drag (spec: zero-lag follow, scale
     /// driven by POSITION not time — 100% at the hand shrinking to 50% toward the board).
-    /// On a successful deploy it dissolves in ~120 ms; on cancel it tweens back to its slot.
+    /// 17-Jul UI pass: shows the real card art inside the blue Frame with a lightning cost
+    /// badge. On a successful deploy it dissolves in ~120 ms; on cancel it tweens home.
     /// Built once at runtime by HandBarView; one instance is enough (single-touch rule).
     /// </summary>
     public sealed class CardDragProxy : MonoBehaviour
@@ -18,8 +19,9 @@ namespace RoyalSiege.UI
         private RectTransform _rect;
         private RectTransform _canvasRect;
         private CanvasGroup _group;
-        private Image _background;
-        private Text _name;
+        private Image _art;
+        private Image _frame;
+        private Image _gem;
         private Text _cost;
 
         private float _dissolveT = -1f;
@@ -35,59 +37,70 @@ namespace RoyalSiege.UI
             proxy._canvasRect = canvasRect;
             proxy._rect = (RectTransform)go.transform;
             proxy._rect.SetParent(canvasRect, false);
-            proxy._rect.sizeDelta = new Vector2(190f, 240f);
+            proxy._rect.sizeDelta = new Vector2(165f, 210f);
             proxy._group = go.GetComponent<CanvasGroup>();
             proxy._group.blocksRaycasts = false;
             proxy._group.interactable = false;
 
-            var borderGo = new GameObject("Border", typeof(RectTransform), typeof(Image));
-            var borderRect = (RectTransform)borderGo.transform;
-            borderRect.SetParent(proxy._rect, false);
-            borderRect.anchorMin = Vector2.zero; borderRect.anchorMax = Vector2.one;
-            borderRect.offsetMin = new Vector2(-6f, -6f); borderRect.offsetMax = new Vector2(6f, 6f);
-            borderGo.GetComponent<Image>().raycastTarget = false;
+            // Art inside the frame window (same insets as CardSlotView).
+            proxy._art = Sub(proxy._rect, "Art", new Vector2(0.075f, 0.225f), new Vector2(0.925f, 0.815f));
+            proxy._frame = Sub(proxy._rect, "Frame", Vector2.zero, Vector2.one);
 
-            var bgGo = new GameObject("Background", typeof(RectTransform), typeof(Image));
-            var bgRect = (RectTransform)bgGo.transform;
-            bgRect.SetParent(proxy._rect, false);
-            bgRect.anchorMin = Vector2.zero; bgRect.anchorMax = Vector2.one;
-            bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
-            proxy._background = bgGo.GetComponent<Image>();
-            proxy._background.raycastTarget = false;
-
-            proxy._name = CreateText(proxy._rect, font, 30, new Vector2(0f, 20f));
-            proxy._cost = CreateText(proxy._rect, font, 40, new Vector2(0f, -78f));
-            proxy._cost.color = new Color(1f, 0.9f, 0.3f);
+            var badge = new GameObject("Cost", typeof(RectTransform));
+            var badgeRect = (RectTransform)badge.transform;
+            badgeRect.SetParent(proxy._rect, false);
+            badgeRect.anchorMin = new Vector2(0.5f, 0f); badgeRect.anchorMax = new Vector2(0.5f, 0f);
+            badgeRect.sizeDelta = new Vector2(70f, 46f);
+            badgeRect.anchoredPosition = new Vector2(0f, 20f);
+            proxy._gem = Sub(badgeRect, "Gem", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f));
+            proxy._gem.rectTransform.sizeDelta = new Vector2(26f, 42f);
+            proxy._gem.rectTransform.anchoredPosition = new Vector2(16f, 0f);
+            proxy._cost = MakeText(badgeRect, font, 34);
 
             go.SetActive(false);
             return proxy;
         }
 
-        private static Text CreateText(RectTransform parent, Font font, int size, Vector2 offset)
+        private static Image Sub(RectTransform parent, string name, Vector2 aMin, Vector2 aMax)
         {
-            var go = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            var go = new GameObject(name, typeof(RectTransform), typeof(Image));
+            var rect = (RectTransform)go.transform;
+            rect.SetParent(parent, false);
+            rect.anchorMin = aMin; rect.anchorMax = aMax;
+            rect.offsetMin = Vector2.zero; rect.offsetMax = Vector2.zero;
+            var img = go.GetComponent<Image>();
+            img.raycastTarget = false;
+            return img;
+        }
+
+        private static Text MakeText(RectTransform parent, Font font, int size)
+        {
+            var go = new GameObject("Num", typeof(RectTransform), typeof(Text));
             var rect = (RectTransform)go.transform;
             rect.SetParent(parent, false);
             rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero; rect.offsetMax = Vector2.zero;
-            rect.anchoredPosition = offset;
+            rect.offsetMin = new Vector2(34f, 0f); rect.offsetMax = Vector2.zero;
             var text = go.GetComponent<Text>();
             text.font = font;
             text.fontSize = size;
             text.fontStyle = FontStyle.Bold;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.color = Color.white;
+            text.alignment = TextAnchor.MiddleLeft;
+            text.color = new Color(1f, 0.85f, 0.2f);
             text.raycastTarget = false;
+            var outline = go.AddComponent<Outline>();
+            outline.effectColor = new Color(0f, 0f, 0f, 0.85f);
+            outline.effectDistance = new Vector2(2f, -2f);
             return text;
         }
 
-        public void Show(Color cardColor, string cardName, string cost, Vector2 screenPosition)
+        public void Show(Sprite art, Sprite frame, Sprite gem, string cost, Vector2 screenPosition)
         {
             _dissolveT = -1f;
             _returnT = -1f;
             _group.alpha = 1f;
-            _background.color = cardColor;
-            _name.text = cardName;
+            _art.sprite = art; _art.enabled = art != null; _art.color = Color.white;
+            _frame.sprite = frame;
+            _gem.sprite = gem;
             _cost.text = cost;
             gameObject.SetActive(true);
             Follow(screenPosition, 0f);
@@ -134,7 +147,7 @@ namespace RoyalSiege.UI
             if (_dissolveT >= 0f)
             {
                 _dissolveT += dt / DissolveSeconds;
-                _group.alpha = 1f - _dissolveT * _dissolveT; // ease-in fade
+                _group.alpha = 1f - _dissolveT * _dissolveT;
                 if (_dissolveT >= 1f) HideImmediate();
                 return;
             }

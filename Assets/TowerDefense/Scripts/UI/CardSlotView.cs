@@ -6,44 +6,44 @@ using RoyalSiege.Data;
 namespace RoyalSiege.UI
 {
     /// <summary>
-    /// One hand slot, animated per the card-animation spec:
-    ///  - idle is completely static — all motion is saved for interaction;
-    ///  - select: border + glow on the SAME frame as the touch, ease-out-back pop to 1.08 with a lift;
-    ///  - while dragged: the slot shows a recessed dark panel with a faint name watermark (slots never reflow);
-    ///  - refill: 0.8 → 1.05 → 1.0 pop in under 100 ms;
-    ///  - unaffordable: art desaturates, cost badge stays colored, tap gives a decaying shake.
-    /// All card visuals live on a runtime "Lift" container so layout groups never fight the tweens.
+    /// One hand slot. 17-Jul UI pass: the visual parts are now real serialized children of a
+    /// PREFAB (CardSlot / CardSlotNext) so they can be preset in the editor — this component
+    /// only drives content (art/cost/cooldown/affordability) and the select/refill/shake/carry
+    /// tweens on the Lift container (the slot rect itself never moves — spec rule). A "next"
+    /// slot has _isNext = true (shows no cost, takes no input) and carries its own "Next Up"
+    /// label as static prefab text. All part refs are null-guarded so a partial prefab is safe.
     /// </summary>
     public sealed class CardSlotView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
     {
-        [SerializeField] private Image _background;
-        [SerializeField] private Text _nameLabel;
-        [SerializeField] private Text _costLabel;
-        [SerializeField] private Image _cooldownOverlay;
-        [SerializeField] private CanvasGroup _group;
+        [Header("Type")]
+        [Tooltip("True on the CardSlotNext prefab: no cost badge, no input.")]
+        [SerializeField] private bool _isNext;
 
-        private static readonly Color BuildingColor = new(0.85f, 0.7f, 0.45f);
-        private static readonly Color SpellColor = new(0.55f, 0.65f, 0.95f);
-        private static readonly Color RecessColor = new(0.1f, 0.1f, 0.13f, 0.92f);
+        [Header("Parts (assigned in the prefab)")]
+        [Tooltip("Container that scales/lifts on select — holds all card visuals.")]
+        [SerializeField] private RectTransform _lift;
+        [SerializeField] private Image _art;              // card thumbnail (icon)
+        [SerializeField] private Image _frame;            // blue border
+        [SerializeField] private Image _glow;             // gold selection glow (optional)
+        [SerializeField] private Image _cooldownOverlay;  // radial dark sweep (optional)
+        [SerializeField] private GameObject _costBadge;   // gem + number group (normal only)
+        [SerializeField] private Image _gem;              // lightning cost gem
+        [SerializeField] private Text _costLabel;         // cost number
 
-        private const float SelectScale = 1.08f;
-        private const float SelectLiftPx = 10f;
+        private const float SelectScale = 1.10f;
+        private const float SelectLiftPx = 16f;
         private const float SelectInSeconds = 0.1f;
         private const float SelectOutSeconds = 0.16f;
         private const float RefillSeconds = 0.09f;
         private const float ShakeSeconds = 0.15f;
-        private const float ShakePx = 4f;
+        private const float ShakePx = 5f;
+
+        private static readonly Color GemLocked = new(0.55f, 0.55f, 0.6f);
 
         private int _slot = -1;
         private HandBarView _owner;
         private CardDefinitionSO _card;
-        private Color _cardColor = Color.white;
         private bool _affordable = true;
-
-        private RectTransform _lift;      // runtime container holding all card visuals
-        private Image _border;
-        private Image _recessPanel;
-        private Text _watermark;
 
         private bool _selected;
         private float _selectT = 1f;
@@ -55,64 +55,15 @@ namespace RoyalSiege.UI
 
         public bool IsCarried => _carried;
         public CardDefinitionSO Card => _card;
+        public bool IsNext => _isNext;
         public RectTransform Rect => (RectTransform)transform;
 
         public void Init(int slot, HandBarView owner)
         {
             _slot = slot;
             _owner = owner;
-            EnsureRuntimeParts();
-        }
-
-        private void EnsureRuntimeParts()
-        {
-            if (_lift != null) return;
-
-            var root = (RectTransform)transform;
-
-            // Recessed empty-slot panel + watermark (revealed while the card is dragged).
-            _recessPanel = CreateImage(root, "Recess", RecessColor);
-            _recessPanel.rectTransform.SetSiblingIndex(0);
-            _watermark = Object.Instantiate(_nameLabel, _recessPanel.rectTransform);
-            var wmRect = _watermark.rectTransform;
-            wmRect.anchorMin = Vector2.zero; wmRect.anchorMax = Vector2.one;
-            wmRect.offsetMin = Vector2.zero; wmRect.offsetMax = Vector2.zero;
-            _watermark.alignment = TextAnchor.MiddleCenter;
-            _watermark.color = new Color(1f, 1f, 1f, 0.13f);
-            _recessPanel.gameObject.SetActive(false);
-
-            // Lift container: move the authored card visuals inside so pops/lifts never
-            // fight the hand layout — the slot rect itself never moves (spec rule).
-            var liftGo = new GameObject("Lift", typeof(RectTransform));
-            _lift = (RectTransform)liftGo.transform;
-            _lift.SetParent(root, false);
-            _lift.anchorMin = Vector2.zero; _lift.anchorMax = Vector2.one;
-            _lift.offsetMin = Vector2.zero; _lift.offsetMax = Vector2.zero;
-
-            var toMove = new System.Collections.Generic.List<Transform>();
-            foreach (Transform child in root)
-                if (child != _lift && child != _recessPanel.rectTransform) toMove.Add(child);
-            foreach (var child in toMove) child.SetParent(_lift, true);
-
-            // Selection border: behind the card content, slightly oversized.
-            _border = CreateImage(_lift, "Border", Color.white);
-            _border.rectTransform.SetSiblingIndex(0);
-            _border.rectTransform.offsetMin = new Vector2(-6f, -6f);
-            _border.rectTransform.offsetMax = new Vector2(6f, 6f);
-            _border.gameObject.SetActive(false);
-        }
-
-        private static Image CreateImage(RectTransform parent, string name, Color color)
-        {
-            var go = new GameObject(name, typeof(RectTransform), typeof(Image));
-            var rect = (RectTransform)go.transform;
-            rect.SetParent(parent, false);
-            rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero; rect.offsetMax = Vector2.zero;
-            var image = go.GetComponent<Image>();
-            image.color = color;
-            image.raycastTarget = false;
-            return image;
+            if (_glow != null) _glow.gameObject.SetActive(false);
+            if (_costBadge != null) _costBadge.SetActive(false);
         }
 
         // ---------------- content ----------------
@@ -126,50 +77,36 @@ namespace RoyalSiege.UI
         private void ApplyCard(CardDefinitionSO card)
         {
             _card = card;
-            if (card == null)
+            bool has = card != null;
+            if (_frame != null) _frame.enabled = has;
+            if (_art != null)
             {
-                _nameLabel.text = "";
-                _costLabel.text = "";
-                if (_watermark != null) _watermark.text = "";
-                return;
+                _art.enabled = has && card.icon != null;
+                if (_art.enabled) _art.sprite = card.icon;
             }
-            _nameLabel.text = card.displayName;
-            _costLabel.text = card.cost.ToString("0");
-            _cardColor = card is BuildingCardSO ? BuildingColor : SpellColor;
-            _background.color = _cardColor;
-            if (_watermark != null) _watermark.text = card.displayName;
+            if (_costBadge != null) _costBadge.SetActive(has && !_isNext);
+            if (has && _costLabel != null) _costLabel.text = card.cost.ToString("0");
         }
 
         public void SetState(float cooldown01, bool affordable)
         {
-            if (_cooldownOverlay != null) _cooldownOverlay.fillAmount = cooldown01;
+            if (_cooldownOverlay != null) _cooldownOverlay.fillAmount = Mathf.Clamp01(cooldown01);
             bool playable = affordable && cooldown01 <= 0f;
             if (playable == _affordable) return;
             _affordable = playable;
 
-            // Desaturate the ART, keep the cost badge colored so the reason stays readable.
-            if (_background != null)
-                _background.color = playable ? _cardColor : Desaturate(_cardColor);
-            if (_nameLabel != null)
-                _nameLabel.color = playable ? Color.white : new Color(0.75f, 0.75f, 0.75f);
-            if (_group != null) _group.alpha = 1f;
-        }
-
-        private static Color Desaturate(Color c)
-        {
-            float grey = c.r * 0.3f + c.g * 0.59f + c.b * 0.11f;
-            return new Color(grey, grey, grey, c.a);
+            if (_art != null) _art.color = playable ? Color.white : new Color(0.38f, 0.4f, 0.46f, 1f);
+            if (_gem != null) _gem.color = playable ? Color.white : GemLocked;
+            if (_costLabel != null) _costLabel.color = playable ? Color.white : new Color(0.72f, 0.72f, 0.78f);
         }
 
         // ---------------- interaction states ----------------
 
-        /// <summary>Border + pop, same frame as the touch.</summary>
         public void Select()
         {
-            if (_border == null) EnsureRuntimeParts();
             _selected = true;
             _selectT = 0f;
-            _border.gameObject.SetActive(true);
+            if (_glow != null) _glow.gameObject.SetActive(true);
         }
 
         public void Deselect()
@@ -177,16 +114,14 @@ namespace RoyalSiege.UI
             if (!_selected) return;
             _selected = false;
             _selectT = 0f;
-            if (_border != null) _border.gameObject.SetActive(false);
+            if (_glow != null) _glow.gameObject.SetActive(false);
         }
 
-        /// <summary>The card left with the finger — reveal the recessed empty slot.</summary>
         public void SetCarried(bool carried)
         {
             if (_carried == carried) return;
             _carried = carried;
-            _lift.gameObject.SetActive(!carried);
-            _recessPanel.gameObject.SetActive(carried);
+            if (_lift != null) _lift.gameObject.SetActive(!carried);
 
             if (!carried)
             {
@@ -201,7 +136,6 @@ namespace RoyalSiege.UI
         }
 
         public void PlayRefillPop() => _refillT = 0f;
-
         public void ShakeUnaffordable() => _shakeT = 0f;
 
         private void Update()
@@ -209,9 +143,7 @@ namespace RoyalSiege.UI
             if (_lift == null) return;
             float dt = Time.unscaledDeltaTime;
 
-            // Select pop / release.
-            float selectScale;
-            float lift;
+            float selectScale, lift;
             if (_selected)
             {
                 _selectT = Mathf.Min(1f, _selectT + dt / SelectInSeconds);
@@ -222,12 +154,11 @@ namespace RoyalSiege.UI
             else
             {
                 _selectT = Mathf.Min(1f, _selectT + dt / SelectOutSeconds);
-                float e = 1f - (1f - _selectT) * (1f - _selectT); // ease-out
+                float e = 1f - (1f - _selectT) * (1f - _selectT);
                 selectScale = Mathf.Lerp(SelectScale, 1f, e);
                 lift = Mathf.Lerp(SelectLiftPx, 0f, e);
             }
 
-            // Refill pop: 0.8 → 1.05 → 1.0.
             float refillScale = 1f;
             if (_refillT < 1f)
             {
@@ -237,7 +168,6 @@ namespace RoyalSiege.UI
                     : Mathf.Lerp(1.05f, 1f, (_refillT - 0.6f) / 0.4f);
             }
 
-            // Unaffordable shake: decaying horizontal oscillation.
             float shakeX = 0f;
             if (_shakeT < 1f)
             {
@@ -247,6 +177,12 @@ namespace RoyalSiege.UI
 
             _lift.localScale = Vector3.one * (selectScale * refillScale);
             _lift.anchoredPosition = new Vector2(shakeX, lift);
+
+            if (_glow != null && _glow.gameObject.activeSelf)
+            {
+                float pulse = 0.55f + 0.35f * Mathf.PingPong(Time.unscaledTime * 2.4f, 1f);
+                var c = _glow.color; _glow.color = new Color(c.r, c.g, c.b, pulse);
+            }
         }
 
         private static float EaseOutBack(float t)

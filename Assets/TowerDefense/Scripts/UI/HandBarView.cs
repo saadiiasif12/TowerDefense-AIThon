@@ -20,6 +20,10 @@ namespace RoyalSiege.UI
         [SerializeField] private CardSlotView[] _slots = new CardSlotView[4];
         [SerializeField] private CardSlotView _nextSlot;
 
+        [Header("Drag-proxy sprites (card parts are preset on the slot prefabs)")]
+        [SerializeField] private Sprite _frameSprite;      // Frame.png (card border)
+        [SerializeField] private Sprite _gemSprite;        // icon_mana.png (lightning cost gem)
+
         private static readonly Color BuildingColor = new(0.85f, 0.7f, 0.45f);
         private static readonly Color SpellColor = new(0.55f, 0.65f, 0.95f);
 
@@ -37,6 +41,7 @@ namespace RoyalSiege.UI
         private void Start()
         {
             for (int i = 0; i < _slots.Length; i++) _slots[i].Init(i, this);
+            _nextSlot.Init(-1, this);
 
             var canvas = GetComponentInParent<Canvas>();
             var canvasRect = (RectTransform)canvas.transform;
@@ -142,8 +147,8 @@ namespace RoyalSiege.UI
                     _dragStarted = true;
                     var card = _context.Deck.Hand[slot];
                     _slots[slot].SetCarried(true);
-                    _proxy.Show(card is BuildingCardSO ? BuildingColor : SpellColor,
-                        card.displayName, card.cost.ToString("0"), position);
+                    _proxy.Show(card.icon, _frameSprite, _gemSprite,
+                        card.cost.ToString("0"), position);
                 }
             }
 
