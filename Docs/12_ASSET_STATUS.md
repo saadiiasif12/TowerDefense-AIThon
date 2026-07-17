@@ -44,5 +44,5 @@ Update this whenever assets are imported/replaced. Models so far are Meshy AI ge
 - ✅ MagicArsenal subset extended (+28 files: Fire/Lightning/FrostV2/GroundFrost sets) via `Tools/import-magic-arsenal.ps1` (reusable GUID closure copier); 9 more materials URP-converted. All library blasts shrunk to arena scale (they ship huge).
 - ✅ `Shaders/RS_Dissolve.shader` — URP unlit UV-noise dissolve with ember edge (enemy deaths). Mobile-cheap, one pass.
 - ✅ X-Bow: bow string LineRenderer (`Mat_BowString`) + limb-tip anchors in `Building_XBow`; Tesla: coil-top `Muzzle` in `Building_Tesla`.
-- ✅ TestRange is now the artist sandbox: serialized `spellCards` + `vfxGallery` lists on TestRangeContext generate "Cast X" and "FX: Y" replay buttons at runtime — add/tune assets with zero code.
+- ✅ TestRange is now the artist sandbox: serialized `spellCards` + `vfxGallery` lists on TestRangeContext generate "Cast X" and "FX: Y" replay buttons at runtime — add/tune assets with zero code. UI is two columns (left = spawns, right = toggles/spells/FX/speed) with **isolation toggles**: `King Attack: ON/OFF` (silences the tower via the `RoyalTower.AttacksEnabled` test hook — watch a single building or spell alone) and `Target Wander: ON/OFF`.
 - Audio note: TestRange camera now has an AudioListener (spell SFX audible there).

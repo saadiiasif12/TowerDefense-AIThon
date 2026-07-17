@@ -139,7 +139,12 @@ namespace RoyalSiege.Testing
                 if (e is EnemyAgent agent) agent.TakeDamage(float.MaxValue);
         }
 
+        public bool KingAttackEnabled => _royalTower != null && _royalTower.AttacksEnabled;
+        public bool DummyWanderEnabled => _dummyTarget != null && _dummyTarget.Wander;
+        public bool DummyMovementEnabled => _dummyTarget != null && _dummyTarget.MovementEnabled;
+        public void ToggleKingAttack() { if (_royalTower != null) _royalTower.AttacksEnabled = !_royalTower.AttacksEnabled; }
         public void ToggleDummyWander() { if (_dummyTarget != null) _dummyTarget.Wander = !_dummyTarget.Wander; }
+        public void ToggleDummyMovement() { if (_dummyTarget != null) _dummyTarget.MovementEnabled = !_dummyTarget.MovementEnabled; }
         public void ResetDummy() { if (_dummyTarget != null) _dummyTarget.ResetHp(); }
         public void SetGameSpeed(float speed) => _tickSystem.SpeedMultiplier = speed;
     }
