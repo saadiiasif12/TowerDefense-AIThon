@@ -61,17 +61,20 @@ Buildings drain `maxHP ÷ lifetime` per second from placement (Cannon 20/s, Tesl
 
 - **5.5** Spawn spread (18-Jul): a wave's enemies fan out along the map-edge arc in staggered ranks, WIDELY spaced (centre spacing `max(2.0, unitRadius·4)`) with a small deterministic per-unit hash scatter (radial + angular, bounded so a jittered pair can't overlap), and each unit's spawn TIME is hash-jittered (0–1.4× `unitSpawnInterval`). Packs now arrive distant and a little irregular instead of bunched/lockstep. Zero-RNG (all hashed), so determinism is intact. Knobs: `SpawnPointProvider` spacing/scatter; `CampaignSO.unitSpawnInterval`.
 
-## 6. Elixir economy (hybrid)
+## 6. Elixir economy (TIME-BASED — 18-Jul ruling)
+**18-Jul user ruling:** kill-drop energy is OFF. The elixir bar fills ONLY from the time-based passive regen — enemy kills no longer drop energy orbs. Toggle back via `EconomyConfigSO.killDropsEnergy` (the old v4 hybrid: kills also paid bounty orbs).
+
 | Param | Value |
 |---|---|
 | Cap | 10 (overflow wasted, bar pulses) |
 | Start / checkpoint resume | 5 |
-| Passive regen | 1 per 3.5 s, always on |
-| Kill bounty | +1 any enemy (orb, 0.55 s flight, credit on arrival) |
-| Ogre bounty | +5 |
+| Passive regen | 1 per 3.5 s, always on — **now the ONLY income source** |
+| Kill bounty (orbs) | **OFF** (`killDropsEnergy = false`); orb path & bounty values kept for the toggle |
 | Wave-clear bonus | REMOVED |
 
-Tuning levers in order: wave budgets → fodder bounty 1→0.5 → regen 3.5↔3.0 → lifetimes ±5 s → tower growth ±3%.
+Implementation: `OrbSpawner.OnEnemyKilled` early-returns when `killDropsEnergy` is off (no orb spawn, nothing credited); `EnergyBank.Tick` passive regen is unchanged. `OrbsInFlight` stays 0, so the wave-clear gap no longer waits on orbs.
+
+Tuning levers in order: `passiveRegenSeconds` (3.5 — the sole income knob now) → wave budgets → lifetimes ±5 s → tower growth ±3%. ⚠️ With kills off, 3.5 s/elixir is the only income — revisit the rate if the game feels starved.
 
 ## 7. Royal Tower levels
 | L | Reached | HP | King (r7) | Cannon (r6) | ~DPS | Unlock |

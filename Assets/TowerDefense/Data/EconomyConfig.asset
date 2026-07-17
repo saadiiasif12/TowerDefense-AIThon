@@ -15,5 +15,6 @@ MonoBehaviour:
   startingEnergy: 5
   maxEnergy: 10
   passiveRegenSeconds: 3.5
+  killDropsEnergy: 0
   waveClearBonus: 0
   orbFlightSeconds: 0.55

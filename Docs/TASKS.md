@@ -79,6 +79,8 @@ Legend: ⬜ todo · 🔄 in progress · ✅ done · Update after EVERY task. Kee
 
 ## Change log (newest first)
 
+- **18 Jul** — Energy is now TIME-ONLY (user ruling): enemy kills no longer drop energy/orbs; the elixir bar fills solely from passive time regen. `EconomyConfigSO.killDropsEnergy` (= false) gates `OrbSpawner.OnEnemyKilled`; `EnergyBank` passive regen unchanged. Live-verified (3 kills add 0 energy, 0 orbs; +1 per 3.5 s regen). Flip `killDropsEnergy` on to restore the old kill-bounty hybrid. ⚠️ 3.5 s/elixir is now the only income — may want a faster rate. See 13_PROGRESSION_V4 §6.
+
 - **18 Jul** — Deployment ring is now a DASHED white circle (matches the user mock). Rendered as 40 opaque white mesh dashes (`Art/Meshes/DeployRingDash.mesh` + `Art/Materials/Mat_DeployRingDash.mat`) on the `Arena/DeploymentRing` object with its LineRenderer disabled — URP wouldn't render a transparent/textured LineRenderer, so opaque mesh geometry was the reliable path. Scene diff is ring-only; play-verified. (Retune: regen the mesh — count/length/width.)
 
 - **18 Jul** — Knight/spawn/material polish (user pass): (1) knights now steer AROUND the Royal Tower/buildings to reach a far-side target instead of grinding into it (`KnightUnit.SteerAroundStructures`, tangential avoidance, no navmesh); (2) wider + hash-jittered wave spawns so enemies arrive spread out and a little irregular (`SpawnPointProvider` spacing max(2.0, r·4) + bounded scatter; `WaveScheduler` per-unit spawn-time jitter — both zero-RNG); (3) fixed dull enemies — restored the darkened Goblin albedo to white and lifted 5 matte body materials to 0.3 smoothness (render-verified). All live-verified; compile clean; zero balance change. See 13_PROGRESSION_V4 §5.3/§5.5.

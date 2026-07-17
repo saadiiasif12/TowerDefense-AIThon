@@ -42,6 +42,10 @@ namespace RoyalSiege.Economy
 
         private void OnEnemyKilled(EnemyKilledArgs args)
         {
+            // 18-Jul ruling: kill-drop energy can be turned off — the elixir bar then fills
+            // ONLY from the passive time regen (EnergyBank). No orb spawns, nothing credited.
+            if (_config == null || !_config.killDropsEnergy) return;
+
             var orb = _pool.Get();
             OrbsInFlight++;
             orb.Launch(args.Position, _barAnchor, args.Bounty, _config.orbFlightSeconds, _clock, OnOrbArrived);
