@@ -22,18 +22,32 @@ namespace RoyalSiege.Cards
         public CardDefinitionSO NextPreview => _queue.Count > 0 ? _queue.Peek() : null;
         public int QueueCount => _queue.Count;
 
-        public DeckService(DeckSO deck, GameEvents events, int seed = 0)
+        public DeckService(IReadOnlyList<CardDefinitionSO> cards, GameEvents events, int seed = 0)
         {
             _events = events;
 
-            if (deck.cards.Count <= HandSize)
-                throw new ArgumentException($"Deck must have more than {HandSize} cards (has {deck.cards.Count}).");
+            if (cards.Count <= HandSize)
+                throw new ArgumentException($"Deck must have more than {HandSize} cards (has {cards.Count}).");
 
-            var shuffled = new List<CardDefinitionSO>(deck.cards);
+            var shuffled = new List<CardDefinitionSO>(cards);
             Shuffle(shuffled, seed == 0 ? Environment.TickCount : seed);
 
             for (int i = 0; i < HandSize; i++) _hand[i] = shuffled[i];
             for (int i = HandSize; i < shuffled.Count; i++) _queue.Enqueue(shuffled[i]);
+        }
+
+        public DeckService(DeckSO deck, GameEvents events, int seed = 0)
+            : this(deck.cards, events, seed) { }
+
+        /// <summary>
+        /// v4 checkpoint unlock (§9): the new card joins the BACK of the queue at cooldown 0
+        /// and reaches the hand naturally — no hand-slot theft. Deck grows 6 → 10.
+        /// </summary>
+        public void AddCard(CardDefinitionSO card)
+        {
+            if (card == null) return;
+            _queue.Enqueue(card);
+            _events.RaiseHandChanged(); // NEXT preview may now show the unlock
         }
 
         /// <summary>Cycle the played card out of the given slot. Validation happens BEFORE this.</summary>

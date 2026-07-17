@@ -26,13 +26,19 @@ namespace RoyalSiege.Combat
         float BodyRadius { get; }
         void ApplyFreeze(float seconds);
         void ApplyStun(float seconds);
+        /// <summary>v4: non-stacking movement slow (strength 0..1, duration refreshes).</summary>
+        void ApplySlow(float strength, float seconds);
+        /// <summary>v4: displace by this planar vector, scaled by the unit's knockback factor (Ogre 0).</summary>
+        void ApplyKnockback(Vector3 displacement);
     }
 
-    /// <summary>A player structure (building or Royal Tower) as seen by enemies.</summary>
+    /// <summary>A player structure (building, Royal Tower or knight) as seen by enemies.</summary>
     public interface IStructureTarget : IDamageable
     {
         bool IsBuilding { get; }
         float FootprintRadius { get; }
+        /// <summary>v4: mobile units (knights) never block building placement.</summary>
+        bool BlocksPlacement { get; }
     }
 
     /// <summary>Read-only spatial queries over everything alive. All distances planar (XZ).</summary>

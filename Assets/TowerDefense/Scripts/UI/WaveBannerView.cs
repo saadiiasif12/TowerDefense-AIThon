@@ -15,22 +15,35 @@ namespace RoyalSiege.UI
         [SerializeField] private Text _bonusLabel;
 
         private float _bonusHideAt = -1f;
+        private int _stageIndex;
+        private int _waveInStage;
+        private int _wavesInStage = 20;
 
         private void Start()
         {
             _bonusLabel.text = "";
             _context.Events.WaveCleared += OnWaveCleared;
+            _context.Events.WaveProgressChanged += OnWaveProgress;
         }
 
         private void OnDestroy()
         {
-            if (_context != null && _context.Events != null) _context.Events.WaveCleared -= OnWaveCleared;
+            if (_context == null || _context.Events == null) return;
+            _context.Events.WaveCleared -= OnWaveCleared;
+            _context.Events.WaveProgressChanged -= OnWaveProgress;
         }
 
         private void OnWaveCleared(int wave)
         {
-            _bonusLabel.text = "WAVE " + wave + " CLEARED  +3 ENERGY";
+            _bonusLabel.text = "WAVE " + wave + " CLEARED";
             _bonusHideAt = Time.time + 2f;
+        }
+
+        private void OnWaveProgress(int stage, int waveInStage, int wavesInStage)
+        {
+            _stageIndex = stage;
+            _waveInStage = waveInStage;
+            _wavesInStage = wavesInStage;
         }
 
         private void Update()
@@ -46,17 +59,15 @@ namespace RoyalSiege.UI
             int total = _context.Waves.WaveCount;
             float toNext = _context.Waves.TimeToNextWave;
 
-            if (toNext >= 0f)
-            {
-                string countdown = "NEXT IN " + Mathf.CeilToInt(toNext) + "s";
-                _waveLabel.text = current > 0
-                    ? "WAVE " + current + "/" + total + "    " + countdown
-                    : countdown;
-            }
+            // v4 stage header: stage-local progress + the global wave number (§1).
+            string stagePart = "STAGE " + (_stageIndex + 1) + " · " + _waveInStage + "/" + _wavesInStage;
+
+            if (_context.Waves.CampaignComplete)
+                _waveLabel.text = stagePart + "    CLEARED";
+            else if (toNext >= 0f)
+                _waveLabel.text = (current > 0 ? stagePart + "    " : "") + "NEXT IN " + Mathf.CeilToInt(toNext) + "s";
             else
-            {
-                _waveLabel.text = "WAVE " + current + "/" + total + "    FINAL WAVE";
-            }
+                _waveLabel.text = stagePart + "    WAVE " + current + "/" + total;
         }
     }
 }

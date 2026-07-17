@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e76e9dbf8d3b08b4e9b76cada04e18e0, type: 3}
   m_Name: Effect_Lightning
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.LightningEffectSO
-  damage: 275
+  damage: 300
   targetCount: 3
   stunSeconds: 0.5

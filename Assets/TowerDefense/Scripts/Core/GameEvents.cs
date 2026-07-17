@@ -60,6 +60,13 @@ namespace RoyalSiege.Core
         public event Action<Vector3> BossSlammed;
         public event Action<Vector3, IEnemyTarget> InstantShotFired;      // muzzle, victim (Tesla zap — target ref so VFX can track/attach)
         public event Action<MatchResult> MatchEnded;
+        // ---- v4 journey ----
+        public event Action<Vector3> KnightSpawned;                       // deploy flash
+        public event Action<Vector3> KnightStruck;                        // a knight landed a hit (clash spark)
+        public event Action<Vector3> KnightDied;
+        public event Action<int, int, int> WaveProgressChanged;           // stageIndex(0-based), waveInStage(1-based), wavesInStage
+        public event Action<CheckpointReachedArgs> CheckpointReached;     // level-up / stage-complete screen
+        public event Action<int> TowerLeveledUp;                          // new 1-based level (visual upgrade)
 
         public void RaiseEnemyKilled(EnemyKilledArgs args) => EnemyKilled?.Invoke(args);
         public void RaiseEnergyChanged(float current, float max) => EnergyChanged?.Invoke(current, max);
@@ -77,5 +84,33 @@ namespace RoyalSiege.Core
         public void RaiseBossSlammed(Vector3 position) => BossSlammed?.Invoke(position);
         public void RaiseInstantShotFired(Vector3 from, IEnemyTarget target) => InstantShotFired?.Invoke(from, target);
         public void RaiseMatchEnded(MatchResult result) => MatchEnded?.Invoke(result);
+        public void RaiseKnightSpawned(Vector3 position) => KnightSpawned?.Invoke(position);
+        public void RaiseKnightStruck(Vector3 position) => KnightStruck?.Invoke(position);
+        public void RaiseKnightDied(Vector3 position) => KnightDied?.Invoke(position);
+        public void RaiseWaveProgressChanged(int stage, int waveInStage, int wavesInStage) => WaveProgressChanged?.Invoke(stage, waveInStage, wavesInStage);
+        public void RaiseCheckpointReached(CheckpointReachedArgs args) => CheckpointReached?.Invoke(args);
+        public void RaiseTowerLeveledUp(int level) => TowerLeveledUp?.Invoke(level);
+    }
+
+    /// <summary>What the checkpoint screen needs to show (v4 §9).</summary>
+    public readonly struct CheckpointReachedArgs
+    {
+        public readonly int AfterWave;
+        public readonly int TowerLevel;         // 0 = unchanged
+        public readonly CardDefinitionSO Unlock; // null = none
+        public readonly bool IsStageComplete;
+        public readonly int Stars;               // stage-complete only
+        public readonly Action Dismissed;        // UI calls this to resume the campaign
+
+        public CheckpointReachedArgs(int afterWave, int towerLevel, CardDefinitionSO unlock,
+            bool isStageComplete, int stars, Action dismissed)
+        {
+            AfterWave = afterWave;
+            TowerLevel = towerLevel;
+            Unlock = unlock;
+            IsStageComplete = isStageComplete;
+            Stars = stars;
+            Dismissed = dismissed;
+        }
     }
 }

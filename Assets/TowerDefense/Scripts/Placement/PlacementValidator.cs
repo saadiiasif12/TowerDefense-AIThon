@@ -42,13 +42,17 @@ namespace RoyalSiege.Placement
         public bool IsValidSpellSpot(Vector3 point) =>
             RangeMath.IsInside(_center, point, _config.mapRadius);
 
+        /// <summary>v4 Knights: anywhere inside the deployment circle (units — no overlap rule).</summary>
+        public bool IsValidTroopSpot(Vector3 point) =>
+            RangeMath.IsInside(_center, point, _config.deploymentRadius);
+
         private bool Overlaps(Vector3 point, float footprint)
         {
             var structures = _query.Structures;
             for (int i = 0; i < structures.Count; i++)
             {
                 var s = structures[i];
-                if (!s.IsAlive) continue;
+                if (!s.IsAlive || !s.BlocksPlacement) continue; // knights are mobile — never block
                 if (RangeMath.PlanarDistance(point, s.Position) < footprint + s.FootprintRadius)
                     return true;
             }

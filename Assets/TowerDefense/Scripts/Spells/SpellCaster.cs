@@ -19,7 +19,7 @@ namespace RoyalSiege.Spells
     /// Targets are CAPTURED at cast (CR-style: the volley tracks them); the delay is a
     /// fixed constant riding the 10 Hz tick — no RNG, determinism intact.
     /// </summary>
-    public sealed class SpellCaster : ISpellCaster, ITickable
+    public sealed class SpellCaster : ISpellCaster, ITickable, ISpellRuntime
     {
         private sealed class PendingCast
         {
@@ -35,8 +35,14 @@ namespace RoyalSiege.Spells
         private readonly float _mapRadius;
         private readonly List<IEnemyTarget> _buffer = new();
         private readonly List<PendingCast> _pending = new();
+        private readonly List<ISpellZone> _zones = new(); // v4: Earthquake DoT, Log roll
         private readonly Stack<List<IEnemyTarget>> _listPool = new();
         private readonly List<Vector3> _hitReport = new();
+
+        // ---- ISpellRuntime (v4 zone effects) ----
+        public ITargetQuery Query => _query;
+        public Vector3 MapCenter => _mapCenter;
+        public void AddZone(ISpellZone zone) => _zones.Add(zone);
 
         public SpellCaster(ITargetQuery query, GameConfigSO config, Vector3 mapCenter, GameEvents events)
         {
@@ -74,6 +80,9 @@ namespace RoyalSiege.Spells
                 _pending.RemoveAt(i);
                 Resolve(p.Card, p.Point, p.Targets);
             }
+
+            for (int i = _zones.Count - 1; i >= 0; i--)
+                if (!_zones[i].Tick(dt)) _zones.RemoveAt(i);
         }
 
         private void Resolve(SpellCardSO card, Vector3 point, List<IEnemyTarget> targets)
@@ -85,7 +94,7 @@ namespace RoyalSiege.Spells
                 !RangeMath.IsInside(point, t.Position, card.radius));
 
             _hitReport.Clear();
-            card.effect.Apply(new SpellContext(point, card.radius, targets, _hitReport));
+            card.effect.Apply(new SpellContext(point, card.radius, targets, _hitReport, this));
             _events.RaiseSpellResolved(card, point, _hitReport);
 
             targets.Clear();
