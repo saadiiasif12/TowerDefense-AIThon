@@ -21,8 +21,14 @@ namespace RoyalSiege.Units
         private const float RetargetHysteresis = 0.9f;  // switch only if the new target is >10% closer
         private const float SeparationSpring = 4f;       // push strength per unit of overlap
         private const float TurnSharpness = 8f;          // view rotation smoothing (1/s)
+        // Structure-overlap resolve: search span (covers tower footprint + largest body) and
+        // the fraction of attack range the standoff may consume — must stay < 1 so a clamped
+        // unit is always still within reach of its target.
+        private const float StructureSearchRadius = 4f;
+        private const float StandoffReachFraction = 0.9f;
 
         private static readonly List<IStructureTarget> SplashBuffer = new();
+        private static readonly List<IStructureTarget> StructureBuffer = new();
 
         private EnemyDefinitionSO _def;
         private EnemyRuntimeDeps _deps;
@@ -67,14 +73,16 @@ namespace RoyalSiege.Units
 
         /// <summary>
         /// Hit-stagger: a MOVING enemy briefly stops and plays the hurt flinch, then resumes.
-        /// Never fires while attacking, frozen/stunned, already staggered, or on cooldown —
-        /// the cooldown is what stops rapid hitters (Tesla) from stun-locking a unit forever.
+        /// EVERY hit re-flinches (a hit landing mid-stagger restarts it) unless the per-enemy
+        /// hurtCooldownSeconds says otherwise — the boss keeps a long cooldown so sustained
+        /// fire can't flinch-lock it. Never fires while attacking or frozen/stunned.
         /// </summary>
         private void TryHurtStagger()
         {
             if (_def == null || _def.hurtStaggerSeconds <= 0f) return;
-            if (!_isMoving || _status.IsBlocked) return;
-            if (_hurtStaggerRemaining > 0f || _hurtCooldownRemaining > 0f) return;
+            if (!_isMoving && _hurtStaggerRemaining <= 0f) return; // moving, or already mid-flinch
+            if (_status.IsBlocked) return;
+            if (_hurtCooldownRemaining > 0f) return;
 
             _hurtStaggerRemaining = _def.hurtStaggerSeconds;
             _hurtCooldownRemaining = _def.hurtCooldownSeconds;
@@ -199,6 +207,35 @@ namespace RoyalSiege.Units
                 _desiredForward = RangeMath.PlanarDirection(_logicPosition, _target.Position);
                 _isMoving = false;
                 _animator?.SetMoving(false);
+            }
+
+            ResolveStructureOverlap();
+        }
+
+        /// <summary>
+        /// Hard rule: an enemy's centre never enters a structure's footprint. The 10 Hz seek
+        /// step can overshoot into the tower and crowd separation shoves attackers straight
+        /// through the mesh — this clamps them back onto a standoff ring. The ring sits at
+        /// BodyRadius outside the footprint, capped just under the unit's attack reach so a
+        /// fat unit (Ogre: body 0.85 > range 0.8) can still land its hits.
+        /// </summary>
+        private void ResolveStructureOverlap()
+        {
+            _deps.Registry.StructuresInRadius(_logicPosition, StructureSearchRadius, StructureBuffer);
+            for (int i = 0; i < StructureBuffer.Count; i++)
+            {
+                var s = StructureBuffer[i];
+                float standoff = s.FootprintRadius + Mathf.Min(BodyRadius, _def.attackRange * StandoffReachFraction);
+                Vector3 center = RangeMath.Flatten(s.Position);
+                Vector3 delta = RangeMath.Flatten(_logicPosition) - center;
+                float distance = delta.magnitude;
+                if (distance >= standoff) continue;
+
+                Vector3 away = distance > 0.001f
+                    ? delta / distance
+                    : RangeMath.PlanarDirection(center, _previousPosition);
+                if (away.sqrMagnitude < 0.001f) away = Vector3.forward; // fully degenerate: pick any stable side
+                _logicPosition = center + away * standoff;
             }
         }
 
