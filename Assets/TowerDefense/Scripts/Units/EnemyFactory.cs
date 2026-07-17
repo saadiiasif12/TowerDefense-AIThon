@@ -37,6 +37,7 @@ namespace RoyalSiege.Units
             EnemyAgent agent = pool.Count > 0 ? pool.Pop() : CreateInstance(definition);
             agent.gameObject.SetActive(true);
             agent.Init(definition, position, waveIndex, _deps);
+            _deps.Events.RaiseEnemySpawned(definition, position);
             return agent;
         }
 

@@ -94,6 +94,7 @@ namespace RoyalSiege.Core
             _tickSystem.Register(Waves);
             _tickSystem.Register(Cooldowns);
             _tickSystem.Register(evaluator);
+            _tickSystem.Register(spellCaster); // sky-fall spells resolve on the tick (fallDelaySeconds)
 
             // Initial UI push
             Events.RaiseEnergyChanged(Energy.Current, Energy.Max);

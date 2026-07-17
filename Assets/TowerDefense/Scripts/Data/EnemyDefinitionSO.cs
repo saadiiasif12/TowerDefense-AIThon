@@ -31,6 +31,10 @@ namespace RoyalSiege.Data
         [Tooltip("An enemy may only ATTACK once it is within this distance of the map center — ranged enemies must enter the territory first instead of standing off at the outskirts (17-Jul rule). Melee enemies are unaffected in practice.")]
         public float engageRadiusFromCenter = 12f;
 
+        [Header("Juice")]
+        [Tooltip("Death burst played instead of the generic puff (e.g. bone shatter for the Skeleton). Optional.")]
+        public ParticleSystem deathVfx;
+
         [Header("Behaviour")]
         [Tooltip("Personal-space radius for separation steering and formation spacing.")]
         public float unitRadius = 0.45f;

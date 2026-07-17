@@ -55,6 +55,18 @@ namespace RoyalSiege.Testing
             }
             AddButton(column.transform, "Kill All Enemies", new Color(0.9f, 0.5f, 0.4f), _context.KillAllEnemies);
 
+            foreach (var spell in _context.spellCards)
+            {
+                var s = spell;
+                AddButton(column.transform, "Cast " + s.displayName, new Color(0.75f, 0.6f, 0.95f), () => _context.CastSpell(s));
+            }
+            foreach (var fx in _context.vfxGallery)
+            {
+                if (fx == null) continue;
+                var f = fx;
+                AddButton(column.transform, "FX: " + f.name, new Color(0.6f, 0.9f, 0.9f), () => _context.PlayGalleryVfx(f));
+            }
+
             AddButton(column.transform, "Toggle Target Wander", Color.white, _context.ToggleDummyWander);
             AddButton(column.transform, "Reset Target HP", Color.white, _context.ResetDummy);
             AddButton(column.transform, "Speed 0.25x (trails)", new Color(0.7f, 0.8f, 1f), () => _context.SetGameSpeed(0.25f));

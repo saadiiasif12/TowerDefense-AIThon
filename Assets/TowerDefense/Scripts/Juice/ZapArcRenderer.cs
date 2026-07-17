@@ -26,6 +26,8 @@ namespace RoyalSiege.Juice
             public Vector3 From;
             public Vector3 To;
             public float Life;
+            public float MaxLife = ArcLifetime;
+            public float Width = 1f;
         }
 
         private readonly List<Arc> _arcs = new();
@@ -55,6 +57,24 @@ namespace RoyalSiege.Juice
 
         private void OnZap(Vector3 from, Vector3 to)
         {
+            // Main bolt + two shorter forks branching off partway — reads as real thunder
+            // instead of a single wobbling line. Fork geometry is hashed from the endpoints
+            // (deterministic, no RNG).
+            SpawnArc(from, to, ArcLifetime, 1f);
+
+            Vector3 dir = to - from;
+            Vector3 side = Vector3.Cross(dir.normalized, Vector3.up);
+            float h = Mathf.Sin(to.x * 12.9898f + to.z * 78.233f);
+            Vector3 branchRoot1 = Vector3.Lerp(from, to, 0.45f);
+            Vector3 branchRoot2 = Vector3.Lerp(from, to, 0.7f);
+            SpawnArc(branchRoot1, branchRoot1 + dir * 0.3f + side * (0.9f * h) + Vector3.down * 0.4f, ArcLifetime * 0.7f, 0.45f);
+            SpawnArc(branchRoot2, branchRoot2 + dir * 0.22f - side * (0.7f * h) + Vector3.down * 0.6f, ArcLifetime * 0.55f, 0.35f);
+
+            _vfx.Spawn(_impactSparks, to, Quaternion.identity, 1f, _arcColor);
+        }
+
+        private void SpawnArc(Vector3 from, Vector3 to, float life, float width)
+        {
             Arc arc = null;
             for (int i = 0; i < _arcs.Count; i++)
                 if (_arcs[i].Life <= 0f) { arc = _arcs[i]; break; }
@@ -66,10 +86,10 @@ namespace RoyalSiege.Juice
 
             arc.From = from;
             arc.To = to;
-            arc.Life = ArcLifetime;
+            arc.Life = life;
+            arc.MaxLife = life;
+            arc.Width = width;
             arc.Line.enabled = true;
-
-            _vfx.Spawn(_impactSparks, to, Quaternion.identity, 1f, _arcColor);
         }
 
         private void Update()
@@ -88,8 +108,8 @@ namespace RoyalSiege.Juice
                     continue;
                 }
 
-                float fade = arc.Life / ArcLifetime;
-                arc.Line.widthMultiplier = 0.18f * fade;
+                float fade = arc.Life / arc.MaxLife;
+                arc.Line.widthMultiplier = 0.18f * fade * arc.Width;
                 Rejitter(arc, i);
             }
         }

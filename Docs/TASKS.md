@@ -45,9 +45,12 @@ Legend: ⬜ todo · 🔄 in progress · ✅ done · Update after EVERY task. Kee
 - ✅ King on the Royal Tower: Golden King (default scale) with AC_King (idle sway + speed-synced throw), turns to target, fires magic orb (dual trail + sparkle wake) with 5-layer arcane impact splash
 - ✅ King spell "shooting star" pass: trail is one continuous ribbon (star head + distance-emitted dust tracing the path), pooled projectile FX hard-reset on launch + trail fades out at impact instead of cutting; new view-only `HitReaction` on all enemies/dummy (backward recoil that settles + glow flash on every hit); king casts from the actual RightHand bone (`KingView.CastPoint` → `firePoint`, spawnHeightOffset 0) with release timing verified against the throw clip (impactFraction 0.4 = hand-extended pose)
 
+- ✅ **Overnight juice pass (17→18 Jul)** — see 11_MODULE_JUICE notes for full detail: sky-fall spell choreography (arrow volley / meteor+blast / freeze nova+tint+pose-hold / lightning pillars on actual victims, damage synced to landing via `fallDelaySeconds`), camera shake (trauma-based) + aspect-ratio fitter on both cameras, enemy spawn pop + death dissolve shader + skeleton bone-burst, Tesla coil-top forked thunder, X-Bow facing fix + live bow string, full card-animation spec implemented (select/drag-proxy/dissolve+name-float/cancel/refill/unaffordable-shake/recessed-slot), placement grid overlay synced with the grass checker, TestRange artist tools (cast-spell buttons, FX gallery replay buttons, serialized lists), first spell SFX wired (fire/lightning/frost impacts). All verified live, 0 errors.
+- ⚠️ **Balance observation (18 Jul, from unattended run):** near-idle play (one fireball only) reached DEFEAT at wave 7/12 — pressure curve is alive but the wave-4 idle-death invariant should be re-verified by a human run on Day 3 (king 93 DPS folded from tower may have softened early waves).
+
 ## Day 3 (18 July) — POLISH & SUBMISSION
 
-- ⬜ Juice map implemented (11_MODULE_JUICE): VFX, SFX, haptics, camera shake, hit-stop
+- ⬜ Juice map implemented (11_MODULE_JUICE): VFX, SFX, haptics, camera shake, hit-stop — **large part done overnight (VFX + shake + first SFX); remaining: haptics, hit-stop, music, full SFX set**
 - ⬜ Music (Suno) + SFX (ElevenLabs) integrated
 - ⬜ UI skin pass (AI-generated card frames/icons)
 - ⬜ Balance pass 2 + bugfix

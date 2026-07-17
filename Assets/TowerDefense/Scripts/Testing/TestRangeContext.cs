@@ -5,6 +5,7 @@ using RoyalSiege.Combat;
 using RoyalSiege.Core;
 using RoyalSiege.Data;
 using RoyalSiege.Juice;
+using RoyalSiege.Spells;
 using RoyalSiege.Units;
 
 namespace RoyalSiege.Testing
@@ -29,6 +30,12 @@ namespace RoyalSiege.Testing
         [Header("What can be spawned (buttons are generated from these)")]
         public List<BuildingCardSO> buildingCards = new();
         public List<EnemyDefinitionSO> enemyDefinitions = new();
+        [Tooltip("Spell cards get a 'Cast @ target' button each — casts on the dummy (artists: add/tune freely).")]
+        public List<SpellCardSO> spellCards = new();
+        [Tooltip("Loose VFX prefabs get a 'FX:' replay button each — plays at the FX anchor for eyeballing.")]
+        public List<ParticleSystem> vfxGallery = new();
+        [Tooltip("Where gallery VFX play. Defaults to (2, 0.5, -4) if empty.")]
+        public Transform fxAnchor;
 
         public GameEvents Events { get; private set; }
         public IClock Clock => _tickSystem;
@@ -39,6 +46,7 @@ namespace RoyalSiege.Testing
         private ProjectileLauncher _launcher;
         private EnemyFactory _enemyFactory;
         private EnemyRuntimeDeps _enemyDeps;
+        private SpellCaster _spellCaster;
         private readonly List<BuildingUnit> _spawnedBuildings = new();
         private int _buildingSlot;
         private int _enemySlot;
@@ -69,8 +77,28 @@ namespace RoyalSiege.Testing
             if (_royalTower != null)
                 _royalTower.Init(_gameConfig, _registry, _launcher, Events, _tickSystem, _tickSystem);
 
+            _spellCaster = new SpellCaster(_registry, _gameConfig, Vector3.zero, Events);
+            _tickSystem.Register(_spellCaster);
+
+            var shaker = Camera.main != null ? Camera.main.GetComponent<CameraShaker>() : null;
             GetComponent<ZapArcRenderer>()?.Init(Events, _tickSystem, Vfx);
-            GetComponent<JuiceDirector>()?.Init(Events, Vfx);
+            GetComponent<JuiceDirector>()?.Init(Events, Vfx, shaker);
+            GetComponent<SpellVfxDirector>()?.Init(Events, Vfx, _tickSystem, shaker);
+        }
+
+        /// <summary>Cast a spell centered on the dummy (or map center when no dummy).</summary>
+        public void CastSpell(SpellCardSO card)
+        {
+            if (card == null || _spellCaster == null) return;
+            Vector3 point = _dummyTarget != null ? _dummyTarget.Position : Vector3.zero;
+            _spellCaster.Cast(card, point);
+        }
+
+        /// <summary>Replay a loose VFX prefab at the FX anchor (artist eyeballing).</summary>
+        public void PlayGalleryVfx(ParticleSystem prefab)
+        {
+            Vector3 point = fxAnchor != null ? fxAnchor.position : new Vector3(2f, 0.5f, -4f);
+            Vfx.Spawn(prefab, point);
         }
 
         public void SpawnBuilding(BuildingCardSO card)

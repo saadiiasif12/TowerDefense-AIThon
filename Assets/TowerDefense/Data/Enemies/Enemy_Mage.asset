@@ -24,6 +24,7 @@ MonoBehaviour:
   splashRadius: 0
   projectile: {fileID: 0}
   engageRadiusFromCenter: 12
+  deathVfx: {fileID: 4273496347337167337, guid: 4b0f0db536de97c499c1e15fc2ecf7d2, type: 3}
   unitRadius: 0.5
   targetPriority: 0
   bounty: 0.5

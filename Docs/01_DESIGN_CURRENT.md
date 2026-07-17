@@ -14,6 +14,8 @@ Base: `Assets/TowerDefense/Documents/GDD_Royal_Siege_v2.md` (read it — it is e
 
 10. **Royal Tower fires ONE attack (17 Jul):** the built-in cannon is disabled (damage 0, range 0.01 in GameConfig) and its DPS folded into the king attack — **king: 93 dmg / 1.0 s / range 7** (total tower DPS ≈93, unchanged; idle-dies-wave-4 invariant preserved). Side effect: goblins (90 HP) die to one king hit instead of two — acceptable, tower attacks were never under the no-one-shot rule (spells only).
 
+11. **Sky-fall spells (17 Jul, user direction):** Arrows and Fireball visually FALL FROM THE SKY onto the target area (15-arrow radial volley / meteor). Their damage now lands when the volley lands: `SpellCardSO.fallDelaySeconds` (Arrows 0.45 s, Fireball 0.5 s; Freeze/Lightning stay 0 = instant). Targets are CAPTURED at cast (CR-style — the volley tracks them; walking out doesn't dodge it), the delay is a fixed constant on the 10 Hz tick — determinism intact, no-one-shot balance untouched. "instant" in the card table below reads as "resolves at fall-delay" for these two.
+
 ## Meeting deltas (16 July, notebook)
 
 1. **Bomb Tower is CUT** ("Card naming: no bomb tower"). Deck is now **7 cards**.

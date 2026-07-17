@@ -13,16 +13,18 @@ namespace RoyalSiege.Juice
     {
         private const float DurationSeconds = 0.22f;
         private const float RecoilDistance = 0.16f;
-        private static readonly Color GlowColor = new(1.7f, 1.9f, 2.4f); // cold overbright star-blue
+        private static readonly Color GlowColor = new(1.45f, 1.6f, 2f); // cold overbright star-blue (kept subtle — rapid hits stack visually)
         private static readonly int ColorId = Shader.PropertyToID("_Color");
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
         private Renderer[] _renderers;
         private MaterialPropertyBlock _block;
         private float _remaining;
+        private EnemyLifecycleView _tintSink; // when present, owns the renderers — glow composes with freeze tint there
 
         private void Awake()
         {
+            _tintSink = GetComponent<EnemyLifecycleView>();
             _renderers = GetComponentsInChildren<Renderer>(true);
             _block = new MaterialPropertyBlock();
         }
@@ -33,7 +35,8 @@ namespace RoyalSiege.Juice
         public void Cancel()
         {
             _remaining = 0f;
-            if (_renderers != null) ClearTint();
+            if (_tintSink != null) _tintSink.SetHitPulse(0f);
+            else if (_renderers != null) ClearTint();
         }
 
         private void LateUpdate()
@@ -42,7 +45,8 @@ namespace RoyalSiege.Juice
             _remaining -= Time.deltaTime;
             if (_remaining <= 0f)
             {
-                ClearTint();
+                if (_tintSink != null) _tintSink.SetHitPulse(0f);
+                else ClearTint();
                 return;
             }
 
@@ -51,6 +55,11 @@ namespace RoyalSiege.Juice
             float pulse = Mathf.Sin(t * Mathf.PI);
             transform.position -= transform.forward * (RecoilDistance * pulse);
 
+            if (_tintSink != null)
+            {
+                _tintSink.SetHitPulse(pulse);
+                return;
+            }
             var tint = Color.Lerp(Color.white, GlowColor, pulse);
             _block.SetColor(ColorId, tint);
             _block.SetColor(BaseColorId, tint);

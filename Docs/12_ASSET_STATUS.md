@@ -38,3 +38,11 @@ Update this whenever assets are imported/replaced. Models so far are Meshy AI ge
 
 ## Audio
 - ✅ First SFX: `arcaneimpact.wav` on the king's impact (VfxInstance now auto-plays an AudioSource if present). More Day 3: Suno (music), ElevenLabs (SFX).
+
+## Overnight juice pass additions (17→18 Jul)
+- ✅ New spell VFX prefabs in `Prefabs/VFX/`: `FX_ArrowRain` (15 Meshy-arrow skyfall volley), `FX_Meteor` (fire projectile + trail skyfall), `VFX_FireballBlast` (+fireimpact.wav), `VFX_LightningPillar` (+lightningimpact.wav), `VFX_FreezeNova` (+frostimpact02.wav), `VFX_GroundFrost` (lingering ice patch), `VFX_BoneBurst` (skeleton death bones, capsule mesh particles + `Mat_Bone`).
+- ✅ MagicArsenal subset extended (+28 files: Fire/Lightning/FrostV2/GroundFrost sets) via `Tools/import-magic-arsenal.ps1` (reusable GUID closure copier); 9 more materials URP-converted. All library blasts shrunk to arena scale (they ship huge).
+- ✅ `Shaders/RS_Dissolve.shader` — URP unlit UV-noise dissolve with ember edge (enemy deaths). Mobile-cheap, one pass.
+- ✅ X-Bow: bow string LineRenderer (`Mat_BowString`) + limb-tip anchors in `Building_XBow`; Tesla: coil-top `Muzzle` in `Building_Tesla`.
+- ✅ TestRange is now the artist sandbox: serialized `spellCards` + `vfxGallery` lists on TestRangeContext generate "Cast X" and "FX: Y" replay buttons at runtime — add/tune assets with zero code.
+- Audio note: TestRange camera now has an AudioListener (spell SFX audible there).

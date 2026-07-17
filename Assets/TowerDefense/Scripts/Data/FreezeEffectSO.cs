@@ -15,6 +15,7 @@ namespace RoyalSiege.Data
             {
                 var target = context.Targets[i];
                 target.ApplyFreeze(target.IsBoss ? bossDuration : duration);
+                context.HitReport?.Add(target.Position);
             }
         }
     }

@@ -71,7 +71,9 @@ namespace RoyalSiege.Buildings
             }
             else
             {
-                _events.RaiseInstantShotFired(origin + Vector3.up, target.Position + Vector3.up * 0.5f);
+                // A firePoint override IS the muzzle (Tesla coil top) — no extra height fudge.
+                Vector3 zapFrom = _firePoint != null ? origin : origin + Vector3.up;
+                _events.RaiseInstantShotFired(zapFrom, target.Position + Vector3.up * 0.5f);
                 target.TakeDamage(_damage);
             }
             _onFire?.Invoke();
