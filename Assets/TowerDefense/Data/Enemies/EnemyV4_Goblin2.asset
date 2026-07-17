@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.EnemyDefinitionSO
   id: Goblin2
   displayName: Spear Goblin
-  prefab: {fileID: 7021374992222244773, guid: b0c48ab80fb01b944b6fec33f1bcfd31, type: 3}
+  prefab: {fileID: 7791316405672678054, guid: 1272212b1509d0c4398cf69d4aa794b9, type: 3}
   hp: 320
   moveSpeed: 1.6
   damage: 70
