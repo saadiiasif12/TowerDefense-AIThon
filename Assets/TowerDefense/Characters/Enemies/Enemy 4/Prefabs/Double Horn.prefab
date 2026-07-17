@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8043092652374357332}
   - component: {fileID: 5691807608310405069}
+  - component: {fileID: 3934005163673623941}
   m_Layer: 0
   m_Name: Double Horn
   m_TagString: Untagged
@@ -51,6 +52,24 @@ MonoBehaviour:
   _fillColor: {r: 0.25, g: 0.9, b: 0.2, a: 1}
   _lowColor: {r: 0.95, g: 0.25, b: 0.15, a: 1}
   _hideWhenFull: 1
+--- !u!114 &3934005163673623941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7265747158914281454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44cca7bd101870429b8e2f56f7ddec2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Units.EnemyThrowView
+  _holdAnchor: {fileID: 0}
+  _heldVisualPrefab: {fileID: 3118196265061972592, guid: 5d2d9116c64abf5429bb1082d4e69856, type: 3}
+  _localPosition: {x: 0, y: 0.02, z: 0.04}
+  _localEuler: {x: 0, y: 0, z: 0}
+  _localScale: 0.12
+  _respawnDelay: 0.35
 --- !u!1001 &965541490723220475
 PrefabInstance:
   m_ObjectHideFlags: 0

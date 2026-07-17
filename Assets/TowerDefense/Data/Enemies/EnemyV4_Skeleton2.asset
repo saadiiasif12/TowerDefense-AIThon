@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.EnemyDefinitionSO
   id: Skeleton2
   displayName: Armored Skeleton
-  prefab: {fileID: 3087399621984602444, guid: 8e27d3a61118c724db2d22f7e2e57dbd, type: 3}
+  prefab: {fileID: 8076293236869482471, guid: 6fccc5b9c00764446a737e7fba74cfa0, type: 3}
   hp: 110
   moveSpeed: 1.8
   damage: 45

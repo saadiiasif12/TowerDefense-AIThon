@@ -23,6 +23,12 @@ namespace RoyalSiege.Juice
         [Tooltip("Alpha-blended particle material (Mat_SmokeSoft) — cloned for dust/cracks.")]
         [SerializeField] private Material _softMaterial;
         [SerializeField] private float _quakeShakePulse = 0.12f;
+        [Tooltip("Rolling log model for the Log spell. Falls back to a brown primitive cylinder if empty.")]
+        [SerializeField] private GameObject _logPrefab;
+
+        // Visual log dimensions (independent of the effect's damage band width).
+        private const float LogLength = 1.8f;
+        private const float LogRadius = 0.35f;
 
         private GameEvents _events;
         private IClock _clock;
@@ -59,7 +65,9 @@ namespace RoyalSiege.Juice
             public float Distance;
             public float Speed;
             public float Travelled;
-            public float BreakT; // -1 while rolling, then 0→1 shrink
+            public Vector3 Axle;      // horizontal axis the log lies along + rolls about
+            public Quaternion BaseRot; // orientation with the log's long axis on the axle
+            public float Radius;      // measured from the model (drives ground height + roll speed)
         }
 
         private void Start()
@@ -191,30 +199,66 @@ namespace RoyalSiege.Juice
             log.Distance = distance;
             log.Speed = speed;
             log.Travelled = 0f;
-            log.BreakT = -1f;
-            log.Root.transform.position = point + Vector3.up * 0.35f;
-            // Cylinder axis (local Y) lies ACROSS the roll direction.
-            log.Model.rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0f, 0f, 90f);
-            log.Model.localScale = new Vector3(0.7f, 0.9f, 0.7f); // radius, half-length
+            // The log lies ALONG the horizontal axle (perpendicular to the roll direction) and
+            // rolls about it. BaseRot puts the model's +Z (its long axis) on that axle.
+            log.Axle = Vector3.Cross(Vector3.up, direction).normalized;
+            log.BaseRot = Quaternion.LookRotation(log.Axle, Vector3.up);
+            log.Model.rotation = log.BaseRot;
+            log.Root.transform.position = point + Vector3.up * log.Radius;
             log.Root.SetActive(true);
         }
 
+        /// <summary>
+        /// Root moves along the path; Model is a pivot that rolls; the visual (Log prefab kept
+        /// at its AUTHORED scale, or a fallback cylinder) is Model's child. The Log prefab is
+        /// never rescaled at runtime — its real radius (from renderer bounds) drives ground
+        /// height and roll speed so it still grips the ground with no foot-slide.
+        /// </summary>
         private LogRollView CreateLog()
         {
             var root = new GameObject("LogRoll");
             root.transform.SetParent(transform, false);
-            var model = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            Destroy(model.GetComponent<Collider>());
-            model.transform.SetParent(root.transform, false);
-            var renderer = model.GetComponent<MeshRenderer>();
-            var mat = new Material(renderer.sharedMaterial); // default lit — recolor to wood
-            mat.color = new Color(0.45f, 0.3f, 0.16f);
-            renderer.material = mat;
+            var model = new GameObject("LogPivot").transform;
+            model.SetParent(root.transform, false);
 
-            var log = new LogRollView { Root = root, Model = model.transform };
+            float radius = LogRadius;
+            if (_logPrefab != null)
+            {
+                var vis = Instantiate(_logPrefab, model);
+                vis.transform.localPosition = Vector3.zero;
+                vis.transform.localRotation = Quaternion.identity;
+                foreach (var c in vis.GetComponentsInChildren<Collider>(true)) Destroy(c);
+                radius = MeasureRadius(vis);   // read-only — scale left exactly as authored
+            }
+            else
+            {
+                var prim = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                Destroy(prim.GetComponent<Collider>());
+                prim.transform.SetParent(model, false);
+                // Unity's cylinder is Y-long; turn it so its length lies on +Z like the prefab.
+                prim.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+                prim.transform.localScale = new Vector3(LogRadius * 2f, LogLength * 0.5f, LogRadius * 2f);
+                var r = prim.GetComponent<MeshRenderer>();
+                var mat = new Material(r.sharedMaterial) { color = new Color(0.45f, 0.3f, 0.16f) };
+                r.material = mat;
+            }
+
+            var log = new LogRollView { Root = root, Model = model, Radius = radius };
             root.SetActive(false);
             _logs.Add(log);
             return log;
+        }
+
+        /// <summary>Rolling radius = half the model's smaller cross-section (long axis is +Z).
+        /// Read-only: never changes the model's scale.</summary>
+        private static float MeasureRadius(GameObject vis)
+        {
+            var rends = vis.GetComponentsInChildren<Renderer>();
+            if (rends.Length == 0) return LogRadius;
+            var b = rends[0].bounds;
+            for (int i = 1; i < rends.Length; i++) b.Encapsulate(rends[i].bounds);
+            float cross = Mathf.Min(b.size.x, b.size.y);
+            return cross > 1e-4f ? cross * 0.5f : LogRadius;
         }
 
         // ---------------- per-frame ----------------
@@ -261,27 +305,21 @@ namespace RoyalSiege.Juice
                 var log = _logs[i];
                 if (!log.Root.activeSelf) continue;
 
-                if (log.BreakT < 0f)
+                float step = log.Speed * dt;
+                log.Travelled += step;
+                Vector3 at = log.Start + log.Direction * Mathf.Min(log.Travelled, log.Distance) + Vector3.up * log.Radius;
+                log.Root.transform.position = at;
+                // Roll: spin about the axle by arc length / radius so the log grips the ground.
+                float rollDeg = log.Travelled / log.Radius * Mathf.Rad2Deg;
+                log.Model.rotation = Quaternion.AngleAxis(rollDeg, log.Axle) * log.BaseRot;
+                if ((int)(log.Travelled * 6f) != (int)((log.Travelled - step) * 6f))
+                    EmitDust(at - log.Direction * 0.4f + Vector3.down * 0.2f, 1, 0.4f, new Color(0.55f, 0.48f, 0.35f, 0.5f));
+
+                // End of run: dust puff + disappear (no scale change — the log stays authored size).
+                if (log.Travelled >= log.Distance)
                 {
-                    float step = log.Speed * dt;
-                    log.Travelled += step;
-                    Vector3 at = log.Start + log.Direction * Mathf.Min(log.Travelled, log.Distance) + Vector3.up * 0.35f;
-                    log.Root.transform.position = at;
-                    // Roll: rotate around the log's lying axis to match the ground speed.
-                    log.Model.Rotate(Vector3.right, step / 0.35f * Mathf.Rad2Deg, Space.Self);
-                    if ((int)(log.Travelled * 6f) != (int)((log.Travelled - step) * 6f))
-                        EmitDust(at - log.Direction * 0.4f + Vector3.down * 0.2f, 1, 0.4f, new Color(0.55f, 0.48f, 0.35f, 0.5f));
-                    if (log.Travelled >= log.Distance) log.BreakT = 0f;
-                }
-                else
-                {
-                    log.BreakT += dt / 0.3f;
-                    log.Model.localScale = new Vector3(0.7f, 0.9f, 0.7f) * Mathf.Max(0.01f, 1f - log.BreakT);
-                    if (log.BreakT >= 1f)
-                    {
-                        EmitDust(log.Root.transform.position, 6, 0.6f, new Color(0.45f, 0.35f, 0.2f, 0.6f));
-                        log.Root.SetActive(false);
-                    }
+                    EmitDust(log.Root.transform.position, 6, 0.6f, new Color(0.45f, 0.35f, 0.2f, 0.6f));
+                    log.Root.SetActive(false);
                 }
             }
         }
