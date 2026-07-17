@@ -3,16 +3,18 @@ using UnityEngine;
 namespace RoyalSiege.Placement
 {
     /// <summary>
-    /// Soft additive grid over the deployment circle, shown only while dragging a building
+    /// Filled snap TILES over the deployment circle, shown only while dragging a building
     /// card, so the snap grid is readable exactly when it matters. Everything is generated
-    /// at Init: one quad, one procedurally drawn texture (cell = placementSnap, circular
-    /// fade baked in) on an additive material — a single cheap draw call, mobile-safe.
+    /// at Init: one quad, one procedurally drawn texture (cell = placementSnap, solid cells
+    /// split by thin transparent seams + soft checker, circular fade baked in) on a
+    /// transparent material — a single cheap draw call, mobile-safe. Tiles are offset so
+    /// their CENTERS sit on snap points: a snapped building lands mid-tile, not on a corner.
     /// </summary>
     public sealed class GridOverlayView : MonoBehaviour
     {
         [SerializeField] private Material _additiveMaterialTemplate;
-        [SerializeField] private Color _lineColor = Color.white; // additive over bright grass needs full white to read
-        [Range(0f, 1f)] [SerializeField] private float _lineStrength = 0.9f;
+        [SerializeField] private Color _lineColor = Color.white; // tile tint — white reads best over bright grass
+        [Range(0f, 1f)] [SerializeField] private float _lineStrength = 0.9f; // master opacity multiplier
 
         private GameObject _quad;
 
@@ -32,19 +34,31 @@ namespace RoyalSiege.Placement
             var pixels = new Color32[texSize * texSize];
             float half = texSize * 0.5f;
 
+            // Solid tiles need far less alpha than hairlines — full strength would white out the arena.
+            const float fillOpacity = 0.24f;
+            const float gutterPixels = 1f; // transparent seam between tiles
+
             for (int y = 0; y < texSize; y++)
             for (int x = 0; x < texSize; x++)
             {
-                // Distance to the nearest grid line, in pixels (grid is centered).
-                float gx = Mathf.Abs(Mathf.Repeat(x - half + pixelsPerCell * 0.5f, pixelsPerCell) - pixelsPerCell * 0.5f);
-                float gy = Mathf.Abs(Mathf.Repeat(y - half + pixelsPerCell * 0.5f, pixelsPerCell) - pixelsPerCell * 0.5f);
-                float line = 1f - Mathf.Clamp01(Mathf.Min(gx, gy) / 2.4f);
+                // Tile-local coords, offset half a cell so tile CENTERS sit on snap points.
+                float lx = Mathf.Repeat(x - half + pixelsPerCell * 0.5f, pixelsPerCell);
+                float ly = Mathf.Repeat(y - half + pixelsPerCell * 0.5f, pixelsPerCell);
+
+                // Solid fill up to a thin gutter at the tile border (1.5 px anti-alias ramp).
+                float border = Mathf.Min(Mathf.Min(lx, pixelsPerCell - lx), Mathf.Min(ly, pixelsPerCell - ly));
+                float fill = Mathf.Clamp01((border - gutterPixels) / 1.5f);
+
+                // Subtle checker keeps tiles readable where the thin gutters mip away.
+                int cx = Mathf.FloorToInt((x - half + pixelsPerCell * 0.5f) / pixelsPerCell);
+                int cy = Mathf.FloorToInt((y - half + pixelsPerCell * 0.5f) / pixelsPerCell);
+                float checker = ((cx + cy) & 1) == 0 ? 1f : 0.62f;
 
                 // Radial fade to zero at the circle edge.
                 float r = Mathf.Sqrt((x - half) * (x - half) + (y - half) * (y - half)) / half;
                 float mask = Mathf.Clamp01((1f - r) * 4f);
 
-                float v = line * mask * _lineStrength;
+                float v = fill * checker * mask * _lineStrength * fillOpacity;
                 pixels[y * texSize + x] = new Color(_lineColor.r * v, _lineColor.g * v, _lineColor.b * v, v);
             }
             texture.SetPixels32(pixels);

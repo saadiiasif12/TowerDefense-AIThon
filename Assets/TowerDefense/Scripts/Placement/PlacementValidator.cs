@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using RoyalSiege.Combat;
 using RoyalSiege.Core;
@@ -7,11 +8,15 @@ namespace RoyalSiege.Placement
 {
     /// <summary>
     /// Spatial placement rules (GDD §3): buildings inside the deployment circle, snapped to
-    /// the grid, no overlap, max 4 on field. Spells anywhere inside the map circle.
+    /// the grid, no overlap, max 4 on field. Spells anywhere inside the map circle AND with
+    /// at least one enemy inside the spell radius (17-Jul rule — no wasting spells on empty
+    /// ground; an invalid release returns the card with nothing spent).
     /// Affordability/cooldown belong to CardPlayService, not here (SRP).
     /// </summary>
     public sealed class PlacementValidator
     {
+        private static readonly List<IEnemyTarget> EnemyBuffer = new();
+
         private readonly GameConfigSO _config;
         private readonly ITargetQuery _query;
         private readonly Vector3 _center;
@@ -41,8 +46,13 @@ namespace RoyalSiege.Placement
             return !Overlaps(snappedPoint, card.footprintRadius);
         }
 
-        public bool IsValidSpellSpot(Vector3 point) =>
-            RangeMath.IsInside(_center, point, _config.mapRadius);
+        public bool IsValidSpellSpot(SpellCardSO card, Vector3 point)
+        {
+            if (!RangeMath.IsInside(_center, point, _config.mapRadius)) return false;
+            // A spell needs at least one live enemy inside its radius at placement time.
+            _query.EnemiesInRadius(point, card.radius, EnemyBuffer);
+            return EnemyBuffer.Count > 0;
+        }
 
         /// <summary>v4 Knights: anywhere inside the deployment circle (units — no overlap rule).</summary>
         public bool IsValidTroopSpot(Vector3 point) =>

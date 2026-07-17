@@ -16,6 +16,8 @@ Base: `Assets/TowerDefense/Documents/GDD_Royal_Siege_v2.md` (read it — it is e
 
 11. **Sky-fall spells (17 Jul, user direction):** Arrows and Fireball visually FALL FROM THE SKY onto the target area (15-arrow radial volley / meteor). Their damage now lands when the volley lands: `SpellCardSO.fallDelaySeconds` (Arrows 0.45 s, Fireball 0.5 s; Freeze/Lightning stay 0 = instant). Targets are CAPTURED at cast (CR-style — the volley tracks them; walking out doesn't dodge it), the delay is a fixed constant on the 10 Hz tick — determinism intact, no-one-shot balance untouched. "instant" in the card table below reads as "resolves at fall-delay" for these two.
 
+12. **Spells require a target (17 Jul, user direction):** a spell placement is only VALID if at least one live enemy is inside the spell's radius at release. Empty ground shows the red ghost; releasing there returns the card — no energy spent, no cooldown, hand unchanged (same flow as an invalid building spot). Implemented in `PlacementValidator.IsValidSpellSpot(card, point)` via the target registry. Prevents wasted casts; no balance numbers changed.
+
 ## Meeting deltas (16 July, notebook)
 
 1. **Bomb Tower is CUT** ("Card naming: no bomb tower"). Deck is now **7 cards**.
