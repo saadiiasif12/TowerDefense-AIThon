@@ -5235,8 +5235,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.512
-      minScalar: 0.41599998
+      scalar: 0.768
+      minScalar: 0.62399995
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -14815,8 +14815,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 4.7999997
-      minScalar: 3.84
+      scalar: 7.2
+      minScalar: 5.7599998
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -29104,9 +29104,9 @@ ParticleSystem:
     enabled: 1
     startLifetime:
       serializedVersion: 2
-      minMaxState: 0
-      scalar: 1.5
-      minScalar: 5
+      minMaxState: 3
+      scalar: 2.6
+      minScalar: 1.6
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -29158,8 +29158,8 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 4.62
-      minScalar: 1.26
+      scalar: 2.4
+      minScalar: 1.2
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -29193,8 +29193,8 @@ ParticleSystem:
     startColor:
       serializedVersion: 2
       minMaxState: 2
-      minColor: {r: 1, g: 0.49411765, b: 0.03529412, a: 0.34117648}
-      maxColor: {r: 0.56078434, g: 0.19607843, b: 0.19607843, a: 1}
+      minColor: {r: 0.16, g: 0.14, b: 0.13, a: 0.85}
+      maxColor: {r: 0.3, g: 0.27, b: 0.25, a: 0.8}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -29258,8 +29258,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.96
-      minScalar: 0.64
+      scalar: 2.4
+      minScalar: 1.4
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -29539,7 +29539,7 @@ ParticleSystem:
         m_RotationOrder: 0
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 1000
+    maxNumParticles: 64
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -29911,12 +29911,12 @@ ParticleSystem:
     m_BurstCount: 1
     m_Bursts:
     - serializedVersion: 2
-      time: 0
+      time: 0.02
       countCurve:
         serializedVersion: 2
         minMaxState: 3
-        scalar: 25
-        minScalar: 20
+        scalar: 20
+        minScalar: 14
         maxCurve:
           serializedVersion: 2
           m_Curve:
@@ -29980,25 +29980,25 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0.6471296
-          inSlope: 0.75464773
-          outSlope: 0.75464773
+          value: 0.6
+          inSlope: 0
+          outSlope: 1.6
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.33333334
-          outWeight: 0.33333334
+          inWeight: 0
+          outWeight: 0
         - serializedVersion: 3
           time: 1
-          value: 1
-          inSlope: -0.1188553
-          outSlope: -0.1188553
+          value: 2.2
+          inSlope: 1.6
+          outSlope: 0
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.33333334
-          outWeight: 0.33333334
+          inWeight: 0
+          outWeight: 0
         m_PreInfinity: 2
         m_PostInfinity: 2
-        m_RotationOrder: 0
+        m_RotationOrder: 4
       minCurve:
         serializedVersion: 2
         m_Curve:
@@ -34039,8 +34039,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 2.56
-      minScalar: 1.92
+      scalar: 3.84
+      minScalar: 2.8799999
       maxCurve:
         serializedVersion: 2
         m_Curve:

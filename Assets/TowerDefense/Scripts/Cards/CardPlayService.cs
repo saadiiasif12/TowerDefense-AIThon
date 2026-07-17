@@ -1,6 +1,7 @@
 using RoyalSiege.Core;
 using RoyalSiege.Data;
 using RoyalSiege.Economy;
+using RoyalSiege.Units;
 
 namespace RoyalSiege.Cards
 {
@@ -22,13 +23,16 @@ namespace RoyalSiege.Cards
         private readonly CardCooldowns _cooldowns;
         private readonly IEnergyBank _bank;
         private readonly GameEvents _events;
+        private readonly ITroopRoster _troops;
 
-        public CardPlayService(DeckService deck, CardCooldowns cooldowns, IEnergyBank bank, GameEvents events)
+        public CardPlayService(DeckService deck, CardCooldowns cooldowns, IEnergyBank bank,
+            GameEvents events, ITroopRoster troops = null)
         {
             _deck = deck;
             _cooldowns = cooldowns;
             _bank = bank;
             _events = events;
+            _troops = troops;
         }
 
         public CardDefinitionSO CardAt(int slot) => _deck.Hand[slot];
@@ -36,7 +40,11 @@ namespace RoyalSiege.Cards
         public bool CanPlay(int slot)
         {
             var card = _deck.Hand[slot];
-            return card != null && _cooldowns.IsReady(card) && _bank.CanAfford(card.cost);
+            if (card == null || !_cooldowns.IsReady(card) || !_bank.CanAfford(card.cost)) return false;
+            // v4 Knights cap: the card greys out whenever a cast would exceed maxActive.
+            if (card is TroopCardSO troop && _troops != null &&
+                _troops.ActiveCount + troop.countPerCast > troop.maxActive) return false;
+            return true;
         }
 
         public bool TryCommitPlay(int slot)

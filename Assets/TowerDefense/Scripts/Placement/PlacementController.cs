@@ -3,6 +3,7 @@ using RoyalSiege.Buildings;
 using RoyalSiege.Cards;
 using RoyalSiege.Data;
 using RoyalSiege.Spells;
+using RoyalSiege.Units;
 
 namespace RoyalSiege.Placement
 {
@@ -25,6 +26,7 @@ namespace RoyalSiege.Placement
         private PlacementValidator _validator;
         private IBuildingFactory _buildingFactory;
         private ISpellCaster _spellCaster;
+        private IKnightFactory _knightFactory;
         private GameConfigSO _config;
 
         private int _slot = -1;
@@ -35,13 +37,14 @@ namespace RoyalSiege.Placement
 
         public void Init(Camera camera, ICardPlayService playService, PlacementValidator validator,
             IBuildingFactory buildingFactory, ISpellCaster spellCaster, GameConfigSO config,
-            Vector3 mapCenter)
+            Vector3 mapCenter, IKnightFactory knightFactory = null)
         {
             _camera = camera;
             _playService = playService;
             _validator = validator;
             _buildingFactory = buildingFactory;
             _spellCaster = spellCaster;
+            _knightFactory = knightFactory;
             _config = config;
             _buildingGhost?.Hide();
             _spellGhost?.Hide();
@@ -58,9 +61,15 @@ namespace RoyalSiege.Placement
 
             _slot = slot;
             var ghost = GhostFor(card);
-            float radius = card is BuildingCardSO b ? b.range : ((SpellCardSO)card).radius;
+            float radius = card switch
+            {
+                BuildingCardSO b => b.range,
+                SpellCardSO s => s.radius,
+                TroopCardSO t => t.unitRadius * 3f, // small deploy-spread marker
+                _ => 1f
+            };
             ghost?.Show(radius);
-            if (card is BuildingCardSO) _gridOverlay?.Show();
+            if (card is BuildingCardSO or TroopCardSO) _gridOverlay?.Show();
         }
 
         public void UpdateDrag(Vector2 screenPosition)
@@ -74,6 +83,11 @@ namespace RoyalSiege.Placement
             {
                 _point = _validator.Snap(_point);
                 _isValid = _validator.IsValidBuildingSpot(building, _point) && _playService.CanPlay(_slot);
+            }
+            else if (card is TroopCardSO)
+            {
+                _point = _validator.Snap(_point);
+                _isValid = _validator.IsValidTroopSpot(_point) && _playService.CanPlay(_slot);
             }
             else
             {
@@ -96,8 +110,12 @@ namespace RoyalSiege.Placement
             var card = _playService.CardAt(_slot);
             if (_isValid && _playService.TryCommitPlay(_slot))
             {
-                if (card is BuildingCardSO building) _buildingFactory.Place(building, _point);
-                else _spellCaster.Cast((SpellCardSO)card, _point);
+                switch (card)
+                {
+                    case BuildingCardSO building: _buildingFactory.Place(building, _point); break;
+                    case TroopCardSO troop: _knightFactory?.Deploy(troop, _point); break;
+                    case SpellCardSO spell: _spellCaster.Cast(spell, _point); break;
+                }
             }
             CancelDrag();
         }

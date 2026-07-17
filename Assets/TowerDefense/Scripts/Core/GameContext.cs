@@ -19,11 +19,11 @@ namespace RoyalSiege.Core
     [DefaultExecutionOrder(-100)]
     public sealed class GameContext : MonoBehaviour
     {
-        [Header("Config (author from Docs/01_DESIGN_CURRENT.md)")]
+        [Header("Config (author from Docs/13_PROGRESSION_V4.md)")]
         [SerializeField] private GameConfigSO _gameConfig;
         [SerializeField] private EconomyConfigSO _economyConfig;
-        [SerializeField] private DeckSO _deck;
-        [SerializeField] private WaveTimelineSO _waveTimeline;
+        [SerializeField] private CampaignSO _campaign;
+        [SerializeField] private ProgressionConfigSO _progression;
         [Tooltip("0 = random per run. The deck shuffle is the game's ONLY RNG; set non-zero for deterministic tests.")]
         [SerializeField] private int _shuffleSeed;
 
@@ -48,11 +48,18 @@ namespace RoyalSiege.Core
         public WaveScheduler Waves { get; private set; }
         public IVfxSpawner Vfx { get; private set; }
         public GameConfigSO GameConfig => _gameConfig;
+        public Vector3 MapCenter { get; private set; }
 
         private void Awake()
         {
             // Flatten: the tower model's pivot may sit above y=0, but all gameplay is planar.
             Vector3 center = RangeMath.Flatten(_royalTower.transform.position);
+            MapCenter = center;
+
+            // v4 journey: the profile IS the checkpoint (saved on checkpoints only). A scene
+            // load with a profile = a retry/resume: tower at its level (full HP), earned
+            // unlocks, next wave = checkpoint wave, empty field, 5 elixir, fresh shuffle.
+            var profile = CampaignProfile.Load();
 
             Events = new GameEvents();
             // Map bounds on the registry: attacks may only target enemies whose center is
@@ -63,9 +70,27 @@ namespace RoyalSiege.Core
             Vfx = new VfxSpawner(_projectileRoot);
             var launcher = new ProjectileLauncher(_projectileRoot, _tickSystem, Vfx);
             Energy = new EnergyBank(_economyConfig, Events);
-            Deck = new DeckService(_deck, Events, _shuffleSeed);
+
+            // Deck = starter six + every unlock already earned (v4 §2).
+            var deckCards = new System.Collections.Generic.List<CardDefinitionSO>(_progression.startingCards);
+            foreach (var checkpoint in _progression.checkpoints)
+                if (checkpoint.unlockCard != null && profile.unlockedCardIds.Contains(checkpoint.unlockCard.id))
+                    deckCards.Add(checkpoint.unlockCard);
+            Deck = new DeckService(deckCards, Events, _shuffleSeed);
             Cooldowns = new CardCooldowns();
-            CardPlay = new CardPlayService(Deck, Cooldowns, Energy, Events);
+
+            var knightDeps = new KnightRuntimeDeps
+            {
+                Registry = registry,
+                Ticker = _tickSystem,
+                Clock = _tickSystem,
+                Events = Events,
+                MapCenter = center,
+                GuardRadius = _gameConfig.deploymentRadius // knights guard the tower's white circle
+            };
+            var knightFactory = new KnightFactory(_buildingRoot, knightDeps);
+
+            CardPlay = new CardPlayService(Deck, Cooldowns, Energy, Events, knightFactory);
 
             var enemyDeps = new EnemyRuntimeDeps
             {
@@ -81,22 +106,27 @@ namespace RoyalSiege.Core
             };
             var enemyFactory = new EnemyFactory(_enemyRoot, enemyDeps);
             var spawnPoints = new SpawnPointProvider(center, _gameConfig.mapRadius);
-            Waves = new WaveScheduler(_waveTimeline, enemyFactory, spawnPoints, center, Events);
+            Waves = new WaveScheduler(_campaign, enemyFactory, spawnPoints, Events, _orbSpawner, profile.nextWave);
 
             var buildingFactory = new BuildingFactory(_buildingRoot, registry, launcher, Events, _tickSystem, _tickSystem);
             var spellCaster = new SpellCaster(registry, _gameConfig, center, Events);
             var validator = new PlacementValidator(_gameConfig, registry, center);
 
             _royalTower.Init(_gameConfig, registry, launcher, Events, _tickSystem, _tickSystem);
-            _orbSpawner.Init(Events, Energy, _economyConfig, _tickSystem);
-            _placement.Init(_gameCamera, CardPlay, validator, buildingFactory, spellCaster, _gameConfig, center);
+            if (profile.towerLevel > 1 && profile.towerLevel <= _progression.towerLevels.Count)
+                _royalTower.ApplyLevel(profile.towerLevel, _progression.towerLevels[profile.towerLevel - 1]);
 
+            _orbSpawner.Init(Events, Energy, _economyConfig, _tickSystem);
+            _placement.Init(_gameCamera, CardPlay, validator, buildingFactory, spellCaster, _gameConfig, center, knightFactory);
+
+            var checkpoints = new CheckpointService(_progression, _royalTower, Deck, _gameConfig, Events, _tickSystem, profile);
             var evaluator = new WinLoseEvaluator(_royalTower, Waves, registry, _gameConfig, Events, _tickSystem);
 
             _tickSystem.Register(Waves);
             _tickSystem.Register(Cooldowns);
             _tickSystem.Register(evaluator);
-            _tickSystem.Register(spellCaster); // sky-fall spells resolve on the tick (fallDelaySeconds)
+            _tickSystem.Register(spellCaster);              // delayed spells + zones resolve on the tick
+            _tickSystem.Register((EnergyBank)Energy);        // v4 passive regen rides the sim clock
 
             // Initial UI push
             Events.RaiseEnergyChanged(Energy.Current, Energy.Max);

@@ -51,6 +51,8 @@ namespace RoyalSiege.Units
         private EnemyAgent CreateInstance(EnemyDefinitionSO definition)
         {
             var go = Object.Instantiate(definition.prefab, _parent);
+            if (!Mathf.Approximately(definition.modelScale, 1f))
+                go.transform.localScale *= definition.modelScale; // v4: type-2 variants read bigger
             var agent = go.GetComponent<EnemyAgent>();
             if (agent == null) agent = go.AddComponent<EnemyAgent>();
             if (go.GetComponent<UnitAnimator>() == null) go.AddComponent<UnitAnimator>();

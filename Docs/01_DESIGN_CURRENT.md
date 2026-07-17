@@ -42,7 +42,9 @@ Base: `Assets/TowerDefense/Documents/GDD_Royal_Siege_v2.md` (read it — it is e
 | Freeze | Spell | 4 | 14 s | 0 | 3.0 | 4 s (boss 2 s) | — | Stops move+attack; refreshes, never stacks |
 | Lightning | Spell | 6 | 16 s | 275 ×3 | 3.5 | 0.35 s storm delay +0.5 s stun | — | Hits 3 highest-HP in radius; 17-Jul juice delta: ThunderSplash HUD pulse on cast (no lighting change), off-screen sky-bolts strike at 0.35 s (targets captured at cast, radius re-checked at strike — same rule as Arrows/Fireball) |
 
-**Placement:** buildings inside deployment circle (radius 5.0, snap 0.5, max 4 on field, no overlap, cost validated at release). Spells anywhere on map (radius 15). Green/red ghost preview, drag threshold 40 px, ghost 1.5 tiles above fingertip.
+> ⚠️ **SUPERSEDED (17 Jul evening): waves, economy, card roster, enemy roster and tower stats now live in `13_PROGRESSION_V4.md`** (v4 journey: 44 clear-triggered waves in 2 stages, 10 cards incl. Log/Earthquake/Knights, 7 enemies, building HP decay, hybrid elixir economy, 5 tower levels, checkpoints). The sections below remain accurate for: strict range, determinism, placement geometry, drag UX, and module architecture.
+
+**Placement:** buildings inside deployment circle (radius 5.0, snap 0.5, max 4 on field, no overlap — knights never block, cost validated at release). Spells anywhere on map (radius 15). Knights deploy inside the deployment circle. Green/red ghost preview, drag threshold 40 px, ghost 1.5 tiles above fingertip.
 
 **QA deltas (17 Jul, bug sheet build 17-07-2026):**
 - An unaffordable / cooling-down card can no longer ENTER the placement state (DT-010) — the tap shakes as before; cost is still re-validated at release for a drag that legitimately started.

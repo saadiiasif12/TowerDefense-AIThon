@@ -22,14 +22,19 @@ namespace RoyalSiege.Buildings
         private UnitAnimator _animator;
         private BuildingTurret _turret;
         private RangeRing _ring;
+        private float _decayPerSecond; // v4 lifetime: maxHP/lifetime, drains from placement
+        private bool _tickingDecay;
 
         public BuildingCardSO Card => _card;
         public float HpPct => _health?.Pct ?? 0f;
+        /// <summary>True when the killing blow was lifetime decay — view plays a crumble, not an explosion.</summary>
+        public bool DiedOfDecay { get; private set; }
 
         // ---- IStructureTarget ----
         public bool IsAlive => _health != null && _health.IsAlive;
         public Vector3 Position => transform.position;
         public bool IsBuilding => true;
+        public bool BlocksPlacement => true;
         public float FootprintRadius => _card != null ? _card.footprintRadius : 0.75f;
         public void TakeDamage(float amount) => _health?.TakeDamage(amount);
 
@@ -43,6 +48,9 @@ namespace RoyalSiege.Buildings
 
             _health = new Health(card.hp);
             _health.Died += OnDied;
+            // v4 building lifetime: the HP bar IS the lifetime bar (13_PROGRESSION_V4 §4).
+            _decayPerSecond = card.lifetimeSeconds > 0f ? card.hp / card.lifetimeSeconds : 0f;
+            DiedOfDecay = false;
 
             _animator = GetComponent<UnitAnimator>();
             _turret = GetComponent<BuildingTurret>();
@@ -73,10 +81,21 @@ namespace RoyalSiege.Buildings
             ticker.Register(this);
         }
 
-        public void Tick(float dt) => _attack.Tick(dt, transform.position);
+        public void Tick(float dt)
+        {
+            if (_decayPerSecond > 0f && IsAlive)
+            {
+                _tickingDecay = true;
+                _health.TakeDamage(_decayPerSecond * dt);
+                _tickingDecay = false;
+                if (!IsAlive) return; // crumbled this tick
+            }
+            _attack.Tick(dt, transform.position);
+        }
 
         private void OnDied()
         {
+            DiedOfDecay = _tickingDecay;
             _registry.Unregister(this);
             _ticker.Unregister(this);
             _events.RaiseBuildingDestroyed(this);

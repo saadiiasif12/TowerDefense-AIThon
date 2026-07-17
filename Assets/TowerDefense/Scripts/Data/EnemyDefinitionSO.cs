@@ -45,6 +45,10 @@ namespace RoyalSiege.Data
         public TargetPriority targetPriority = TargetPriority.ClosestStructure;
         [Tooltip("Energy orb value dropped on death.")]
         public float bounty = 0.25f;
+        [Tooltip("v4: knockback multiplier — light 1, heavy 0.5, Ogre 0 (immune).")]
+        [Range(0f, 1f)] public float knockbackFactor = 1f;
+        [Tooltip("v4: visual scale applied to the model instance (type-2 variants read bigger).")]
+        [Min(0.1f)] public float modelScale = 1f;
 
         [Header("Boss")]
         public bool isBoss;

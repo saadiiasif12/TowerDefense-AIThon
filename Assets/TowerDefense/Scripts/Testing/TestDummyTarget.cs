@@ -63,6 +63,8 @@ namespace RoyalSiege.Testing
         public float BodyRadius => _bodyRadius;
         public void ApplyFreeze(float seconds) => _freezeRemaining = Mathf.Max(_freezeRemaining, seconds);
         public void ApplyStun(float seconds) => _freezeRemaining = Mathf.Max(_freezeRemaining, seconds);
+        public void ApplySlow(float strength, float seconds) { } // dummy ignores slows
+        public void ApplyKnockback(Vector3 displacement) { if (_movementEnabled) _position += displacement; }
 
         public void TakeDamage(float amount)
         {
