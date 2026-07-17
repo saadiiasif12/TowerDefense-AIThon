@@ -22,12 +22,14 @@ namespace RoyalSiege.Units
         private const float SeparationSpring = 4f;
         private const float SpawnPopSeconds = 0.22f;
         private const float LungePunch = 0.28f;
+        private const float DeathDespawnSeconds = 1.6f; // hold the corpse so the death anim plays before pooling
 
         private TroopCardSO _card;
         private KnightRuntimeDeps _deps;
         private Health _health;
         private AttackCycle _attack;
         private HitReaction _hitReaction;
+        private UnitAnimator _animator;
 
         private IEnemyTarget _target;
         private Vector3 _logicPosition;
@@ -37,6 +39,7 @@ namespace RoyalSiege.Units
         private float _lungeT = 1f;
         private Vector3 _baseScale = Vector3.one;
         private bool _dead;
+        private float _despawnTimer;
 
         public float HpPct => _health?.Pct ?? 0f;
 
@@ -74,6 +77,9 @@ namespace RoyalSiege.Units
             if (_hitReaction == null)
                 _hitReaction = GetComponent<HitReaction>() ?? gameObject.AddComponent<HitReaction>();
             _hitReaction.Cancel();
+            if (_animator == null) _animator = GetComponent<UnitAnimator>();
+            _animator?.Rebind();
+            _despawnTimer = 0f;
 
             _deps.Registry.Register(this);
             _deps.Ticker.Register(this);
@@ -81,7 +87,13 @@ namespace RoyalSiege.Units
 
         public void Tick(float dt)
         {
-            if (_dead) return;
+            if (_dead)
+            {
+                // Dead: keep ticking only to hold the corpse while the death anim plays.
+                _despawnTimer -= dt;
+                if (_despawnTimer <= 0f) Despawn();
+                return;
+            }
 
             AcquireTarget();
             _previousPosition = _logicPosition;
@@ -89,6 +101,7 @@ namespace RoyalSiege.Units
             if (_target == null)
             {
                 _attack.Tick(dt, false);
+                _animator?.SetMoving(false);
             }
             else
             {
@@ -102,10 +115,12 @@ namespace RoyalSiege.Units
                     Vector3 velocity = Vector3.ClampMagnitude(seek + ComputeSeparation() * SeparationSpring, _card.moveSpeed * 1.2f);
                     _logicPosition += velocity * dt;
                     _desiredForward = velocity.sqrMagnitude > 0.001f ? velocity.normalized : _desiredForward;
+                    _animator?.SetMoving(true, velocity.magnitude);
                 }
                 else
                 {
                     _desiredForward = RangeMath.PlanarDirection(_logicPosition, _target.Position);
+                    _animator?.SetMoving(false);
                 }
             }
 
@@ -205,7 +220,11 @@ namespace RoyalSiege.Units
             return push;
         }
 
-        private void OnAttackSwing() => _lungeT = 0f;
+        private void OnAttackSwing()
+        {
+            _lungeT = 0f;
+            _animator?.PlayAttack(_card.attackRate);
+        }
 
         private void OnAttackImpact()
         {
@@ -218,6 +237,8 @@ namespace RoyalSiege.Units
 
         private void Update()
         {
+            // Visuals follow the game clock (pause/speed) — also drives the death anim while dead.
+            _animator?.SetPlaybackSpeed(_deps.Clock.IsPaused ? 0f : _deps.Clock.SpeedMultiplier);
             if (_dead) return;
             Vector3 view = Vector3.Lerp(_previousPosition, _logicPosition, _deps.Clock.InterpolationAlpha);
 
@@ -256,10 +277,19 @@ namespace RoyalSiege.Units
         {
             if (_dead) return;
             _dead = true;
+            _despawnTimer = DeathDespawnSeconds;
+            // Drop out of targeting/guarding at once, but stay ticking so the death anim plays
+            // before the pool reclaims the body (Despawn does the final unregister + release).
             _deps.Registry.Unregister(this);
+            _hitReaction?.Cancel();
+            _deps.Events.RaiseKnightDied(_logicPosition);
+            _animator?.PlayDie();
+        }
+
+        private void Despawn()
+        {
             _deps.Ticker.Unregister(this);
             _health.Died -= OnDied;
-            _deps.Events.RaiseKnightDied(_logicPosition);
             _deps.Release(this);
         }
     }

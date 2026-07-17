@@ -101,7 +101,7 @@ namespace RoyalSiege.Units
             // While stopped it parks at 1 (NOT 0 — that would freeze the sway too): the tree's
             // idle child carries its own 0.08 timescale.
             _moveSpeedTarget = moving
-                ? Mathf.Clamp(groundSpeed / _walkClipNaturalSpeed, 0.4f, 2.5f)
+                ? Mathf.Clamp(groundSpeed / _walkClipNaturalSpeed, 0.4f, 3.5f)
                 : 1f;
         }
 
