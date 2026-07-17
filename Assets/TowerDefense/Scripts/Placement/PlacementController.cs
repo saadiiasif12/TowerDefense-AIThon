@@ -77,7 +77,7 @@ namespace RoyalSiege.Placement
             }
             else
             {
-                _isValid = _validator.IsValidSpellSpot(_point) && _playService.CanPlay(_slot);
+                _isValid = _validator.IsValidSpellSpot((SpellCardSO)card, _point) && _playService.CanPlay(_slot);
             }
 
             var ghost = GhostFor(card);
