@@ -8,8 +8,8 @@ namespace RoyalSiege.Buildings
 {
     /// <summary>
     /// A placed player building (Cannon / Tesla / X-Bow — all data-driven from BuildingCardSO).
-    /// Composition: Health + StructureAttack + RangeRing + optional UnitAnimator.
-    /// Not pooled: max 4 alive by rule, instantiate/destroy is fine.
+    /// Composition: Health + StructureAttack + optional BuildingTurret (visual yaw/recoil/muzzle)
+    /// + RangeRing + optional UnitAnimator. Not pooled: max 4 alive by rule.
     /// </summary>
     public sealed class BuildingUnit : MonoBehaviour, ITickable, IStructureTarget, IHealthReadout
     {
@@ -20,6 +20,7 @@ namespace RoyalSiege.Buildings
         private ITicker _ticker;
         private GameEvents _events;
         private UnitAnimator _animator;
+        private BuildingTurret _turret;
         private RangeRing _ring;
 
         public BuildingCardSO Card => _card;
@@ -33,7 +34,7 @@ namespace RoyalSiege.Buildings
         public void TakeDamage(float amount) => _health?.TakeDamage(amount);
 
         public void Init(BuildingCardSO card, ITargetRegistry registry, IProjectileLauncher launcher,
-            GameEvents events, ITicker ticker)
+            GameEvents events, ITicker ticker, IClock clock)
         {
             _card = card;
             _registry = registry;
@@ -44,10 +45,20 @@ namespace RoyalSiege.Buildings
             _health.Died += OnDied;
 
             _animator = GetComponent<UnitAnimator>();
+            _turret = GetComponent<BuildingTurret>();
+
             _attack = new StructureAttack(registry, launcher, events,
                 card.damage, card.attackRate, card.range, card.impactFraction,
                 card.projectile, card.retargetDelay,
-                _animator != null ? _animator.PlayAttack : (System.Action<float>)null);
+                onSwing: period =>
+                {
+                    _animator?.PlayAttack(period);
+                    _turret?.OnSwing();
+                },
+                onFire: () => _turret?.OnFire(),
+                firePoint: () => _turret != null ? _turret.MuzzlePosition : transform.position);
+
+            _turret?.Init(clock, () => _attack.CurrentTarget);
 
             // Range ring is configured but stays HIDDEN once placed — the drag ghost is the
             // range preview. (Otherwise it doubles up with the deployment ring on screen.)

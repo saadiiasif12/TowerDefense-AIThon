@@ -10,12 +10,15 @@ namespace RoyalSiege.Data
         public readonly float Radius;
         /// <summary>Enemies already filtered: center inside radius AND inside the map circle.</summary>
         public readonly IReadOnlyList<IEnemyTarget> Targets;
+        /// <summary>Optional out-list: effects append the positions they actually struck (juice draws there).</summary>
+        public readonly List<Vector3> HitReport;
 
-        public SpellContext(Vector3 point, float radius, IReadOnlyList<IEnemyTarget> targets)
+        public SpellContext(Vector3 point, float radius, IReadOnlyList<IEnemyTarget> targets, List<Vector3> hitReport = null)
         {
             Point = point;
             Radius = radius;
             Targets = targets;
+            HitReport = hitReport;
         }
     }
 

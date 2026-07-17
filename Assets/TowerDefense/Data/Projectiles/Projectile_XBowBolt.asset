@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a474eaa9432ebcc49aa2b8591bb3fd0f, type: 3}
   m_Name: Projectile_XBowBolt
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.ProjectileSettingsSO
-  prefab: {fileID: 4940953907557913313, guid: 8da77107783c95246ab2fabfe565614d, type: 3}
-  speed: 20
-  arcHeight: 0.1
-  spawnHeightOffset: 1.2
-  impactHeightOffset: 0.6
+  prefab: {fileID: 1163836338206272684, guid: 9dd496e4d306e994da194d6331d795cf, type: 3}
+  speed: 22
+  arcHeight: 1.2
+  spawnHeightOffset: 0.35
+  impactHeightOffset: 0.5
+  muzzleVfx: {fileID: 225452147359146344, guid: cc8f0844337b925479b0eaa4d5f278aa, type: 3}
+  impactVfx: {fileID: 3663090471507589420, guid: 5bee579a8c487734ba20c1dab722c39b, type: 3}
+  impactTint: {r: 1, g: 1, b: 1, a: 1}
+  spinDegreesPerSecond: 0

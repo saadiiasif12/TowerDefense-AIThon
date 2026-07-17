@@ -422,6 +422,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6377237829693905731, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
       insertIndex: -1
       addedObject: {fileID: 890359252}
+    - targetCorrespondingSourceObject: {fileID: 6377237829693905731, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1768380952}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 9048933503596644207, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
       insertIndex: -1
@@ -901,6 +904,94 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 249304622}
   m_CullTransparentMesh: 1
+--- !u!1 &300827901
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 300827904}
+  - component: {fileID: 300827903}
+  - component: {fileID: 300827902}
+  - component: {fileID: 300827905}
+  m_Layer: 0
+  m_Name: Juice
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &300827902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300827901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b163c0cfb237e9e499c950e77b1cc323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.JuiceDirector
+  _context: {fileID: 1247799767}
+  _deathPuff: {fileID: 6791656653965077214, guid: a12e16938bf406a45a2f75a161d291fd, type: 3}
+  _placementDust: {fileID: 6791656653965077214, guid: a12e16938bf406a45a2f75a161d291fd, type: 3}
+  _spellBurst: {fileID: 3545189036054417965, guid: 8b24acb25d92a0f4892ec2b6ffd6fd0d, type: 3}
+--- !u!114 &300827903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300827901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e0323788511b9b4f9d80af42c007d37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.ZapArcRenderer
+  _context: {fileID: 1247799767}
+  _arcMaterial: {fileID: 2100000, guid: ff30c846934d709499878285cfd44201, type: 2}
+  _impactSparks: {fileID: 781277473990021009, guid: 2203716810d5c8241b8d65dbed6cfbd3, type: 3}
+  _arcColor: {r: 0.55, g: 0.9, b: 1, a: 1}
+--- !u!4 &300827904
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300827901}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &300827905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300827901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a2c5142805559e48b9e006bb7b25437, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.SpellVfxDirector
+  _context: {fileID: 1247799767}
+  _arrowVolleyPrefab: {fileID: 3767597746862682603, guid: e91d8270d80b2bc4183accf34eaa01a4, type: 3}
+  _meteorPrefab: {fileID: 8228662346123858856, guid: c428cacef9356244d8e9f804fd14b31a, type: 3}
+  _fireBlast: {fileID: 7817829927753830091, guid: 2fd0c822c48e1194f90f1cccf3e2c165, type: 3}
+  _fireShake: 0.5
+  _freezeNova: {fileID: 1140935557964873636, guid: 3ec60b518d7cbca468db369a9d002b72, type: 3}
+  _frostGroundPatch: {fileID: 6639331156978392743, guid: 09d9e510d38ab4b49843ed9b3154a394, type: 3}
+  _freezeShake: 0.15
+  _lightningPillar: {fileID: 860226099328180391, guid: b138cc61618a91548bc83c2c4eebe0af, type: 3}
+  _lightningShake: 0.35
 --- !u!1 &324120706
 GameObject:
   m_ObjectHideFlags: 0
@@ -1023,6 +1114,8 @@ GameObject:
   - component: {fileID: 338089797}
   - component: {fileID: 338089796}
   - component: {fileID: 338089799}
+  - component: {fileID: 338089801}
+  - component: {fileID: 338089800}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1148,6 +1241,36 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &338089800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338089795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53c351eb240c5240b8ac0b9a01d314c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Core.CameraAspectFitter
+  _referenceAspect: 0.5625
+  _referenceFov: 0
+--- !u!114 &338089801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338089795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbff90abf97cbfb4cbd484ca153b5426, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.CameraShaker
+  _maxOffset: 0.28
+  _maxRollDegrees: 1.5
+  _frequency: 17
+  _decayPerSecond: 1.4
 --- !u!1 &376502450
 GameObject:
   m_ObjectHideFlags: 0
@@ -1683,7 +1806,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -60.00006}
+  m_AnchoredPosition: {x: 0, y: -60}
   m_SizeDelta: {x: 0, y: -120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &787831483
@@ -2888,6 +3011,7 @@ GameObject:
   - component: {fileID: 1247799769}
   - component: {fileID: 1247799768}
   - component: {fileID: 1247799767}
+  - component: {fileID: 1247799773}
   m_Layer: 0
   m_Name: GameSystems
   m_TagString: Untagged
@@ -2947,6 +3071,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Placement.PlacementController
   _buildingGhost: {fileID: 2008488035}
   _spellGhost: {fileID: 787831484}
+  _gridOverlay: {fileID: 1247799773}
 --- !u!114 &1247799770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2992,6 +3117,175 @@ Transform:
   - {fileID: 324120707}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1247799773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247799766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bd8bb5ce58c2fe489593ea6fd34ed15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Placement.GridOverlayView
+  _additiveMaterialTemplate: {fileID: 2100000, guid: e7b7570d0baa9a844bcf5fad12850e20, type: 2}
+  _lineColor: {r: 1, g: 1, b: 1, a: 1}
+  _lineStrength: 0.9
+--- !u!1 &1247945086
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1247945087}
+  m_Layer: 0
+  m_Name: VFX_MagicFlash
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1247945087
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247945086}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1312560749
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1768380952}
+    m_Modifications:
+    - target: {fileID: 1793848302357012071, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 80a7eb0935051154e920fed3f12c046b, type: 2}
+    - target: {fileID: 1793848302357012071, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4994206108447989415, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_Name
+      value: King
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.3500001
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4994206108447989415, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1312560753}
+    - targetCorrespondingSourceObject: {fileID: 4994206108447989415, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1312560752}
+  m_SourcePrefab: {fileID: 100100000, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+--- !u!4 &1312560750 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5621947342632551453, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+  m_PrefabInstance: {fileID: 1312560749}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1312560751 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4994206108447989415, guid: ea3bd42eb1d529945b2f9391c3471774, type: 3}
+  m_PrefabInstance: {fileID: 1312560749}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1312560752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1312560751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 549dc1db22839a249a518fc7e7390313, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Buildings.KingView
+  _turnDegreesPerSecond: 420
+  _yawModelOffsetDegrees: 0
+  _idleFacing: {x: 0, y: 0, z: -1}
+  _castHand: {fileID: 0}
+--- !u!114 &1312560753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1312560751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3d30382474815742b6eea43a8ed14fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Units.UnitAnimator
+  _animator: {fileID: 0}
+  _fallbackWalkClipSpeed: 0.9
 --- !u!1 &1390501603
 GameObject:
   m_ObjectHideFlags: 0
@@ -4104,6 +4398,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1721602523}
   m_CullTransparentMesh: 1
+--- !u!1 &1768380951
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1768380952}
+  m_Layer: 0
+  m_Name: KingRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1768380952
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1768380951}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.882, z: 0}
+  m_LocalScale: {x: 0.3846154, y: 0.5555556, z: 0.3846154}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1312560750}
+  m_Father: {fileID: 1818130885}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1775148432
 GameObject:
   m_ObjectHideFlags: 0
@@ -4236,9 +4562,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6aa690daa1b73514db5612a10a7a9a30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.WorldHealthBar
-  _width: 3.5
-  _thickness: 0.3
-  _yOffset: 2.4
+  _width: 1
+  _thickness: 0.09
+  _yOffset: 1.7
   _fillColor: {r: 0.25, g: 0.9, b: 0.2, a: 1}
   _lowColor: {r: 0.95, g: 0.25, b: 0.15, a: 1}
   _hideWhenFull: 0
@@ -4789,3 +5115,5 @@ SceneRoots:
   - {fileID: 1247799772}
   - {fileID: 131760748}
   - {fileID: 1564541632}
+  - {fileID: 300827904}
+  - {fileID: 1247945087}

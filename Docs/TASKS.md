@@ -28,6 +28,10 @@ Legend: ⬜ todo · 🔄 in progress · ✅ done · Update after EVERY task. Kee
 
 ## Day 2 (17 July) — CONTENT
 
+- ✅ Building attack juice: BuildingTurret (cannon Octagone yaw-tracks target 420°/s, Body anticipation+recoil; X-Bow fast swivel 720°/s + snappy recoil; Tesla charge-squash→discharge-pop; all buildings ease-out-back pop-in on placement)
+- ✅ Projectile art + juice: metallic cannonball (spin+smoke trail), Meshy Arrow bolt (tracer), purple emissive mage bolt; per-settings muzzle flash + impact burst (tintable); trajectory heights/arcs raised so nothing clips the tower
+- ✅ VFX pipeline: pooled VfxSpawner + JuiceDirector (death puffs, placement dust, per-spell tinted bursts) + Tesla ZapArcRenderer (animated jagged arcs + sparks). All verified live: pools show MuzzleFlash/Impact/Puff/SpellBurst/Sparks all spawning, turret yaws confirmed tracking, 0 console errors
+
 - ⬜ All 7 cards implemented (Tesla instant, X-Bow, Fireball, Freeze, Lightning + statuses)
 - ⬜ All 4 enemies (Mage ranged+splash, Ogre buildings-first, Boss + slam) with priority/hysteresis rules
 - ⬜ Full 12-wave timeline + WaveCleared/victory/stars/defeat + end screens
@@ -37,9 +41,16 @@ Legend: ⬜ todo · 🔄 in progress · ✅ done · Update after EVERY task. Kee
 - ⬜ Balance pass 1: full runs; check idle-dies-wave-4, winners at 40–70% tower HP
 - ⬜ Mobile build on device; touch + performance check
 
+- ✅ **TestRange scene** (`Scenes/TestRange.unity`): isolated tuning sandbox — grass floor, full tower+king, wandering auto-heal dummy target with health bar, runtime button column (spawn each building/enemy, clear, kill all, wander toggle, HP reset, 0.25×/1×/3× speed for eyeballing trails), live Target DPS readout. `TestRangeContext` is a minimal composition root (no waves/economy) — spawnable lists are inspector-editable. Odin Inspector 3.1.14.2 imported for nicer inspectors
+- ✅ King on the Royal Tower: Golden King (default scale) with AC_King (idle sway + speed-synced throw), turns to target, fires magic orb (dual trail + sparkle wake) with 5-layer arcane impact splash
+- ✅ King spell "shooting star" pass: trail is one continuous ribbon (star head + distance-emitted dust tracing the path), pooled projectile FX hard-reset on launch + trail fades out at impact instead of cutting; new view-only `HitReaction` on all enemies/dummy (backward recoil that settles + glow flash on every hit); king casts from the actual RightHand bone (`KingView.CastPoint` → `firePoint`, spawnHeightOffset 0) with release timing verified against the throw clip (impactFraction 0.4 = hand-extended pose)
+
+- ✅ **Overnight juice pass (17→18 Jul)** — see 11_MODULE_JUICE notes for full detail: sky-fall spell choreography (arrow volley / meteor+blast / freeze nova+tint+pose-hold / lightning pillars on actual victims, damage synced to landing via `fallDelaySeconds`), camera shake (trauma-based) + aspect-ratio fitter on both cameras, enemy spawn pop + death dissolve shader + skeleton bone-burst, Tesla coil-top forked thunder, X-Bow facing fix + live bow string, full card-animation spec implemented (select/drag-proxy/dissolve+name-float/cancel/refill/unaffordable-shake/recessed-slot), placement grid overlay synced with the grass checker, TestRange artist tools (cast-spell buttons, FX gallery replay buttons, serialized lists), first spell SFX wired (fire/lightning/frost impacts). All verified live, 0 errors.
+- ⚠️ **Balance observation (18 Jul, from unattended run):** near-idle play (one fireball only) reached DEFEAT at wave 7/12 — pressure curve is alive but the wave-4 idle-death invariant should be re-verified by a human run on Day 3 (king 93 DPS folded from tower may have softened early waves).
+
 ## Day 3 (18 July) — POLISH & SUBMISSION
 
-- ⬜ Juice map implemented (11_MODULE_JUICE): VFX, SFX, haptics, camera shake, hit-stop
+- ⬜ Juice map implemented (11_MODULE_JUICE): VFX, SFX, haptics, camera shake, hit-stop — **large part done overnight (VFX + shake + first SFX); remaining: haptics, hit-stop, music, full SFX set**
 - ⬜ Music (Suno) + SFX (ElevenLabs) integrated
 - ⬜ UI skin pass (AI-generated card frames/icons)
 - ⬜ Balance pass 2 + bugfix

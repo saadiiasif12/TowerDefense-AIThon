@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using RoyalSiege.Combat;
 using RoyalSiege.Data;
@@ -53,7 +54,10 @@ namespace RoyalSiege.Core
         public event Action<IStructureTarget> BuildingPlaced;
         public event Action<IStructureTarget> BuildingDestroyed;
         public event Action<float, float> TowerDamaged;                   // current, max
-        public event Action<SpellCardSO, Vector3> SpellCast;
+        public event Action<SpellCardSO, Vector3> SpellCast;              // cast moment (visuals start)
+        public event Action<SpellCardSO, Vector3, IReadOnlyList<Vector3>> SpellResolved; // damage landed (+ struck positions)
+        public event Action<EnemyDefinitionSO, Vector3> EnemySpawned;
+        public event Action<Vector3> BossSlammed;
         public event Action<Vector3, Vector3> InstantShotFired;           // from, to (Tesla zap)
         public event Action<MatchResult> MatchEnded;
 
@@ -68,6 +72,9 @@ namespace RoyalSiege.Core
         public void RaiseBuildingDestroyed(IStructureTarget b) => BuildingDestroyed?.Invoke(b);
         public void RaiseTowerDamaged(float current, float max) => TowerDamaged?.Invoke(current, max);
         public void RaiseSpellCast(SpellCardSO card, Vector3 point) => SpellCast?.Invoke(card, point);
+        public void RaiseSpellResolved(SpellCardSO card, Vector3 point, IReadOnlyList<Vector3> hits) => SpellResolved?.Invoke(card, point, hits);
+        public void RaiseEnemySpawned(EnemyDefinitionSO def, Vector3 position) => EnemySpawned?.Invoke(def, position);
+        public void RaiseBossSlammed(Vector3 position) => BossSlammed?.Invoke(position);
         public void RaiseInstantShotFired(Vector3 from, Vector3 to) => InstantShotFired?.Invoke(from, to);
         public void RaiseMatchEnded(MatchResult result) => MatchEnded?.Invoke(result);
     }

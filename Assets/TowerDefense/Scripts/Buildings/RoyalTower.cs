@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using RoyalSiege.Combat;
 using RoyalSiege.Core;
@@ -29,7 +30,7 @@ namespace RoyalSiege.Buildings
         public void TakeDamage(float amount) => _health?.TakeDamage(amount);
 
         public void Init(GameConfigSO config, ITargetRegistry registry, IProjectileLauncher launcher,
-            GameEvents events, ITicker ticker)
+            GameEvents events, ITicker ticker, IClock clock)
         {
             _config = config;
             _events = events;
@@ -37,7 +38,17 @@ namespace RoyalSiege.Buildings
             _health = new Health(config.towerHp);
             _health.Damaged += (current, max) => _events.RaiseTowerDamaged(current, max);
 
-            _kingAttack = CreateAttack(config.kingAttack, registry, launcher, events);
+            // The visible king on top mirrors the king attack (view-only).
+            var kingView = GetComponentInChildren<KingView>();
+            var king = config.kingAttack;
+            _kingAttack = new StructureAttack(registry, launcher, events,
+                king.damage, king.attackRate, king.range, king.impactFraction, king.projectile,
+                onSwing: period => kingView?.OnSwing(period),
+                // Bolt leaves from the king's casting hand, read at the exact fire moment
+                // (impactFraction lands on the hand-extended release pose of the throw anim).
+                firePoint: kingView == null ? (Func<Vector3>)null : () => kingView.CastPoint);
+            kingView?.Init(clock, () => _kingAttack.CurrentTarget);
+
             _cannonAttack = CreateAttack(config.builtInCannon, registry, launcher, events);
 
             registry.Register(this);
