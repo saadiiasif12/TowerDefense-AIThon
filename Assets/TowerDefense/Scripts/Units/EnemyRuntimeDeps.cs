@@ -17,6 +17,7 @@ namespace RoyalSiege.Units
         public float HpMultiplier = 1f;
         public float DamageMultiplier = 1f;
         public float BountyMultiplier = 1f;
+        public float WalkAnimMultiplier = 1f; // global enemy walk-anim speed factor (GameConfig)
         public Action<EnemyAgent> Release;
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace RoyalSiege.Data
 {
@@ -38,6 +39,11 @@ namespace RoyalSiege.Data
         public float hurtStaggerSeconds = 0.35f;
         [Tooltip("Minimum seconds between staggers so rapid hits (Tesla, Arrows) can't stun-lock a unit into never advancing.")]
         public float hurtCooldownSeconds = 2.5f;
+        [Tooltip("THIS enemy's own walk-animation speed multiplier (multiplies the global GameConfig " +
+                 "one). 1 = feet synced to ground speed; <1 = calmer legs (e.g. the Skeleton reads " +
+                 "frantic at full sync because it moves fast), >1 = busier.")]
+        [FormerlySerializedAs("walkAnimSpeedScale")]
+        [Range(0.25f, 4f)] public float walkAnimSpeedMultiplier = 1f;
 
         [Header("Behaviour")]
         [Tooltip("Personal-space radius for separation steering and formation spacing.")]

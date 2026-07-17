@@ -145,7 +145,7 @@ MonoBehaviour:
   _context: {fileID: 0}
   _segmentRoot: {fileID: 247269347218339369}
   _segmentSprite: {fileID: 21300000, guid: f2a848cf85e3f26409d99ee07a06eab5, type: 3}
-  _label: {fileID: 0}
+  _label: {fileID: 3739548005832185777}
   _segmentSize: {x: 51, y: 27}
   _segmentGap: 5
   _normalColor: {r: 1, g: 0.78, b: 0.12, a: 1}

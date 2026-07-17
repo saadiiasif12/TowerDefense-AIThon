@@ -33,6 +33,7 @@ MonoBehaviour:
   enemyHpMultiplier: 1
   enemyDamageMultiplier: 0.5
   enemyBountyMultiplier: 1
+  enemyWalkAnimSpeedMultiplier: 0.365
   twoStarHpPct: 0.5
   threeStarHpPct: 0.8
   dragThresholdPx: 40

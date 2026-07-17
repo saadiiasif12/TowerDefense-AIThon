@@ -135,6 +135,8 @@ namespace RoyalSiege.Units
             _hurtCooldownRemaining = 0f;
 
             if (_animator == null) _animator = GetComponent<UnitAnimator>();
+            // Walk-anim speed = global GameConfig factor × this enemy's per-def scale.
+            _animator?.ConfigureWalk(_deps.WalkAnimMultiplier * _def.walkAnimSpeedMultiplier);
             // Lifecycle view FIRST — HitReaction discovers it in Awake and routes its glow there.
             if (_lifecycle == null)
                 _lifecycle = GetComponent<EnemyLifecycleView>() ?? gameObject.AddComponent<EnemyLifecycleView>();
@@ -172,6 +174,7 @@ namespace RoyalSiege.Units
                 _previousPosition = _logicPosition;
                 _isMoving = false;
                 _animator?.SetMoving(false);
+                _animator?.SetAttacking(false);
                 return; // frozen/stunned: no movement, no attacks; still damageable
             }
 
@@ -184,6 +187,7 @@ namespace RoyalSiege.Units
                 _hurtStaggerRemaining -= dt;
                 _previousPosition = _logicPosition;
                 _isMoving = false;
+                _animator?.SetAttacking(false);
                 return;
             }
 
@@ -196,6 +200,7 @@ namespace RoyalSiege.Units
             {
                 _isMoving = false;
                 _animator?.SetMoving(false);
+                _animator?.SetAttacking(false);
                 return;
             }
 
@@ -219,6 +224,7 @@ namespace RoyalSiege.Units
                 _desiredForward = velocity.normalized;
                 _isMoving = true;
                 _animator?.SetMoving(true, velocity.magnitude);
+                _animator?.SetAttacking(false);
             }
             else
             {
@@ -229,6 +235,7 @@ namespace RoyalSiege.Units
                 _desiredForward = RangeMath.PlanarDirection(_logicPosition, _target.Position);
                 _isMoving = false;
                 _animator?.SetMoving(false);
+                _animator?.SetAttacking(true);
             }
 
             ResolveStructureOverlap();

@@ -37,6 +37,7 @@ namespace RoyalSiege.Buildings
         private ITargetRegistry _registry;
         private IProjectileLauncher _launcher;
         private KingView _kingView;
+        private TowerLevelView _levelView;
 
         /// <summary>Current 1-based tower level (v4 §7).</summary>
         public int Level { get; private set; } = 1;
@@ -56,6 +57,10 @@ namespace RoyalSiege.Buildings
             _kingView = GetComponentInChildren<KingView>();
             BuildKingAttack(config.kingAttack.damage);
             _kingView?.Init(clock, () => _kingAttack.CurrentTarget);
+
+            // Level-up tower visuals (view-only): show the starting level instantly.
+            _levelView = GetComponentInChildren<TowerLevelView>();
+            _levelView?.Init(events, Level);
 
             _cannonAttack = CreateAttack(config.builtInCannon, registry, launcher, events);
 
@@ -79,8 +84,9 @@ namespace RoyalSiege.Buildings
         /// <summary>
         /// v4 checkpoint level-up (§7): new max HP with a FULL HEAL (the mercy component),
         /// king damage retuned, ranges untouched. Raises TowerLeveledUp for the visuals.
+        /// instantVisual=true (resume/retry scene load) snaps the model without the surge.
         /// </summary>
-        public void ApplyLevel(int level, TowerLevelDef def)
+        public void ApplyLevel(int level, TowerLevelDef def, bool instantVisual = false)
         {
             Level = level;
             if (_health != null) _health.Damaged -= OnHealthDamaged;
@@ -88,6 +94,7 @@ namespace RoyalSiege.Buildings
             _health.Damaged += OnHealthDamaged;
             BuildKingAttack(def.kingDamage);
             _events.RaiseTowerDamaged(_health.Current, def.hp); // refresh HP bar to the new full
+            _levelView?.SetLevel(level, instantVisual); // juicy seamless model swap (view-only)
             _events.RaiseTowerLeveledUp(level);
         }
 

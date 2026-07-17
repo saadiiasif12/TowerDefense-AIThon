@@ -27,6 +27,7 @@ MonoBehaviour:
   deathVfx: {fileID: 0}
   hurtStaggerSeconds: 0.35
   hurtCooldownSeconds: 0
+  walkAnimSpeedMultiplier: 1
   unitRadius: 0.65
   targetPriority: 0
   bounty: 1
