@@ -29,6 +29,7 @@ Legend: ⬜ todo · 🔄 in progress · ✅ done · Update after EVERY task. Kee
 - ✅ World-space health bars: enemies + buildings (hide when full) + tower (always visible), billboarded, color lerps green→red, driven via `IHealthReadout` (UI polls gameplay; gameplay never references UI)
 
 - ✅ Crowd/animation polish: arc-spread staggered spawn formations, per-unit body radii + separation steering (no overlaps — audited), velocity-matched walk anim (no foot-slide), de-synced walk phases, smooth turns, blended animator transitions
+- ✅ Structure-overlap clamp (17 Jul): enemies could clip INSIDE the tower while attacking (seek overshoot on the 10 Hz tick + crowd separation shoving ring-attackers inward). `EnemyAgent.ResolveStructureOverlap()` now clamps every unit's centre to a standoff ring `footprint + min(bodyRadius, 0.9×attackRange)` around all nearby structures after each movement tick — the 0.9 cap keeps fat units (Ogre body 0.85 > range 0.8) attack-capable. Also stops enemies walking through placed buildings. Play-verified: 4 live audits over waves 1–5 (13 enemies, 11 sieging) — zero footprint penetrations, attackers ring the tower base exactly at standoff
 
 - ✅ Full-bleed ground: map-edge ring hidden (visual only — the r=15 gameplay boundary lives in config), ground plane 200×200 with density-preserving 50×50 tiling, camera clears to grass green — no skybox on any phone/tablet aspect
 
