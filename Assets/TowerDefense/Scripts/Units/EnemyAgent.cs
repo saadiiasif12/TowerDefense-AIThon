@@ -40,6 +40,10 @@ namespace RoyalSiege.Units
         private bool _dead;
         private float _despawnTimer;
 
+        private bool _isMoving;
+        private float _hurtStaggerRemaining;
+        private float _hurtCooldownRemaining;
+
         private float _slamTimer;
         private float _slamTelegraphRemaining;
 
@@ -56,7 +60,25 @@ namespace RoyalSiege.Units
         public void TakeDamage(float amount)
         {
             _health?.TakeDamage(amount);
-            if (!_dead) _hitReaction?.Play(); // fatal hits skip the flash — death anim takes over
+            if (_dead) return; // fatal hits skip the flash — death anim takes over
+            _hitReaction?.Play();
+            TryHurtStagger();
+        }
+
+        /// <summary>
+        /// Hit-stagger: a MOVING enemy briefly stops and plays the hurt flinch, then resumes.
+        /// Never fires while attacking, frozen/stunned, already staggered, or on cooldown —
+        /// the cooldown is what stops rapid hitters (Tesla) from stun-locking a unit forever.
+        /// </summary>
+        private void TryHurtStagger()
+        {
+            if (_def == null || _def.hurtStaggerSeconds <= 0f) return;
+            if (!_isMoving || _status.IsBlocked) return;
+            if (_hurtStaggerRemaining > 0f || _hurtCooldownRemaining > 0f) return;
+
+            _hurtStaggerRemaining = _def.hurtStaggerSeconds;
+            _hurtCooldownRemaining = _def.hurtCooldownSeconds;
+            _animator?.PlayHurt(_def.hurtStaggerSeconds);
         }
         public void ApplyFreeze(float seconds) => _status.ApplyFreeze(seconds);
         public void ApplyStun(float seconds) => _status.ApplyStun(seconds);
@@ -82,6 +104,10 @@ namespace RoyalSiege.Units
 
             _slamTimer = def.slamInterval;
             _slamTelegraphRemaining = 0f;
+
+            _isMoving = false;
+            _hurtStaggerRemaining = 0f;
+            _hurtCooldownRemaining = 0f;
 
             if (_animator == null) _animator = GetComponent<UnitAnimator>();
             // Lifecycle view FIRST — HitReaction discovers it in Awake and routes its glow there.
@@ -115,8 +141,21 @@ namespace RoyalSiege.Units
             if (_status.IsBlocked)
             {
                 _previousPosition = _logicPosition;
+                _isMoving = false;
                 _animator?.SetMoving(false);
                 return; // frozen/stunned: no movement, no attacks; still damageable
+            }
+
+            if (_hurtCooldownRemaining > 0f) _hurtCooldownRemaining -= dt;
+            if (_hurtStaggerRemaining > 0f)
+            {
+                // Hit-stagger: hold position while the hurt flinch plays. The walk params
+                // are deliberately left at their moving values — the Hurt state owns the
+                // pose, and its exit crossfades straight back into the mid-stride walk.
+                _hurtStaggerRemaining -= dt;
+                _previousPosition = _logicPosition;
+                _isMoving = false;
+                return;
             }
 
             TickBossSlam(dt);
@@ -126,6 +165,7 @@ namespace RoyalSiege.Units
 
             if (_target == null)
             {
+                _isMoving = false;
                 _animator?.SetMoving(false);
                 return;
             }
@@ -147,6 +187,7 @@ namespace RoyalSiege.Units
 
                 _logicPosition += velocity * dt;
                 _desiredForward = velocity.normalized;
+                _isMoving = true;
                 _animator?.SetMoving(true, velocity.magnitude);
             }
             else
@@ -156,6 +197,7 @@ namespace RoyalSiege.Units
                 Vector3 shuffle = Vector3.ClampMagnitude(separation * SeparationSpring * 0.5f, _def.moveSpeed * 0.4f);
                 _logicPosition += shuffle * dt;
                 _desiredForward = RangeMath.PlanarDirection(_logicPosition, _target.Position);
+                _isMoving = false;
                 _animator?.SetMoving(false);
             }
         }
@@ -282,6 +324,9 @@ namespace RoyalSiege.Units
             _deps.Registry.Unregister(this);
             _deps.Events.RaiseEnemyKilled(new EnemyKilledArgs(
                 _def, WaveIndex, _def.bounty * _deps.BountyMultiplier, _logicPosition));
+            // Update() stops driving playback speed once dead — restore it here so a unit
+            // killed while frozen/stunned (speed parked at 0) still plays its death anim.
+            _animator?.SetPlaybackSpeed(_deps.Clock.IsPaused ? 0f : _deps.Clock.SpeedMultiplier);
             _animator?.PlayDie();
         }
 
