@@ -13,6 +13,8 @@ namespace RoyalSiege.UI
         [SerializeField] private GameContext _context;
         [SerializeField] private Text _waveLabel;
         [SerializeField] private Text _bonusLabel;
+        [Tooltip("Stage progress as a Unity Slider (9-sliced base + fill).")]
+        [SerializeField] private Slider _stageSlider;
 
         private float _bonusHideAt = -1f;
         private int _stageIndex;
@@ -44,6 +46,8 @@ namespace RoyalSiege.UI
             _stageIndex = stage;
             _waveInStage = waveInStage;
             _wavesInStage = wavesInStage;
+            if (_stageSlider != null)
+                _stageSlider.value = wavesInStage > 0 ? (float)waveInStage / wavesInStage : 0f;
         }
 
         private void Update()
@@ -55,19 +59,22 @@ namespace RoyalSiege.UI
             }
 
             if (_context.Waves == null) return;
-            int current = _context.Waves.CurrentWaveNumber;
-            int total = _context.Waves.WaveCount;
-            float toNext = _context.Waves.TimeToNextWave;
 
-            // v4 stage header: stage-local progress + the global wave number (§1).
-            string stagePart = "STAGE " + (_stageIndex + 1) + " · " + _waveInStage + "/" + _wavesInStage;
+            // Header per mock_1: clean "Stage N" title above the green progress bar.
+            _waveLabel.text = "Stage " + (_stageIndex + 1);
 
+            // The transient line (below the bar) shows the live countdown / final state — the
+            // wave-cleared flash overrides it briefly (kept from the bonus flash).
+            if (_bonusHideAt > 0f) return; // a cleared flash is showing
             if (_context.Waves.CampaignComplete)
-                _waveLabel.text = stagePart + "    CLEARED";
-            else if (toNext >= 0f)
-                _waveLabel.text = (current > 0 ? stagePart + "    " : "") + "NEXT IN " + Mathf.CeilToInt(toNext) + "s";
+                _bonusLabel.text = "CAMPAIGN CLEARED";
             else
-                _waveLabel.text = stagePart + "    WAVE " + current + "/" + total;
+            {
+                float toNext = _context.Waves.TimeToNextWave;
+                _bonusLabel.text = toNext >= 0f
+                    ? "NEXT WAVE IN " + Mathf.CeilToInt(toNext) + "s"
+                    : "WAVE " + _context.Waves.CurrentWaveNumber + " / " + _context.Waves.WaveCount;
+            }
         }
     }
 }

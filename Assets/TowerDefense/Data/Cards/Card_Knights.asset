@@ -15,7 +15,7 @@ MonoBehaviour:
   id: Knights
   displayName: Knights
   description: Two knights charge the nearest enemy, tank hits and body-block.
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 82807ec2fc71b774a8e2e1a8458d5f3f, type: 3}
   cost: 5
   cooldown: 12
   troopPrefab: {fileID: 2862941095944794720, guid: f9b1afb9c0733c643b1f3acc6bb97f6b, type: 3}
