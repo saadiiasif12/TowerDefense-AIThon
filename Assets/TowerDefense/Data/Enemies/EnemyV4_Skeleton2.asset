@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Armored Skeleton
   prefab: {fileID: 8076293236869482471, guid: 6fccc5b9c00764446a737e7fba74cfa0, type: 3}
   hp: 110
-  moveSpeed: 1.8
+  moveSpeed: 1.5
   damage: 45
   attackRate: 1.1
   attackRange: 0.5
@@ -27,6 +27,7 @@ MonoBehaviour:
   deathVfx: {fileID: 4273496347337167337, guid: 4b0f0db536de97c499c1e15fc2ecf7d2, type: 3}
   hurtStaggerSeconds: 0.35
   hurtCooldownSeconds: 0
+  walkAnimSpeedMultiplier: 2
   unitRadius: 0.5
   targetPriority: 0
   bounty: 1

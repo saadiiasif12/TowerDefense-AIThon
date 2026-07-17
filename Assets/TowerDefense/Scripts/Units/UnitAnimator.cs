@@ -24,6 +24,7 @@ namespace RoyalSiege.Units
     {
         private static readonly int MovingHash = Animator.StringToHash("Moving");
         private static readonly int AttackHash = Animator.StringToHash("Attack");
+        private static readonly int AttackingHash = Animator.StringToHash("Attacking");
         private static readonly int DieHash = Animator.StringToHash("Die");
         private static readonly int HurtHash = Animator.StringToHash("Hurt");
         private static readonly int HurtSpeedHash = Animator.StringToHash("HurtSpeed");
@@ -49,6 +50,7 @@ namespace RoyalSiege.Units
         private float _hurtClipLength = 2.4f;
         private float _moveBlendTarget;
         private float _moveSpeedTarget = 1f;
+        private float _walkSpeedMultiplier = 1f; // artistic walk-anim speed factor (1 = feet synced)
 
         // Parameters present on THIS controller. Not every rig has the full contract
         // (AC_King has no MoveBlend/Hurt) — setting a missing param logs a warning
@@ -86,6 +88,14 @@ namespace RoyalSiege.Units
             }
         }
 
+        /// <summary>
+        /// Sets the walk-animation speed factor: 1 = feet synced to ground speed (no slide),
+        /// &lt;1 = slower/calmer legs, &gt;1 = busier. Enemies pass GameConfig's global factor ×
+        /// their per-def scale; other units (knight/buildings) leave it at 1.
+        /// </summary>
+        public void ConfigureWalk(float speedMultiplier) =>
+            _walkSpeedMultiplier = Mathf.Max(0.05f, speedMultiplier);
+
         /// <param name="groundSpeed">Actual displacement speed this tick (tiles/s) — pass the
         /// REAL velocity magnitude (incl. separation), not the stat, so feet always match.</param>
         public void SetMoving(bool moving, float groundSpeed = 0f)
@@ -101,7 +111,7 @@ namespace RoyalSiege.Units
             // While stopped it parks at 1 (NOT 0 — that would freeze the sway too): the tree's
             // idle child carries its own 0.08 timescale.
             _moveSpeedTarget = moving
-                ? Mathf.Clamp(groundSpeed / _walkClipNaturalSpeed, 0.4f, 3.5f)
+                ? Mathf.Clamp(groundSpeed / _walkClipNaturalSpeed * _walkSpeedMultiplier, 0.4f, 3.5f)
                 : 1f;
         }
 
@@ -117,12 +127,24 @@ namespace RoyalSiege.Units
                 _animator.SetFloat(MoveSpeedHash, _moveSpeedTarget, MoveDampSeconds, Time.deltaTime);
         }
 
+        /// <summary>
+        /// Called on each swing: scales the LOOPING attack state so one swing ≈ one attack
+        /// period, clamped so a short period never makes it frantic nor a long one crawl.
+        /// Entering/leaving the attack state is driven by <see cref="SetAttacking"/> (bool)
+        /// for smooth crossfades — no per-swing trigger, so no restart stutter.
+        /// </summary>
         public void PlayAttack(float attackPeriod)
         {
-            if (_animator == null) return;
-            if (Has(AttackSpeedHash))
-                _animator.SetFloat(AttackSpeedHash, _attackClipLength / Mathf.Max(0.05f, attackPeriod));
-            if (Has(AttackHash)) _animator.SetTrigger(AttackHash);
+            if (_animator == null || !Has(AttackSpeedHash)) return;
+            float scale = Mathf.Clamp(_attackClipLength / Mathf.Max(0.05f, attackPeriod), 0.6f, 1.6f);
+            _animator.SetFloat(AttackSpeedHash, scale);
+        }
+
+        /// <summary>Hold the attack state (looping) while true; crossfades back to locomotion when false.</summary>
+        public void SetAttacking(bool attacking)
+        {
+            if (_animator == null || !Has(AttackingHash)) return;
+            _animator.SetBool(AttackingHash, attacking);
         }
 
         public void PlayDie()

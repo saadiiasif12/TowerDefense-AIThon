@@ -65,6 +65,8 @@ Legend: ⬜ todo · 🔄 in progress · ✅ done · Update after EVERY task. Kee
 
 - ✅ **Knights guard rules + no building cap (17 Jul, user passes)** — knights: guard the tower's white circle (target only enemies inside it, hard leash every tick, wait for targets to enter — verified max dist 4.05, zero out-of-circle chasing) and can't walk through the tower/buildings (standoff clamp; forced-inside knight ejected to exactly 1.90). Building count cap REMOVED (`maxPlayerBuildings` 0 = unlimited; supersedes max-4 + QA DT-003 — Coda updated; verified 6 towers placed). Space/overlap/elixir/decay are the only placement limits now.
 
+- ✅ **Tower level visuals + ruin wired into the game (18 Jul)** — root cause: `Game.unity` still instanced the OLD `RoyalTower.prefab` (no `TowerLevelView`), so the 4 level models + fail model built into `RoyalTower_Full.prefab` never appeared. Scene instance swapped to `RoyalTower_Full` (same transform/name, `GameContext._royalTower` rewired, scene saved). Code: `TowerLevelView.SetLevel(level, instant)` + `RoyalTower.ApplyLevel(..., instantVisual)` — resume/retry loads snap the earned level with no surge/shake; `SetLevel` guarded after fail (ruin is terminal). Play-verified: resume showed L2 instantly (HP 4600), ApplyLevel(3) played the seamless swap to the L3 model, tower death hid all levels + King and crashed in the ruin, post-fail SetLevel no-op, 0 console errors. ⚠️ 5 config levels vs 4 models — L5 reuses the L4 model (asset gap logged in 12_ASSET_STATUS).
+
 ## Day 3 (18 July) — POLISH & SUBMISSION
 
 - ⬜ Juice map implemented (11_MODULE_JUICE): VFX, SFX, haptics, camera shake, hit-stop — **large part done overnight (VFX + shake + first SFX); remaining: haptics, hit-stop, music, full SFX set**

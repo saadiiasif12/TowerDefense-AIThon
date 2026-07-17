@@ -36,6 +36,10 @@ namespace RoyalSiege.Data
         [Tooltip("v2 ships at 0.5 — compensates strict ranges + faster spawns + lean economy.")]
         public float enemyDamageMultiplier = 0.5f;
         public float enemyBountyMultiplier = 1f;
+        [Tooltip("GLOBAL enemy walk-animation speed factor. 1 = feet synced to ground speed; " +
+                 "<1 = slower/calmer legs, >1 = faster. Tunes every enemy at once (per-enemy " +
+                 "fine-tuning lives on each EnemyDefinition's walkAnimSpeedScale).")]
+        [Range(0.25f, 2f)] public float enemyWalkAnimSpeedMultiplier = 1f;
 
         [Header("Stars")]
         [Range(0f, 1f)] public float twoStarHpPct = 0.5f;

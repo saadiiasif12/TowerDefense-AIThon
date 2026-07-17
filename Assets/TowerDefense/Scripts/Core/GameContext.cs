@@ -102,7 +102,8 @@ namespace RoyalSiege.Core
                 Ticker = _tickSystem,
                 HpMultiplier = _gameConfig.enemyHpMultiplier,
                 DamageMultiplier = _gameConfig.enemyDamageMultiplier,
-                BountyMultiplier = _gameConfig.enemyBountyMultiplier
+                BountyMultiplier = _gameConfig.enemyBountyMultiplier,
+                WalkAnimMultiplier = _gameConfig.enemyWalkAnimSpeedMultiplier
             };
             var enemyFactory = new EnemyFactory(_enemyRoot, enemyDeps);
             var spawnPoints = new SpawnPointProvider(center, _gameConfig.mapRadius);
@@ -114,7 +115,8 @@ namespace RoyalSiege.Core
 
             _royalTower.Init(_gameConfig, registry, launcher, Events, _tickSystem, _tickSystem);
             if (profile.towerLevel > 1 && profile.towerLevel <= _progression.towerLevels.Count)
-                _royalTower.ApplyLevel(profile.towerLevel, _progression.towerLevels[profile.towerLevel - 1]);
+                _royalTower.ApplyLevel(profile.towerLevel, _progression.towerLevels[profile.towerLevel - 1],
+                    instantVisual: true); // resume shows the earned tower, no surge on load
 
             _orbSpawner.Init(Events, Energy, _economyConfig, _tickSystem);
             _placement.Init(_gameCamera, CardPlay, validator, buildingFactory, spellCaster, _gameConfig, center, knightFactory);
