@@ -22,8 +22,12 @@ namespace RoyalSiege.Units
         [SerializeField] private float _localScale = 1f;
         [Tooltip("Seconds after a throw before a fresh object pops back into the hand.")]
         [SerializeField] private float _respawnDelay = 0.35f;
+        [Tooltip("Extra rig object (e.g. the modeled 'Weapon' mesh in the hand) hidden together " +
+                 "with the held visual during the throw window. Auto-found by name if empty.")]
+        [SerializeField] private GameObject _alsoHideOnThrow;
 
         private const string HandBoneName = "RightHand";
+        private const string RigWeaponName = "Weapon";
         private const float PopSeconds = 0.14f;
 
         private IClock _clock;
@@ -47,6 +51,12 @@ namespace RoyalSiege.Units
             if (_holdAnchor == null)
                 foreach (var t in GetComponentsInChildren<Transform>(true))
                     if (t.name.Contains(HandBoneName)) { _holdAnchor = t; break; }
+
+            // The rig's own modeled hand weapon (if any) vanishes with the held visual on
+            // each throw — otherwise the character visibly "throws" while still gripping it.
+            if (_alsoHideOnThrow == null)
+                foreach (var t in GetComponentsInChildren<Transform>(true))
+                    if (t.name == RigWeaponName) { _alsoHideOnThrow = t.gameObject; break; }
 
             // Fallback for rigs whose bones aren't named "RightHand" (e.g. tripo models):
             // ask the humanoid avatar directly. Resolves at runtime when the animator is live.
@@ -77,6 +87,8 @@ namespace RoyalSiege.Units
         {
             _respawnTimer = 0f;
             _popT = 1f;
+            // Rig weapon back in the hand regardless of throws (melee defs keep it visible).
+            if (_alsoHideOnThrow != null) _alsoHideOnThrow.SetActive(true);
             if (_held == null) return;
             _held.transform.localScale = _baseScale;
             _held.SetActive(_throws);
@@ -87,6 +99,7 @@ namespace RoyalSiege.Units
         {
             if (!_throws || _held == null) return;
             _held.SetActive(false);
+            if (_alsoHideOnThrow != null) _alsoHideOnThrow.SetActive(false);
             _respawnTimer = _respawnDelay;
         }
 
@@ -102,6 +115,7 @@ namespace RoyalSiege.Units
                 if (_respawnTimer <= 0f)
                 {
                     _held.SetActive(true);
+                    if (_alsoHideOnThrow != null) _alsoHideOnThrow.SetActive(true);
                     _popT = 0f;
                 }
             }

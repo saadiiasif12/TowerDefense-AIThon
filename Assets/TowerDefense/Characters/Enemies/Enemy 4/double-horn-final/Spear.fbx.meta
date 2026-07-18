@@ -1,9 +1,24 @@
 fileFormatVersion: 2
-guid: 2c3dbd1f52b643a418e3c0c25beec9fe
+guid: c0bae1e78884b1f49b87d3e0ed568452
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tripo_mat_984fea6a
+    second: {fileID: 2100000, guid: a477f6d18f6564a4aaa690ed1e847d49, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: extracted_normal_tripo_node_ce43f187
+    second: {fileID: 2800000, guid: 503883488bd672e46a9fc5af26ba73b0, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: tripo_rgb_e5e05b9d-518a-42da-bfb2-41f7708f2cc5
+    second: {fileID: 2800000, guid: 8a7f7c54c01a1aa4fbc69dbff289ee12, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -33,7 +48,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 2
+    globalScale: 0.8
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -83,12 +98,7 @@ ModelImporter:
   humanDescription:
     serializedVersion: 3
     human: []
-    skeleton:
-    - name: Meshy_AI_Arrow_0716172953_texture(Clone)
-      parentName: 
-      position: {x: -0, y: 0, z: 0}
-      rotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-      scale: {x: 100, y: 100, z: 100}
+    skeleton: []
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5
@@ -96,7 +106,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 2
+    globalScale: 0.008
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

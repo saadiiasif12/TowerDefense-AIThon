@@ -70,7 +70,8 @@ MonoBehaviour:
   _localPosition: {x: 0, y: 0.02, z: 0.04}
   _localEuler: {x: 0, y: 0, z: 0}
   _localScale: 0.12
-  _respawnDelay: 0.35
+  _respawnDelay: 0.3375
+  _alsoHideOnThrow: {fileID: 119102463125509802}
 --- !u!1001 &965541490723220475
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -141,13 +142,18 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 98f2260f81c1de44a801a6bf373a8d22, type: 2}
     - target: {fileID: 919132149155446097, guid: 9c21ed6794e0a9a48bda5992d2efe029, type: 3}
       propertyPath: m_Name
-      value: Meshy_AI_Stormcleaver_0716122527_texture
+      value: Weapon
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9c21ed6794e0a9a48bda5992d2efe029, type: 3}
+--- !u!1 &119102463125509802 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9c21ed6794e0a9a48bda5992d2efe029, type: 3}
+  m_PrefabInstance: {fileID: 965541490723220475}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &787271919455439888 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9c21ed6794e0a9a48bda5992d2efe029, type: 3}
@@ -216,7 +222,7 @@ PrefabInstance:
     - target: {fileID: -5590452712435908964, guid: ef79a1c6e3e401f4db978734e2c77ac9, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 79adc1a59cee6f340852f035ef706b01, type: 2}
+      objectReference: {fileID: 2100000, guid: 888d7425193fd67428112dc1bf8dafff, type: 2}
     - target: {fileID: 919132149155446097, guid: ef79a1c6e3e401f4db978734e2c77ac9, type: 3}
       propertyPath: m_Name
       value: DoubleHornModel
