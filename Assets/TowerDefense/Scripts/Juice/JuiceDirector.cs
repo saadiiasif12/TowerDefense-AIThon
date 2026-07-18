@@ -55,7 +55,14 @@ namespace RoyalSiege.Juice
                 ? args.Definition.deathVfx
                 : _deathPuff;
             _vfx.Spawn(vfx, args.Position + Vector3.up * 0.6f);
-            if (args.Definition != null && args.Definition.isBoss) _shaker?.AddTrauma(0.4f);
+            // 18-Jul: the camera feels the big ones hit the ground — boss thump, and a
+            // smaller thud for HEAVY units (Ogre-class, body radius ≥ 0.8) whose fall
+            // animation is a full collapse. Fodder deaths stay shake-free.
+            if (args.Definition != null)
+            {
+                if (args.Definition.isBoss) _shaker?.AddTrauma(0.45f);
+                else if (args.Definition.unitRadius >= 0.8f) _shaker?.AddTrauma(0.3f);
+            }
         }
 
         private void OnEnemySpawned(EnemyDefinitionSO def, Vector3 position) =>

@@ -10,11 +10,12 @@ namespace RoyalSiege.Juice
     /// coroutines, no per-frame allocations, number strings cached) on WALL-CLOCK time so
     /// numbers finish floating while the sim pauses.
     ///
-    /// Entry points:
-    ///  • <c>DamagePopupManager.Instance.ShowDamage(amount, position, isCritical)</c> —
-    ///    called from RoyalTower/BuildingUnit damage methods (null-safe: TestRange has none).
-    ///  • GameEvents.EnemyDamaged — enemies stay event-driven (keeps the DoT aggregation
-    ///    and killing-blow styling): killing blows render as criticals.
+    /// 18-Jul rulings:
+    ///  • Damage TEXT is for ENEMIES ONLY (GameEvents.EnemyDamaged — DoT pre-aggregated,
+    ///    killing blows render as criticals). Structures (tower/buildings) BLINK instead —
+    ///    see <see cref="StructureHitBlink"/>.
+    ///  • Text/plate COLORS are preset on the DamagePopup prefab — never set at runtime;
+    ///    criticals read bigger via scale only.
     ///
     /// "Random" spread/drift is HASHED off a hit counter — the project allows no RNG.
     /// </summary>
@@ -56,18 +57,8 @@ namespace RoyalSiege.Juice
         [SerializeField] private float _startScale = 0.6f;
         [Tooltip("Peak of the initial punch.")]
         [SerializeField] private float _punchScale = 1.2f;
-        [Tooltip("Extra scale multiplier for criticals / killing blows.")]
+        [Tooltip("Extra scale multiplier for criticals / killing blows (colors live on the prefab).")]
         [SerializeField] private float _critScaleMul = 1.35f;
-
-        [Header("Colors")]
-        [Tooltip("Normal hit text (white per the reference).")]
-        [SerializeField] private Color _textColor = Color.white;
-        [Tooltip("Critical / killing-blow text (yellow-orange).")]
-        [SerializeField] private Color _critTextColor = new(1f, 0.72f, 0.1f);
-        [Tooltip("Rounded plate behind normal numbers (magenta/red).")]
-        [SerializeField] private Color _backgroundColor = new(0.78f, 0.12f, 0.35f, 0.9f);
-        [Tooltip("Plate behind criticals (deeper red).")]
-        [SerializeField] private Color _critBackgroundColor = new(0.62f, 0.07f, 0.14f, 0.92f);
 
         // Read by DamagePopup.Tick — grouped accessors keep the popup free of duplicated fields.
         public float Duration => _duration;
@@ -116,6 +107,7 @@ namespace RoyalSiege.Juice
         /// <summary>
         /// Spawn one damage number at a world position (the serialized world offset and the
         /// hashed spread/anti-overlap bump are applied on top). Every hit gets its own popup.
+        /// ENEMIES ONLY (18-Jul ruling) — structures blink via StructureHitBlink instead.
         /// </summary>
         public void ShowDamage(float amount, Vector3 position, bool isCritical = false)
         {
@@ -153,11 +145,7 @@ namespace RoyalSiege.Juice
                 _active.RemoveAt(0);
             }
 
-            popup.Show(label,
-                isCritical ? _critTextColor : _textColor,
-                isCritical ? _critBackgroundColor : _backgroundColor,
-                isCritical ? _critScaleMul : 1f,
-                origin, drift);
+            popup.Show(label, isCritical ? _critScaleMul : 1f, origin, drift);
             _active.Add(popup);
         }
 

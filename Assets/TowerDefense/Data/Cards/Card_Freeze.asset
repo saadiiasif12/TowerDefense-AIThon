@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.SpellCardSO
   id: Freeze
   displayName: Frost-ball
-  description: 
+  description: Freezes every enemy within radius 3 solid for a few seconds.
   icon: {fileID: 21300000, guid: 509b6ed9981ba6f4fb66dfbd5cd608b4, type: 3}
   cost: 4
   cooldown: 14

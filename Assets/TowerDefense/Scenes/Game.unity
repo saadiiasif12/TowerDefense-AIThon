@@ -869,6 +869,7 @@ GameObject:
   - component: {fileID: 1247799768}
   - component: {fileID: 1247799767}
   - component: {fileID: 1247799773}
+  - component: {fileID: 1247799774}
   m_Layer: 0
   m_Name: GameSystems
   m_TagString: Untagged
@@ -990,6 +991,33 @@ MonoBehaviour:
   _additiveMaterialTemplate: {fileID: 2100000, guid: e7b7570d0baa9a844bcf5fad12850e20, type: 2}
   _lineColor: {r: 1, g: 1, b: 1, a: 1}
   _lineStrength: 0.9
+--- !u!114 &1247799774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247799766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cfc87c5309327a49bc7c28f59f66a6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FrameRateSetter
+  matchPanelRefreshRate: 1
+  absoluteMaxFPS: 240
+  ultraFPS: 120
+  highFPS: 120
+  midFPS: 90
+  lowFPS: 60
+  ultraScale: 1
+  highScale: 0.9
+  midScale: 0.75
+  lowScale: 0.6
+  disableVSync: 1
+  disableOnDemandRendering: 1
+  sustainedPerformanceMode: 0
+  optimizeFixedTimestep: 1
+  logDeviceInfo: 1
 --- !u!1 &1247945086
 GameObject:
   m_ObjectHideFlags: 0

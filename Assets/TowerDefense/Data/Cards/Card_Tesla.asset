@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.BuildingCardSO
   id: Tesla
   displayName: Tesla
-  description: 
+  description: "Zaps the closest enemy for 115 at range 5 \u2014 never misses."
   icon: {fileID: 21300000, guid: 031388e958e5a1a40b7862d59b484892, type: 3}
   cost: 4
   cooldown: 10

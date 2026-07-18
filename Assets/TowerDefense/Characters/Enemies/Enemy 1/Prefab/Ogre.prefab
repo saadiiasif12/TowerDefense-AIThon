@@ -77,12 +77,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6aa690daa1b73514db5612a10a7a9a30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.WorldHealthBar
-  _width: 1.2
-  _thickness: 0.14
+  _barPrefab: {fileID: 1166747743028082617, guid: a1581481d0c4db34387ebd3cc0121fb7, type: 3}
   _yOffset: 2.9
-  _fillColor: {r: 0.25, g: 0.9, b: 0.2, a: 1}
   _lowColor: {r: 0.95, g: 0.25, b: 0.15, a: 1}
   _hideWhenFull: 1
+  _width: 1.2
+  _thickness: 0.14
+  _fillColor: {r: 0.25, g: 0.9, b: 0.2, a: 1}
 --- !u!1001 &1970434635650057085
 PrefabInstance:
   m_ObjectHideFlags: 0

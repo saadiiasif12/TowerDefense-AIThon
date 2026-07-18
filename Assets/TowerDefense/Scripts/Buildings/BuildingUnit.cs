@@ -36,15 +36,16 @@ namespace RoyalSiege.Buildings
         public bool IsBuilding => true;
         public bool BlocksPlacement => true;
         public float FootprintRadius => _card != null ? _card.footprintRadius : 0.75f;
-        /// <summary>Popup anchor: just above the building's roof (view-only).</summary>
-        private const float PopupHeight = 1.1f;
+        private Juice.StructureHitBlink _hitBlink;
         public void TakeDamage(float amount)
         {
             if (_health == null || !_health.IsAlive || amount <= 0f) return;
             _health.TakeDamage(amount);
-            // Damage popup the moment damage lands (null-safe: test scenes have no manager).
-            Juice.DamagePopupManager.Instance?.ShowDamage(
-                amount, transform.position + Vector3.up * PopupHeight, isCritical: false);
+            // 18-Jul ruling: structures show NO damage text — one juicy blink per hit.
+            // (Lifetime decay calls _health directly in Tick, so decay never blinks.)
+            if (_hitBlink == null) _hitBlink = GetComponent<Juice.StructureHitBlink>()
+                ?? gameObject.AddComponent<Juice.StructureHitBlink>();
+            _hitBlink.Play();
         }
 
         public void Init(BuildingCardSO card, ITargetRegistry registry, IProjectileLauncher launcher,

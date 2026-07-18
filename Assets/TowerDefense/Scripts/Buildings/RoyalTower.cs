@@ -32,15 +32,16 @@ namespace RoyalSiege.Buildings
         public bool IsBuilding => false;
         public bool BlocksPlacement => true;
         public float FootprintRadius => _config != null ? _config.towerFootprintRadius : 1.5f;
-        /// <summary>Popup anchor: just above the tower roof (view-only).</summary>
-        private const float PopupHeight = 2.6f;
+        private Juice.StructureHitBlink _hitBlink;
         public void TakeDamage(float amount)
         {
             if (_health == null || !_health.IsAlive || amount <= 0f) return;
             _health.TakeDamage(amount);
-            // Damage popup the moment damage lands (null-safe: test scenes have no manager).
-            Juice.DamagePopupManager.Instance?.ShowDamage(
-                amount, transform.position + Vector3.up * PopupHeight, isCritical: false);
+            // 18-Jul ruling: structures show NO damage text — one juicy blink per hit
+            // (lazily added so every scene incl. TestRange gets it without prefab edits).
+            if (_hitBlink == null) _hitBlink = GetComponent<Juice.StructureHitBlink>()
+                ?? gameObject.AddComponent<Juice.StructureHitBlink>();
+            _hitBlink.Play();
         }
 
         private ITargetRegistry _registry;
