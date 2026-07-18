@@ -231,6 +231,7 @@ GameObject:
   - component: {fileID: 300827906}
   - component: {fileID: 300827907}
   - component: {fileID: 300827908}
+  - component: {fileID: 300827909}
   m_Layer: 0
   m_Name: Juice
   m_TagString: Untagged
@@ -364,6 +365,33 @@ MonoBehaviour:
   _baseSize: 38
   _normalColor: {r: 1, g: 0.95, b: 0.75, a: 1}
   _killColor: {r: 1, g: 0.55, b: 0.15, a: 1}
+--- !u!114 &300827909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300827901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0c08a31b8df92348b609477cd5ea1ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.FeedbackDirector
+  _context: {fileID: 1247799767}
+  _enemyHit: {fileID: 8300000, guid: 676793e8b24f07a49a5aac3b0985ad69, type: 3}
+  _enemyDeaths:
+  - {fileID: 8300000, guid: ca7e829e9f876ea4a95a4edad95deb8e, type: 3}
+  - {fileID: 8300000, guid: 18f19d03b5eb5f6438c7255ed4adfd44, type: 3}
+  - {fileID: 8300000, guid: 1a197a36b1e09c44cb1d60ee4ceec601, type: 3}
+  - {fileID: 8300000, guid: 5f02d8d8a7340884fbac3973015477d1, type: 3}
+  _towerHit: {fileID: 8300000, guid: 676793e8b24f07a49a5aac3b0985ad69, type: 3}
+  _cardPlayed: {fileID: 8300000, guid: ca77d13bf4f3b7442b324e68259c72e1, type: 3}
+  _buildingPlaced: {fileID: 8300000, guid: cc685207a46826746af448ba3a0eaa07, type: 3}
+  _knightSpawn: {fileID: 8300000, guid: ca77d13bf4f3b7442b324e68259c72e1, type: 3}
+  _levelUp: {fileID: 8300000, guid: 77d6356f3f181f04c86c084a2ff5267d, type: 3}
+  _victory: {fileID: 8300000, guid: 98046261e6947b64eb462140e10a5b35, type: 3}
+  _defeat: {fileID: 8300000, guid: 46dcfa1187f4a1e4cb3793dd1351f669, type: 3}
+  _sfxVolume: 0.8
 --- !u!1 &324120706
 GameObject:
   m_ObjectHideFlags: 0
