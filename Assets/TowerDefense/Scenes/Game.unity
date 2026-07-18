@@ -211,6 +211,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fbdc74ab6460884692140df19329d99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Buildings.RoyalTower
+--- !u!4 &28133054 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7628973665681816515, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
+  m_PrefabInstance: {fileID: 28133052}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &84871391
 GameObject:
   m_ObjectHideFlags: 0
@@ -1094,6 +1099,7 @@ GameObject:
   - component: {fileID: 993133029}
   - component: {fileID: 993133031}
   - component: {fileID: 993133030}
+  - component: {fileID: 993133032}
   m_Layer: 0
   m_Name: DeploymentRing
   m_TagString: Untagged
@@ -1344,7 +1350,25 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 993133027}
-  m_Mesh: {fileID: 4300000, guid: c1bccb5b153faf448ab5cecb76b3156e, type: 2}
+  m_Mesh: {fileID: 0}
+--- !u!114 &993133032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 993133027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5919d73c44453b4db1c7556b7bb77ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Buildings.DeployRingView
+  _config: {fileID: 11400000, guid: eb70626727b6d9a479884b2a69e7d654, type: 2}
+  _tower: {fileID: 28133054}
+  _dashCount: 40
+  _dashLength: 0.42
+  _dashWidth: 0.18
+  _heightOffset: -1.74
 --- !u!1 &1192866539
 GameObject:
   m_ObjectHideFlags: 0

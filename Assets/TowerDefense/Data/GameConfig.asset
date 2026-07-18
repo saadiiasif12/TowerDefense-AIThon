@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: GameConfig
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.GameConfigSO
   towerHp: 2000
-  towerFootprintRadius: 1.55
+  towerFootprintRadius: 1.705
   kingAttack:
     damage: 93
     attackRate: 1
     range: 5
     impactFraction: 0.4
-    projectile: {fileID: 11400000, guid: cc29e23a9d9fc0745b28e85e902f497e, type: 2}
+    projectile: {fileID: 11400000, guid: 53b443e68d7ec684ba50298e6459c093, type: 2}
   builtInCannon:
     damage: 0
     attackRate: 1.4

@@ -37,6 +37,7 @@ namespace RoyalSiege.Buildings
         private ITargetRegistry _registry;
         private IProjectileLauncher _launcher;
         private KingView _kingView;
+        private MortarView _mortarView;
         private TowerLevelView _levelView;
 
         /// <summary>Current 1-based tower level (v4 §7).</summary>
@@ -53,10 +54,21 @@ namespace RoyalSiege.Buildings
             _health = new Health(config.towerHp);
             _health.Damaged += OnHealthDamaged;
 
-            // The visible king on top mirrors the king attack (view-only).
+            // 18-Jul delta: when a MortarView exists on the roof, IT fires the tower attack
+            // (yaw-track/recoil/muzzle) and the King is static decoration — idle anim only,
+            // fixed idle facing (target getter returns null so he never turns or throws).
             _kingView = GetComponentInChildren<KingView>();
+            _mortarView = GetComponentInChildren<MortarView>();
             BuildKingAttack(config.kingAttack.damage);
-            _kingView?.Init(clock, () => _kingAttack.CurrentTarget);
+            if (_mortarView != null)
+            {
+                _mortarView.Init(clock, () => _kingAttack.CurrentTarget);
+                _kingView?.Init(clock, () => null); // static king: idle sway, no turning
+            }
+            else
+            {
+                _kingView?.Init(clock, () => _kingAttack.CurrentTarget);
+            }
 
             // Level-up tower visuals (view-only): show the starting level instantly.
             _levelView = GetComponentInChildren<TowerLevelView>();
@@ -73,6 +85,17 @@ namespace RoyalSiege.Buildings
         private void BuildKingAttack(float damage)
         {
             var king = _config.kingAttack;
+            if (_mortarView != null)
+            {
+                // Mortar mode (18-Jul): shells leave the tube mouth; windup charges the tube,
+                // the fire moment kicks the recoil + muzzle flash. King stays out of it.
+                _kingAttack = new StructureAttack(_registry, _launcher, _events,
+                    damage, king.attackRate, king.range, king.impactFraction, king.projectile,
+                    onSwing: period => _mortarView.OnSwing(period),
+                    onFire: () => _mortarView.OnFire(),
+                    firePoint: () => _mortarView.FirePoint);
+                return;
+            }
             _kingAttack = new StructureAttack(_registry, _launcher, _events,
                 damage, king.attackRate, king.range, king.impactFraction, king.projectile,
                 onSwing: period => _kingView?.OnSwing(period),
