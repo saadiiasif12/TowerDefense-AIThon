@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Campaign_RoyalDefense
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.CampaignSO
   unitSpawnInterval: 0.11
-  clearGapSeconds: 2
-  loopStages: 1
+  clearGapSeconds: 3
   stages:
   - stageName: Stage 1
     waves:
