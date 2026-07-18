@@ -79,6 +79,8 @@ namespace RoyalSiege.Units
             if (_hitReaction == null)
                 _hitReaction = GetComponent<HitReaction>() ?? gameObject.AddComponent<HitReaction>();
             _hitReaction.Cancel();
+            // 18-Jul stylized look: dark outline (idempotent, shared material).
+            if (GetComponent<OutlineView>() == null) gameObject.AddComponent<OutlineView>();
             if (_animator == null) _animator = GetComponent<UnitAnimator>();
             _animator?.Rebind();
             _despawnTimer = 0f;

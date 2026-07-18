@@ -200,6 +200,7 @@ GameObject:
   - component: {fileID: 1275085759078276183}
   - component: {fileID: 3233191537817031277}
   - component: {fileID: 2325179451610482436}
+  - component: {fileID: 3290112225589297884}
   m_Layer: 0
   m_Name: Building_Tesla
   m_TagString: Untagged
@@ -278,6 +279,18 @@ MonoBehaviour:
   _anticipationDistance: 0.05
   _scalePunchMode: 1
   _spawnPunchSeconds: 0.35
+--- !u!114 &3290112225589297884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3138221973509297826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 126d0ce3a7fbdcc4aa2b4b3a97c407bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.OutlineView
 --- !u!1001 &3300000000000000011
 PrefabInstance:
   m_ObjectHideFlags: 0

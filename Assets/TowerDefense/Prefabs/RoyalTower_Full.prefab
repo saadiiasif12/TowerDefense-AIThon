@@ -635,6 +635,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9048933503596644207, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9004321302601156164}
+    - targetCorrespondingSourceObject: {fileID: 9048933503596644207, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5280723715067923698}
   m_SourcePrefab: {fileID: 100100000, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
 --- !u!4 &2467080259100477992 stripped
 Transform:
@@ -693,6 +696,18 @@ MonoBehaviour:
   _flashColor: {r: 1, g: 0.92, b: 0.55, a: 1}
   _kingRoot: {fileID: 497038797034581244}
   _kingHeightOffset: 0
+--- !u!114 &5280723715067923698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5533598138898769903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 126d0ce3a7fbdcc4aa2b4b3a97c407bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.OutlineView
 --- !u!4 &7628973665681816515 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6377237829693905731, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
