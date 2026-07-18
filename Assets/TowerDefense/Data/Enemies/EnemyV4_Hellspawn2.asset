@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Hellspawn Artillery
   prefab: {fileID: 7226527311606813120, guid: 94bf2d3599f87ab4cb224b1856a56ea1, type: 3}
   hp: 800
-  moveSpeed: 1
+  moveSpeed: 0.8
   damage: 90
   attackRate: 1.6
   attackRange: 5

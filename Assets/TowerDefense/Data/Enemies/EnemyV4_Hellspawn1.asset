@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Hellspawn
   prefab: {fileID: 7265747158914281454, guid: 06e16ed6a5668bc41a77cf15cf2c9e5f, type: 3}
   hp: 500
-  moveSpeed: 1.2
+  moveSpeed: 0.9
   damage: 100
   attackRate: 1.4
   attackRange: 5
@@ -27,7 +27,7 @@ MonoBehaviour:
   deathVfx: {fileID: 0}
   hurtStaggerSeconds: 0.35
   hurtCooldownSeconds: 0
-  walkAnimSpeedMultiplier: 1
+  walkAnimSpeedMultiplier: 1.2
   unitRadius: 0.6
   targetPriority: 0
   bounty: 1
