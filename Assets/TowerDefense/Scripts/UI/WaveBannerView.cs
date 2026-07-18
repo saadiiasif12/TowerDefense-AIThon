@@ -58,7 +58,7 @@ namespace RoyalSiege.UI
 
             // Header per mock_1 + 18-Jul ruling: clean "Stage N" title above the green stage
             // progress bar — NO wave information (no countdown, no wave numbers).
-            _waveLabel.text = "Stage " + (_stageIndex + 1);
+            //_waveLabel.text = "Stage " + (_stageIndex + 1);
             if (_context.Waves.CampaignComplete) _bonusLabel.text = "CAMPAIGN CLEARED";
             else if (_bonusLabel.text.Length > 0) _bonusLabel.text = "";
         }

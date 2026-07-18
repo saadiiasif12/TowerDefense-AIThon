@@ -1,3 +1,4 @@
+using RoyalSiege.Juice;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -68,6 +69,10 @@ namespace RoyalSiege.Testing
                 AddButton(right, "FX: " + f.name, new Color(0.6f, 0.9f, 0.9f), () => _context.PlayGalleryVfx(f));
             }
             AddCycleButton(right, "Tesla VFX", () => _context.TeslaQualityLabel, _context.CycleTeslaQuality);
+            // Earthquake / camera shake tester (trauma-based, see CameraShaker docs).
+            AddButton(right, "Quake: small", new Color(0.95f, 0.78f, 0.55f), () => { var s = CameraShaker.Main; if (s != null) s.AddTrauma(0.25f); });
+            AddButton(right, "Quake: medium", new Color(0.95f, 0.7f, 0.45f), () => { var s = CameraShaker.Main; if (s != null) s.AddTrauma(0.5f); });
+            AddButton(right, "Quake: BIG", new Color(0.95f, 0.55f, 0.35f), () => { var s = CameraShaker.Main; if (s != null) s.AddTrauma(0.9f); });
             AddButton(right, "Speed 0.25x (trails)", new Color(0.7f, 0.8f, 1f), () => _context.SetGameSpeed(0.25f));
             AddButton(right, "Speed 1x", new Color(0.7f, 0.8f, 1f), () => _context.SetGameSpeed(1f));
             AddButton(right, "Speed 3x", new Color(0.7f, 0.8f, 1f), () => _context.SetGameSpeed(3f));
@@ -97,21 +102,39 @@ namespace RoyalSiege.Testing
 
         private Transform MakeColumn(Transform canvas, string name, bool anchorRight)
         {
-            var column = new GameObject(name, typeof(RectTransform), typeof(VerticalLayoutGroup));
-            column.transform.SetParent(canvas, false);
-            var rt = column.GetComponent<RectTransform>();
+            // Scroll view: the lists are generated from data (every enemy/spell/FX gets a
+            // button), so a fixed column overflows the screen — drag to scroll instead.
+            var view = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(RectMask2D), typeof(ScrollRect));
+            view.transform.SetParent(canvas, false);
+            var rt = view.GetComponent<RectTransform>();
             float x = anchorRight ? 1f : 0f;
             rt.anchorMin = new Vector2(x, 0.5f);
             rt.anchorMax = new Vector2(x, 0.5f);
             rt.pivot = new Vector2(x, 0.5f);
             rt.anchoredPosition = new Vector2(anchorRight ? -16f : 16f, 0f);
-            rt.sizeDelta = new Vector2(300f, 1400f);
-            var layout = column.GetComponent<VerticalLayoutGroup>();
+            rt.sizeDelta = new Vector2(300f, 1500f);
+            view.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.25f);
+
+            var content = new GameObject("Content", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            content.transform.SetParent(view.transform, false);
+            var crt = content.GetComponent<RectTransform>();
+            crt.anchorMin = new Vector2(0f, 1f);
+            crt.anchorMax = new Vector2(1f, 1f);
+            crt.pivot = new Vector2(0.5f, 1f);
+            crt.offsetMin = Vector2.zero;
+            crt.offsetMax = Vector2.zero;
+            var layout = content.GetComponent<VerticalLayoutGroup>();
             layout.spacing = 8f;
             layout.childControlHeight = false;
             layout.childControlWidth = true;
             layout.childForceExpandHeight = false;
-            return column.transform;
+            content.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var scroll = view.GetComponent<ScrollRect>();
+            scroll.content = crt;
+            scroll.horizontal = false;
+            scroll.scrollSensitivity = 40f;
+            return content.transform;
         }
 
         /// <summary>A button that cycles a multi-state setting; label shows the current state.</summary>
