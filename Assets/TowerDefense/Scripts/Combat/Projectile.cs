@@ -131,7 +131,19 @@ namespace RoyalSiege.Combat
                 // beyond the shooter's drawn radius.
                 Vector3 impactPoint = ClampToRange(_target.Position);
                 _target.TakeDamage(_damage);
-                _vfx?.Spawn(_settings.impactVfx, impactPoint + Vector3.up * _settings.impactHeightOffset,
+                // Structures (tower/buildings) are WIDE: an impact burst at the target's
+                // CENTER plays inside the mesh, where the camera-facing walls z-occlude its
+                // bright core (18-Jul Hellspawn hit-VFX finding). Pull the VFX back along the
+                // flight line onto the struck SURFACE instead. Enemies keep the center burst
+                // (small bodies, blast bigger than the model).
+                Vector3 vfxPoint = impactPoint;
+                if (_target is IStructureTarget structure)
+                {
+                    Vector3 approach = RangeMath.Flatten(impactPoint - _start);
+                    if (approach.sqrMagnitude > 0.01f)
+                        vfxPoint -= approach.normalized * structure.FootprintRadius;
+                }
+                _vfx?.Spawn(_settings.impactVfx, vfxPoint + Vector3.up * _settings.impactHeightOffset,
                     Quaternion.identity, 1f, _settings.impactTint);
                 if (_settings.impactShake > 0f) CameraShaker.Main?.AddTrauma(_settings.impactShake);
                 _onImpact?.Invoke(impactPoint, _target);
