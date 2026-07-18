@@ -39,6 +39,8 @@ namespace RoyalSiege.Data
         public ParticleSystem deathVfx;
         [Tooltip("Weapon-hit sound when THIS enemy's attack lands (melee strike or projectile impact). Optional — null = silent.")]
         public AudioClip attackHitSfx;
+        [Tooltip("Voice/grunt when THIS enemy TAKES a non-fatal hit ('got hit'). Optional — null falls back to the generic hit thock. The death grunt covers killing blows.")]
+        public AudioClip hurtSfx;
         [Tooltip("Hit-stagger: a MOVING enemy stops and plays the hurt flinch for this long when damaged, then resumes. 0 = disabled. Attacking/frozen enemies never stagger.")]
         public float hurtStaggerSeconds = 0.35f;
         [Tooltip("Minimum seconds between staggers so rapid hits (Tesla, Arrows) can't stun-lock a unit into never advancing.")]

@@ -74,6 +74,7 @@ namespace RoyalSiege.Core
         // ---- 18-Jul juice ----
         public event Action<Vector3, float, bool> EnemyDamaged;           // position, amount, wasKillingBlow (floating numbers)
         public event Action<EnemyDefinitionSO, Vector3> EnemyAttackImpact; // an enemy's attack landed (per-weapon hit SFX)
+        public event Action<EnemyDefinitionSO, Vector3> EnemyHurt;         // an enemy TOOK a non-fatal hit (per-enemy got-hit voice)
 
         public void RaiseEnemyKilled(EnemyKilledArgs args) => EnemyKilled?.Invoke(args);
         public void RaiseEnergyChanged(float current, float max) => EnergyChanged?.Invoke(current, max);
@@ -103,6 +104,8 @@ namespace RoyalSiege.Core
             => EnemyDamaged?.Invoke(position, amount, killingBlow);
         public void RaiseEnemyAttackImpact(EnemyDefinitionSO def, Vector3 position)
             => EnemyAttackImpact?.Invoke(def, position);
+        public void RaiseEnemyHurt(EnemyDefinitionSO def, Vector3 position)
+            => EnemyHurt?.Invoke(def, position);
     }
 
     /// <summary>What the checkpoint screen needs to show (v4 §9).</summary>

@@ -20,7 +20,7 @@ MonoBehaviour:
   cooldown: 12
   troopPrefab: {fileID: 5995942894469131339, guid: d5016d6ff1abe834b9a55cdf5cc7af7a, type: 3}
   countPerCast: 2
-  maxActive: 4
+  maxActive: 30
   hp: 480
   damage: 75
   attackRate: 1.1

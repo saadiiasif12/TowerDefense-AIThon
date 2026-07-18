@@ -35,6 +35,10 @@ namespace RoyalSiege.UI
 
         private System.Action _dismiss;
         private int _checkpointsSeen;
+        // The visible "unlocked card" slot (art/frame/cost). Driven from the unlock card so
+        // the thumbnail can never be left on its authored placeholder (was showing the Cannon
+        // art regardless of which card actually unlocked).
+        private CardSlotView _unlockCardSlot;
         // 18-Jul tower cinematic gate: the tower's sink/rise sequence starts BEFORE
         // CheckpointReached is raised (same call stack), so when a transition is running the
         // screen buffers and shows on TowerTransitionCompleted. Timeout = never soft-lock.
@@ -48,6 +52,10 @@ namespace RoyalSiege.UI
             if (_context == null) _context = FindFirstObjectByType<GameContext>();
             if (_panel != null) _panel.SetActive(false);
             if (_continueButton != null) _continueButton.onClick.AddListener(OnContinue);
+            // Cache the card slot inside the unlock group (may be null on the older simple layout).
+            _unlockCardSlot = _unlockGroup != null
+                ? _unlockGroup.GetComponentInChildren<CardSlotView>(true)
+                : GetComponentInChildren<CardSlotView>(true);
             if (_context != null && _context.Events != null)
             {
                 _context.Events.CheckpointReached += OnCheckpoint;
@@ -115,6 +123,9 @@ namespace RoyalSiege.UI
             if (_unlockGroup != null) _unlockGroup.SetActive(hasUnlock);
             if (hasUnlock)
             {
+                // Drive the whole card slot from the actual unlock — art/frame/cost all follow
+                // the card, so the thumbnail always matches (no more stale placeholder art).
+                if (_unlockCardSlot != null) _unlockCardSlot.SetCard(args.Unlock);
                 if (_unlockLabel != null) _unlockLabel.text = args.Unlock.displayName;
                 if (_unlockIcon != null)
                 {

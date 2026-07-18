@@ -75,9 +75,14 @@ namespace RoyalSiege.Placement
             if (card is SpellCardSO spellCard && spellCard.effect is LogEffectSO logFx)
                 ghost?.ShowLane(logFx.rollDistance, logFx.width, logFx.RollDirection, card.displayName);
             else
+            {
+                // Building disc = the card's true occupied space (footprint), not the
+                // prefab's fixed 1-unit speck — the placement spot must actually read.
+                if (card is BuildingCardSO buildingCard) ghost?.SetFootprint(buildingCard.footprintRadius * 2f);
                 ghost?.Show(radius, card.displayName); // name floats above the preview
+            }
             if (card is BuildingCardSO or TroopCardSO) _gridOverlay?.Show();
-            _deployRing?.SetDragHighlight(true);   // circle brightens while a card is held
+            ActiveDeployRing?.SetDragHighlight(true);   // circle brightens while a card is held
         }
 
         /// <summary>
@@ -141,7 +146,7 @@ namespace RoyalSiege.Placement
                 _slot = -1;
                 if (committed == _buildingGhost) _spellGhost?.Hide(); else _buildingGhost?.Hide();
                 _gridOverlay?.Hide();
-                _deployRing?.SetDragHighlight(false);
+                ActiveDeployRing?.SetDragHighlight(false);
                 committed?.PlayCommitConfirm();
                 return;
             }
@@ -154,7 +159,23 @@ namespace RoyalSiege.Placement
             _buildingGhost?.Hide();
             _spellGhost?.Hide();
             _gridOverlay?.Hide();
-            _deployRing?.SetDragHighlight(false);
+            ActiveDeployRing?.SetDragHighlight(false);
+        }
+
+        /// <summary>
+        /// The dashed circle of the CURRENTLY shown arena. Each stage environment carries its
+        /// own DeploymentRing, so the serialized ref goes stale when the arena swaps — resolve
+        /// (and re-cache) the live one instead of highlighting a disabled object.
+        /// </summary>
+        private Buildings.DeployRingView ActiveDeployRing
+        {
+            get
+            {
+                if (_deployRing != null && _deployRing.isActiveAndEnabled) return _deployRing;
+                var live = FindFirstObjectByType<Buildings.DeployRingView>(); // active objects only
+                if (live != null) _deployRing = live;
+                return _deployRing;
+            }
         }
 
         private GhostView GhostFor(CardDefinitionSO card) =>

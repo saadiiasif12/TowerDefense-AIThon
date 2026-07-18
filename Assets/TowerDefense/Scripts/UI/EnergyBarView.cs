@@ -61,6 +61,19 @@ namespace RoyalSiege.UI
         {
             int max = _context != null ? Mathf.RoundToInt(_context.Energy.Max) : 10;
             if (max <= 0) max = 10;
+
+            // Prefer the segment cells the designer hand-placed under _segmentRoot: their
+            // EXACT authored fitting is used (position/size/sprite kept, no layout group
+            // needed). Only if none are pre-placed do we build procedural cells as a fallback.
+            var placed = new System.Collections.Generic.List<Image>();
+            if (_segmentRoot != null)
+                for (int c = 0; c < _segmentRoot.childCount; c++)
+                {
+                    var img = _segmentRoot.GetChild(c).GetComponent<Image>();
+                    if (img != null) placed.Add(img);
+                }
+            bool usePlaced = placed.Count >= max;
+
             _max = max;
             _segments = new Image[max];
             _ghostT = new float[max];
@@ -70,22 +83,34 @@ namespace RoyalSiege.UI
             float startX = -totalW * 0.5f + _segmentSize.x * 0.5f;
             for (int i = 0; i < max; i++)
             {
-                var go = new GameObject("Seg" + i, typeof(RectTransform), typeof(Image));
-                var rt = (RectTransform)go.transform;
-                rt.SetParent(_segmentRoot, false);
-                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-                rt.pivot = new Vector2(0.5f, 0.5f);
-                rt.sizeDelta = _segmentSize;
-                rt.anchoredPosition = new Vector2(startX + i * (_segmentSize.x + _segmentGap), 0f);
-                var img = go.GetComponent<Image>();
-                img.sprite = _segmentSprite;
+                Image img;
+                if (usePlaced)
+                {
+                    img = placed[i]; // designer's exact cell — transform/sprite untouched
+                }
+                else
+                {
+                    var go = new GameObject("Seg" + i, typeof(RectTransform), typeof(Image));
+                    var rt = (RectTransform)go.transform;
+                    rt.SetParent(_segmentRoot, false);
+                    rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+                    rt.pivot = new Vector2(0.5f, 0.5f);
+                    rt.sizeDelta = _segmentSize;
+                    rt.anchoredPosition = new Vector2(startX + i * (_segmentSize.x + _segmentGap), 0f);
+                    img = go.GetComponent<Image>();
+                    img.sprite = _segmentSprite;
+                }
                 img.color = _normalColor;
                 img.raycastTarget = false;
                 _segments[i] = img;
                 _ghostT[i] = float.MinValue; // idle sentinel
                 _popT[i] = -1f;
-                go.SetActive(false);
+                img.gameObject.SetActive(false);
             }
+
+            // Never show more than max patches: hide any extra authored cells.
+            if (usePlaced)
+                for (int i = max; i < placed.Count; i++) placed[i].gameObject.SetActive(false);
         }
 
         private void OnEnergyChanged(float current, float max)

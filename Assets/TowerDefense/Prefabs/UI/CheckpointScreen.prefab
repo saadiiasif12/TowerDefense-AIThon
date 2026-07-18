@@ -194,7 +194,7 @@ MonoBehaviour:
   _subtitle: {fileID: 0}
   _detail: {fileID: 0}
   _unlockGroup: {fileID: 2503041395847808892}
-  _unlockIcon: {fileID: 2847009589882649221}
+  _unlockIcon: {fileID: 7556372468877561997}
   _unlockLabel: {fileID: 9160944927390871392}
   _unlockCost: {fileID: 2065394739238545201}
   _unlockDescription: {fileID: 1621535193651352105}
@@ -1813,3 +1813,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7659993945485212895, guid: e7fc317953035224fb5e67523bf87569, type: 3}
   m_PrefabInstance: {fileID: 621061561699359402}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7556372468877561997 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6936621543292160551, guid: e7fc317953035224fb5e67523bf87569, type: 3}
+  m_PrefabInstance: {fileID: 621061561699359402}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image

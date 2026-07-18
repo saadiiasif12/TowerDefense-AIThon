@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.BuildingCardSO
   id: XBow
   displayName: X-Bow
-  description: 'Long-range crossbow: rapid 35-damage bolts out to range 9.'
+  description: Continuously attack enemies with arrows
   icon: {fileID: 21300000, guid: d397b4dfc0d73264b9ec895378ee4adf, type: 3}
   cost: 6
   cooldown: 20

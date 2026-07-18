@@ -26,9 +26,12 @@ MonoBehaviour:
   attackImpactOnAnimEvent: 1
   engageRadiusFromCenter: 12
   deathVfx: {fileID: 0}
+  attackHitSfx: {fileID: 0}
+  hurtSfx: {fileID: 8300000, guid: 88993b906d4443c45b68c8d3e4e0346e, type: 3}
   hurtStaggerSeconds: 0.35
   hurtCooldownSeconds: 0
   walkAnimSpeedMultiplier: 1.2
+  attackAnimSpeedMultiplier: 1
   unitRadius: 0.6
   targetPriority: 0
   bounty: 1

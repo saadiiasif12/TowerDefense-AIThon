@@ -17,8 +17,9 @@ namespace RoyalSiege.Juice
         [SerializeField] private GameContext _context;
 
         [Header("Combat")]
-        [SerializeField] private AudioClip _enemyHit;        // small thock per landed hit (throttled)
-        [SerializeField] private AudioClip[] _enemyDeaths;   // grunt variations (hashed pick)
+        // 19-Jul user ruling: an enemy taking a hit plays ONLY its own per-enemy voice
+        // (EnemyDefinitionSO.hurtSfx, the Sounds/new pack) — no generic thock, no shared
+        // death grunts. An enemy without a clip is simply silent on hits.
         [SerializeField] private AudioClip _towerHit;        // tower taking damage (throttled)
 
         [Header("Cards & buildings")]
@@ -69,7 +70,7 @@ namespace RoyalSiege.Juice
                 _pool[i].spatialBlend = 0f; // 2D — the whole arena is on screen anyway
             }
 
-            _events.EnemyDamaged += OnEnemyDamaged;
+            _events.EnemyHurt += OnEnemyHurt;
             _events.EnemyKilled += OnEnemyKilled;
             _events.TowerDamaged += OnTowerDamaged;
             _events.CardPlayed += OnCardPlayed;
@@ -86,7 +87,7 @@ namespace RoyalSiege.Juice
         private void OnDestroy()
         {
             if (_events == null) return;
-            _events.EnemyDamaged -= OnEnemyDamaged;
+            _events.EnemyHurt -= OnEnemyHurt;
             _events.EnemyKilled -= OnEnemyKilled;
             _events.TowerDamaged -= OnTowerDamaged;
             _events.CardPlayed -= OnCardPlayed;
@@ -102,18 +103,22 @@ namespace RoyalSiege.Juice
 
         // ---------------- handlers ----------------
 
-        private void OnEnemyDamaged(Vector3 position, float amount, bool killingBlow)
+        private void OnEnemyHurt(EnemyDefinitionSO def, Vector3 position)
         {
-            if (killingBlow) return; // the death grunt covers it
-            if (Time.realtimeSinceStartup - _lastHitSound < 0.09f) return; // anti-stack
+            // Only non-fatal hits raise this; the killing blow plays the same voice via
+            // OnEnemyKilled. No fallback — the per-enemy voice is THE hit sound (19-Jul).
+            if (def == null || def.hurtSfx == null) return;
+            if (Time.realtimeSinceStartup - _lastHitSound < 0.1f) return; // anti-stack across a crowd
             _lastHitSound = Time.realtimeSinceStartup;
-            Play(_enemyHit, 0.35f, 0.92f, 1.1f);
+            Play(def.hurtSfx, 0.5f, 0.94f, 1.08f);
         }
 
         private void OnEnemyKilled(EnemyKilledArgs args)
         {
-            if (_enemyDeaths != null && _enemyDeaths.Length > 0)
-                Play(_enemyDeaths[Mathf.Abs(Hash(_hashCounter)) % _enemyDeaths.Length], 0.5f, 0.9f, 1.12f);
+            // Killing blow = the same per-enemy voice, pitched down so it reads as the
+            // death groan (still the ONLY enemy-hit sound — Feel demo grunts retired).
+            if (args.Definition != null && args.Definition.hurtSfx != null)
+                Play(args.Definition.hurtSfx, 0.55f, 0.82f, 0.92f);
             if (Time.realtimeSinceStartup - _lastHitHaptic > 0.15f)
             {
                 _lastHitHaptic = Time.realtimeSinceStartup;

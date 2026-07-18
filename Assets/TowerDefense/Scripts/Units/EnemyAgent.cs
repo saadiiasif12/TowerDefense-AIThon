@@ -78,6 +78,8 @@ namespace RoyalSiege.Units
             _dotAccumulated = 0f;
             if (_dead) return; // fatal hits skip the flash — death anim takes over
             _hitReaction?.Play();
+            if (_def != null && _deps != null)
+                _deps.Events.RaiseEnemyHurt(_def, _logicPosition); // per-enemy got-hit voice
             TryHurtStagger();
         }
 
