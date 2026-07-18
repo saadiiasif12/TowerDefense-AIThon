@@ -16,18 +16,19 @@ MonoBehaviour:
   displayName: Ogre
   prefab: {fileID: 7720359947094939964, guid: d6a3affd378e7684184d14e719ebeb86, type: 3}
   hp: 3000
-  moveSpeed: 0.7
+  moveSpeed: 0.6
   damage: 250
   attackRate: 1.6
   attackRange: 0.8
   impactFraction: 0.4
   splashRadius: 0
   projectile: {fileID: 0}
+  attackImpactOnAnimEvent: 0
   engageRadiusFromCenter: 12
   deathVfx: {fileID: 0}
   hurtStaggerSeconds: 0.3
   hurtCooldownSeconds: 6
-  walkAnimSpeedMultiplier: 1
+  walkAnimSpeedMultiplier: 2.51
   unitRadius: 0.85
   targetPriority: 1
   bounty: 5

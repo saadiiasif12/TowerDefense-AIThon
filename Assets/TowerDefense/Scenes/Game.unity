@@ -147,11 +147,47 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: -45
       objectReference: {fileID: 0}
+    - target: {fileID: 1174359340284924331, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1526092221582247437, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1947799372287183633, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.577
+      objectReference: {fileID: 0}
+    - target: {fileID: 3992981283579155717, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.34
+      objectReference: {fileID: 0}
+    - target: {fileID: 4333091756816240575, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5533598138898769903, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
       propertyPath: m_Name
       value: RoyalTower
       objectReference: {fileID: 0}
     - target: {fileID: 5533598138898769903, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6145865776123665108, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6271447148172470046, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.52
+      objectReference: {fileID: 0}
+    - target: {fileID: 6648288697936821668, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6773784310251290734, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -1663,6 +1699,22 @@ PrefabInstance:
     - target: {fileID: 16505177095170966, guid: 0fabd01970b9b774988945e4b91ff544, type: 3}
       propertyPath: m_Mesh
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 840366830439701899, guid: 0fabd01970b9b774988945e4b91ff544, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.059999943
+      objectReference: {fileID: 0}
+    - target: {fileID: 840366830439701899, guid: 0fabd01970b9b774988945e4b91ff544, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 840366830439701899, guid: 0fabd01970b9b774988945e4b91ff544, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 840366830439701899, guid: 0fabd01970b9b774988945e4b91ff544, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2954325628743506835, guid: 0fabd01970b9b774988945e4b91ff544, type: 3}
       propertyPath: m_LocalPosition.x

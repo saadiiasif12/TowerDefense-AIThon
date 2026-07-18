@@ -145,13 +145,33 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2902475275671970206}
   m_SourcePrefab: {fileID: 100100000, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
 --- !u!4 &2722536810962084067 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1852576806548013000, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
   m_PrefabInstance: {fileID: 4358859935350136619}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3511859748799980154 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
+  m_PrefabInstance: {fileID: 4358859935350136619}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2902475275671970206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3511859748799980154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a15f1aeff7e6b5e45a9dc25468527d03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Units.AnimationEventRelay
 --- !u!4 &4321047132636674240 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 13376fd9aa9d7a94eb2e9f32a5c5e6b9, type: 3}
