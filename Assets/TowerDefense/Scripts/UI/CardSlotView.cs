@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using RoyalSiege.Data;
+using TMPro;
 
 namespace RoyalSiege.UI
 {
@@ -28,7 +29,7 @@ namespace RoyalSiege.UI
         [SerializeField] private Image _cooldownOverlay;  // radial dark sweep (optional)
         [SerializeField] private GameObject _costBadge;   // gem + number group (normal only)
         [SerializeField] private Image _gem;              // lightning cost gem
-        [SerializeField] private Text _costLabel;         // cost number
+        [SerializeField] private TextMeshProUGUI _costLabel;         // cost number
 
         private const float SelectScale = 1.10f;
         private const float SelectLiftPx = 16f;

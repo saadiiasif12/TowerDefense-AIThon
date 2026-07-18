@@ -35,7 +35,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3874251538055014163}
-  - {fileID: 3355285858656128329}
+  - {fileID: 7262539626108722858}
   - {fileID: 3007208946958159994}
   - {fileID: 2417746578707333565}
   - {fileID: 5663896645031662992}
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.WaveBannerView
   _context: {fileID: 0}
-  _waveLabel: {fileID: 0}
+  _waveLabel: {fileID: 5625755206567485881}
   _bonusLabel: {fileID: 6387742005854064659}
   _stageSlider: {fileID: 6111907392335531651}
 --- !u!114 &2353387877922184939
@@ -323,6 +323,43 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &2063998920107198238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7262539626108722858}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7262539626108722858
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2063998920107198238}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3355285858656128329}
+  - {fileID: 6614810961921199622}
+  m_Father: {fileID: 9069069455070055251}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 19.400146, y: 0}
+  m_SizeDelta: {x: 38.79975, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2151420355276285869
 GameObject:
   m_ObjectHideFlags: 0
@@ -617,9 +654,8 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 6614810961921199622}
   - {fileID: 3461470813393141155}
   m_Father: {fileID: 9069069455070055251}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -970,16 +1006,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6286541748550516111}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.90000004, y: 0.90000004, z: 0.90000004}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4190838407659044547}
   - {fileID: 4872510938967565914}
   - {fileID: 4524870216298952824}
   - {fileID: 4326145118173002309}
-  m_Father: {fileID: 3007208946958159994}
+  m_Father: {fileID: 7262539626108722858}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -1004,7 +1040,7 @@ MonoBehaviour:
     m_Top: 32
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: -22.23
+  m_Spacing: -19.88
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -1299,20 +1335,20 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9005820064412800245}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3607214211743419729}
   - {fileID: 247269347218339369}
   - {fileID: 7141874713248645819}
-  m_Father: {fileID: 9069069455070055251}
+  m_Father: {fileID: 7262539626108722858}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 678.2, y: 42.6}
-  m_SizeDelta: {x: 715, y: 38}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: 122.40004, y: 42.600098}
+  m_SizeDelta: {x: -396.6001, y: 38}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4108744387263546409
 CanvasRenderer:

@@ -609,17 +609,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dd6bb34571ec6349b9295c1ae229322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Placement.GhostView
---- !u!114 &850488798 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5625755206567485881, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-  m_PrefabInstance: {fileID: 2019923221}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1082647734
 GameObject:
   m_ObjectHideFlags: 0
@@ -1388,38 +1377,6 @@ PrefabInstance:
       propertyPath: _context
       value: 
       objectReference: {fileID: 1247799767}
-    - target: {fileID: 4190838407659044547, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4190838407659044547, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4190838407659044547, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4190838407659044547, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4326145118173002309, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4326145118173002309, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4326145118173002309, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4326145118173002309, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4394233422570863962, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: _context
       value: 
@@ -1428,98 +1385,14 @@ PrefabInstance:
       propertyPath: _placement
       value: 
       objectReference: {fileID: 1247799769}
-    - target: {fileID: 4524870216298952824, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4524870216298952824, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4524870216298952824, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4524870216298952824, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4863120699905256512, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _context
-      value: 
-      objectReference: {fileID: 1247799767}
-    - target: {fileID: 4863120699905256512, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _kingSad
-      value: 
-      objectReference: {fileID: 21300000, guid: 0998f339b99b39948a62887ba5111b75, type: 3}
-    - target: {fileID: 4863120699905256512, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _kingHappy
-      value: 
-      objectReference: {fileID: 21300000, guid: 3e19f3cea693fe54a9d803075d8eab9d, type: 3}
-    - target: {fileID: 4863120699905256512, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _buttonBase
-      value: 
-      objectReference: {fileID: 21300000, guid: c0c253fd4041b844abf948bde5374e79, type: 3}
-    - target: {fileID: 4863120699905256512, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _circleSprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 1394264f09a77d54e96a90c75c078f66, type: 3}
-    - target: {fileID: 4863120699905256512, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _titleBannerFail
-      value: 
-      objectReference: {fileID: 21300000, guid: 45bdfccbbf8039347ad9467df0aeb4de, type: 3}
-    - target: {fileID: 4863120699905256512, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _titleBannerPass
-      value: 
-      objectReference: {fileID: 21300000, guid: c0dc287976901734ab9a7882b0f6eba4, type: 3}
-    - target: {fileID: 4872510938967565914, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4872510938967565914, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4872510938967565914, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4872510938967565914, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5162031887842230656, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: _context
       value: 
       objectReference: {fileID: 1247799767}
-    - target: {fileID: 5162031887842230656, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _waveLabel
-      value: 
-      objectReference: {fileID: 850488798}
     - target: {fileID: 5823243070724458760, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6813862837004063808, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _context
-      value: 
-      objectReference: {fileID: 1247799767}
-    - target: {fileID: 6813862837004063808, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _cardFrame
-      value: 
-      objectReference: {fileID: 21300000, guid: 571d4991fc7acda4f8be5433628af92e, type: 3}
-    - target: {fileID: 6813862837004063808, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _kingHappy
-      value: 
-      objectReference: {fileID: 21300000, guid: 3e19f3cea693fe54a9d803075d8eab9d, type: 3}
-    - target: {fileID: 6813862837004063808, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _buttonBase
-      value: 
-      objectReference: {fileID: 21300000, guid: c0c253fd4041b844abf948bde5374e79, type: 3}
-    - target: {fileID: 6813862837004063808, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
-      propertyPath: _titleBanner
-      value: 
-      objectReference: {fileID: 21300000, guid: c0dc287976901734ab9a7882b0f6eba4, type: 3}
     - target: {fileID: 9069069455070055251, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_Pivot.x
       value: 0
