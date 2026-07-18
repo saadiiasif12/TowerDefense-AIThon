@@ -222,7 +222,7 @@ PrefabInstance:
     - target: {fileID: -5590452712435908964, guid: ef79a1c6e3e401f4db978734e2c77ac9, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 79adc1a59cee6f340852f035ef706b01, type: 2}
+      objectReference: {fileID: 2100000, guid: 888d7425193fd67428112dc1bf8dafff, type: 2}
     - target: {fileID: 919132149155446097, guid: ef79a1c6e3e401f4db978734e2c77ac9, type: 3}
       propertyPath: m_Name
       value: DoubleHornModel
