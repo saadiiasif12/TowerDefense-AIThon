@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Projectile_MageBolt
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.ProjectileSettingsSO
   prefab: {fileID: 8026250712916438719, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
-  speed: 8
+  speed: 16
   arcHeight: 1.8
   spawnHeightOffset: 1.4
   impactHeightOffset: 0.6
