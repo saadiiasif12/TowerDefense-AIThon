@@ -18,7 +18,7 @@ MonoBehaviour:
   spawnHeightOffset: 0.25
   impactHeightOffset: 0.5
   muzzleVfx: {fileID: 225452147359146344, guid: bffca10003aa0cf4da306bf41811e999, type: 3}
-  impactVfx: {fileID: 3663090471507589420, guid: 5bee579a8c487734ba20c1dab722c39b, type: 3}
+  impactVfx: {fileID: 4182092774760245322, guid: f76d8b569c8899d4fac1b2af0ea3b56d, type: 3}
   impactTint: {r: 1, g: 1, b: 1, a: 1}
   spinDegreesPerSecond: 540
   impactShake: 0
