@@ -70,7 +70,12 @@ namespace RoyalSiege.Placement
                 TroopCardSO t => t.unitRadius * 3f, // small deploy-spread marker
                 _ => 1f
             };
-            ghost?.Show(radius, card.displayName); // 18-Jul: name floats above the preview
+            // 18-Jul: the Log previews its actual ROLL LANE (straight, forward, exact range)
+            // instead of the meaningless little drop circle.
+            if (card is SpellCardSO spellCard && spellCard.effect is LogEffectSO logFx)
+                ghost?.ShowLane(logFx.rollDistance, logFx.width, logFx.RollDirection, card.displayName);
+            else
+                ghost?.Show(radius, card.displayName); // name floats above the preview
             if (card is BuildingCardSO or TroopCardSO) _gridOverlay?.Show();
             _deployRing?.SetDragHighlight(true);   // circle brightens while a card is held
         }
