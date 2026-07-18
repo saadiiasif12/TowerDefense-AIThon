@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Spear Goblin
   prefab: {fileID: 7791316405672678054, guid: 1272212b1509d0c4398cf69d4aa794b9, type: 3}
   hp: 320
-  moveSpeed: 1.6
+  moveSpeed: 1.3
   damage: 70
   attackRate: 1.4
   attackRange: 0.5
@@ -27,7 +27,7 @@ MonoBehaviour:
   deathVfx: {fileID: 0}
   hurtStaggerSeconds: 0.35
   hurtCooldownSeconds: 0
-  walkAnimSpeedMultiplier: 1
+  walkAnimSpeedMultiplier: 2.5
   unitRadius: 0.4
   targetPriority: 0
   bounty: 1
