@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.SpellCardSO
   id: Lightning
   displayName: Lightning
-  description: 
+  description: A mighty storm strikes the strongest enemies in a radius of 3.5.
   icon: {fileID: 21300000, guid: 28ec336b16805e24cb9f4a7baaccf6e5, type: 3}
   cost: 6
   cooldown: 16

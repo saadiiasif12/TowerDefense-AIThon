@@ -128,15 +128,27 @@ namespace RoyalSiege.Units
         }
 
         /// <summary>
+        /// Artistic attack-anim speed factor applied AFTER the period-fit clamp (1 = default).
+        /// Enemies pass their per-def attackAnimSpeedMultiplier; other units leave it at 1.
+        /// </summary>
+        public void ConfigureAttackAnim(float speedMultiplier) =>
+            _attackAnimMultiplier = Mathf.Max(0.05f, speedMultiplier);
+
+        private float _attackAnimMultiplier = 1f;
+
+        /// <summary>
         /// Called on each swing: scales the LOOPING attack state so one swing ≈ one attack
-        /// period, clamped so a short period never makes it frantic nor a long one crawl.
+        /// period, clamped so a short period never makes it frantic nor a long one crawl,
+        /// then scaled by the per-unit artistic multiplier (purely visual — damage timing
+        /// stays on the AttackCycle / anim-event schedule).
         /// Entering/leaving the attack state is driven by <see cref="SetAttacking"/> (bool)
         /// for smooth crossfades — no per-swing trigger, so no restart stutter.
         /// </summary>
         public void PlayAttack(float attackPeriod)
         {
             if (_animator == null || !Has(AttackSpeedHash)) return;
-            float scale = Mathf.Clamp(_attackClipLength / Mathf.Max(0.05f, attackPeriod), 0.6f, 1.6f);
+            float scale = Mathf.Clamp(_attackClipLength / Mathf.Max(0.05f, attackPeriod), 0.6f, 1.6f)
+                * _attackAnimMultiplier;
             _animator.SetFloat(AttackSpeedHash, scale);
         }
 

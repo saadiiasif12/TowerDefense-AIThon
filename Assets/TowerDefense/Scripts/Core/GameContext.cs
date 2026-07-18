@@ -52,9 +52,8 @@ namespace RoyalSiege.Core
 
         private void Awake()
         {
-            // Mobile smoothness: steady 60 (vSync off so the cap actually applies on device).
-            QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = 60;
+            // Frame rate is owned by FrameRateSetter (panel-max, 120Hz where supported) —
+            // it lives on GameSystems and in the Splash scene. Nothing hardcoded here.
 
             // Flatten: the tower model's pivot may sit above y=0, but all gameplay is planar.
             Vector3 center = RangeMath.Flatten(_royalTower.transform.position);

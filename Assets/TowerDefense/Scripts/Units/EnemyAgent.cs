@@ -184,6 +184,8 @@ namespace RoyalSiege.Units
             if (_animator == null) _animator = GetComponent<UnitAnimator>();
             // Walk-anim speed = global GameConfig factor × this enemy's per-def scale.
             _animator?.ConfigureWalk(_deps.WalkAnimMultiplier * _def.walkAnimSpeedMultiplier);
+            // Attack-anim speed = this enemy's per-def artistic factor (visual only).
+            _animator?.ConfigureAttackAnim(_def.attackAnimSpeedMultiplier);
             // 18-Jul stylized look: outline BEFORE the lifecycle view exists — the lifecycle
             // caches sharedMaterials in ITS Awake and restores them on every ResetForSpawn,
             // so the outline slot must already be appended when that cache is taken.

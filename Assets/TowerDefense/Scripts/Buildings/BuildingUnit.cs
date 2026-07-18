@@ -36,7 +36,17 @@ namespace RoyalSiege.Buildings
         public bool IsBuilding => true;
         public bool BlocksPlacement => true;
         public float FootprintRadius => _card != null ? _card.footprintRadius : 0.75f;
-        public void TakeDamage(float amount) => _health?.TakeDamage(amount);
+        private Juice.StructureHitBlink _hitBlink;
+        public void TakeDamage(float amount)
+        {
+            if (_health == null || !_health.IsAlive || amount <= 0f) return;
+            _health.TakeDamage(amount);
+            // 18-Jul ruling: structures show NO damage text — one juicy blink per hit.
+            // (Lifetime decay calls _health directly in Tick, so decay never blinks.)
+            if (_hitBlink == null) _hitBlink = GetComponent<Juice.StructureHitBlink>()
+                ?? gameObject.AddComponent<Juice.StructureHitBlink>();
+            _hitBlink.Play();
+        }
 
         public void Init(BuildingCardSO card, ITargetRegistry registry, IProjectileLauncher launcher,
             GameEvents events, ITicker ticker, IClock clock)

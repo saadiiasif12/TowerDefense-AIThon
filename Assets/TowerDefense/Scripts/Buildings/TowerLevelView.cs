@@ -75,9 +75,9 @@ namespace RoyalSiege.Buildings
         }
 
         /// <summary>
-        /// The 4 tower arts have different roof heights (measured world tops 3.09/2.52/2.28/2.38)
-        /// — one fixed king height can't fit them all. Reads the level model's renderer bounds at
-        /// its BASE scale and drops KingRoot exactly on the roof (+ the artistic offset).
+        /// The tower arts have different roof heights — one fixed king height can't fit them
+        /// all. Reads the level model's renderer bounds at its BASE scale and drops KingRoot's
+        /// Y onto the roof (+ the artistic offset). X/Z stay exactly as authored on the prefab.
         /// </summary>
         private void AlignKing(int level)
         {
@@ -190,8 +190,8 @@ namespace RoyalSiege.Buildings
             Transform oldM = Get(fromLevel), newM = Get(toLevel);
             Vector3 oldBase = Scale(fromLevel), newBase = Scale(toLevel);
 
-            // King rides the swap: lerp from the old roof height to the new one (measured
-            // at base scale BEFORE the pop starts, so mid-pop bounds never lie).
+            // King rides the swap: lerp Y from the old roof height to the new one (measured
+            // at base scale BEFORE the pop starts, so mid-pop bounds never lie). X/Z untouched.
             float kingFromY = _kingRoot != null ? _kingRoot.position.y : 0f;
             float newTop = RoofTopY(toLevel);
             float kingToY = float.IsNaN(newTop) ? kingFromY : newTop + _kingHeightOffset;
