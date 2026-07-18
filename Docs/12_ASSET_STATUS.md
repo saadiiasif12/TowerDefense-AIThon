@@ -54,6 +54,7 @@ Update this whenever assets are imported/replaced. Models so far are Meshy AI ge
 
 ## UI
 - ✅ Greybox HUD live (hand bar + NEXT, energy bar, wave banner, end panel, world health bars). No art skin yet — AI-generate card frames/icons on Day 3 (Scenario/Ludo.ai). Mock `IMG-20260716-WA0006.jpg` remains the layout reference.
+- ✅ Environment toggle button (18 Jul): `UI/EnvIcons/Icon_EnvGrass.png` + `Icon_EnvSnow.png` — procedurally-drawn 128px circular biome chips (sky-over-ground two-tone, themed to the real grass/snow grounds) used as the HUD header toggle's swappable icon. Regenerate via the `MakeChip` editor snippet (see AI Log) if the biome palette changes.
 
 ## Third-party FX
 - ✅ `ThirdParty/MagicArsenal/` — dependency-closure subset (26 files, 3.7 MB) of the Arcane projectile/impact/muzzle triplet from the local Particles-Library project. Materials auto-converted Legacy-Additive → URP Particles Unlit. Pool-safe copies (lights + MagicLightFade stripped) live in `Prefabs/VFX/VFX_Arcane*`. Full library (6600+ prefabs, 30+ packs) at `D:\GameDevelopment\Assets\ParticlesLibrary\Particles-Library` + its `particles-skill.md` reference — pull more via the same closure-copy recipe (see AI Log).

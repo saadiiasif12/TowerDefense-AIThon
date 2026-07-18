@@ -93,7 +93,7 @@ MonoBehaviour:
   _fireShake: 2.5
   _freezeNova: {fileID: 1140935557964873636, guid: 3ec60b518d7cbca468db369a9d002b72, type: 3}
   _frostGroundPatch: {fileID: 6639331156978392743, guid: 09d9e510d38ab4b49843ed9b3154a394, type: 3}
-  _freezeShake: 0.8
+  _freezeShake: 1.5
 --- !u!114 &2708859401058599862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,6 +113,8 @@ MonoBehaviour:
   _thunderSplash: {fileID: 0}
   _smokeMaterial: {fileID: 2100000, guid: 7d36cef4162e55a4fb4774f3e3cf08ba, type: 2}
   _shakeTrauma: 0.5
+  _crackRadius: 0.8
+  _crackSeconds: 0.8
 --- !u!114 &5168311276957130814
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,7 +129,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.V4CardVfx
   _context: {fileID: 0}
   _softMaterial: {fileID: 2100000, guid: 7d36cef4162e55a4fb4774f3e3cf08ba, type: 2}
-  _quakeShakePulse: 0.12
+  _quakeRumblePerSecond: 1.45
+  _quakeShakeHorizontalDamp: 0.25
+  _quakeShakeStrength: 0.6
+  _quakeShakeSeconds: 1.2
   _logPrefab: {fileID: 5467130179978715683, guid: 6d1a18af5c08b154585aed70b28b45aa, type: 3}
 --- !u!114 &3227671822173771447
 MonoBehaviour:
@@ -152,6 +157,12 @@ MonoBehaviour:
   _cardPlayed: {fileID: 8300000, guid: ca77d13bf4f3b7442b324e68259c72e1, type: 3}
   _buildingPlaced: {fileID: 8300000, guid: cc685207a46826746af448ba3a0eaa07, type: 3}
   _knightSpawn: {fileID: 8300000, guid: ca77d13bf4f3b7442b324e68259c72e1, type: 3}
+  _knightHit: {fileID: 0}
+  _arrowRain: {fileID: 0}
+  _fireballBlast: {fileID: 0}
+  _freeze: {fileID: 0}
+  _earthquake: {fileID: 0}
+  _logRoll: {fileID: 0}
   _levelUp: {fileID: 8300000, guid: 77d6356f3f181f04c86c084a2ff5267d, type: 3}
   _victory: {fileID: 8300000, guid: 98046261e6947b64eb462140e10a5b35, type: 3}
   _defeat: {fileID: 8300000, guid: 46dcfa1187f4a1e4cb3793dd1351f669, type: 3}

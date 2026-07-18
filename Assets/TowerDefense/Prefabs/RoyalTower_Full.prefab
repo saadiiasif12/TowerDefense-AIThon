@@ -678,7 +678,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.WorldHealthBar
   _barPrefab: {fileID: 6749988150019998838, guid: 816abd0db227d11489548220cd59f090, type: 3}
-  _yOffset: 2.15
+  _yOffset: 3.27
   _lowColor: {r: 0.95, g: 0.25, b: 0.15, a: 1}
   _hideWhenFull: 0
   _width: 1
