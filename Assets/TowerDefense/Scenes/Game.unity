@@ -14,18 +14,18 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 0
+  m_Fog: 1
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.01
+  m_FogDensity: 0.006
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
-  m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
-  m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+  m_AmbientSkyColor: {r: 0, g: 0.21316099, b: 1, a: 1}
+  m_AmbientEquatorColor: {r: 0.13999642, g: 0.24528301, b: 0.16105375, a: 1}
+  m_AmbientGroundColor: {r: 0.56180626, g: 0.5086774, b: 0.6698113, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 3
-  m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
+  m_AmbientMode: 1
+  m_SubtractiveShadowColor: {r: 1, g: 1, b: 1, a: 1}
   m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
@@ -252,162 +252,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7628973665681816515, guid: 2e76e168e2eab3d40bb53d43bac82d3f, type: 3}
   m_PrefabInstance: {fileID: 28133052}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &300827901
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 300827904}
-  - component: {fileID: 300827903}
-  - component: {fileID: 300827902}
-  - component: {fileID: 300827905}
-  - component: {fileID: 300827906}
-  - component: {fileID: 300827907}
-  - component: {fileID: 300827909}
-  m_Layer: 0
-  m_Name: Juice
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &300827902
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 300827901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b163c0cfb237e9e499c950e77b1cc323, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.JuiceDirector
-  _context: {fileID: 1247799767}
-  _deathPuff: {fileID: 6791656653965077214, guid: a12e16938bf406a45a2f75a161d291fd, type: 3}
-  _placementDust: {fileID: 6791656653965077214, guid: a12e16938bf406a45a2f75a161d291fd, type: 3}
-  _spellBurst: {fileID: 3545189036054417965, guid: 8b24acb25d92a0f4892ec2b6ffd6fd0d, type: 3}
---- !u!114 &300827903
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 300827901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e0323788511b9b4f9d80af42c007d37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.ZapArcRenderer
-  _context: {fileID: 1247799767}
-  _arcMaterial: {fileID: 2100000, guid: ff30c846934d709499878285cfd44201, type: 2}
-  _impactSparks: {fileID: 781277473990021009, guid: 2203716810d5c8241b8d65dbed6cfbd3, type: 3}
-  _arcColor: {r: 0.55, g: 0.9, b: 1, a: 1}
-  _coreMaterial: {fileID: 2100000, guid: 82f6901305a7b7348a9163a772da59b6, type: 2}
-  _bodyMaterial: {fileID: 2100000, guid: 4ed323ac4020d6446b9159e252b34dc2, type: 2}
-  _glowMaterial: {fileID: 2100000, guid: ef34267ef7cbd9040ad53f9869abf804, type: 2}
-  _muzzleFlash: {fileID: 5382113171138667504, guid: de716ee51864a584b8c64442ebb9ae9e, type: 3}
-  _quality: 1
---- !u!4 &300827904
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 300827901}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &300827905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 300827901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a2c5142805559e48b9e006bb7b25437, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.SpellVfxDirector
-  _context: {fileID: 1247799767}
-  _arrowVolleyPrefab: {fileID: 3767597746862682603, guid: e91d8270d80b2bc4183accf34eaa01a4, type: 3}
-  _meteorPrefab: {fileID: 8228662346123858856, guid: c428cacef9356244d8e9f804fd14b31a, type: 3}
-  _fireBlast: {fileID: 5962631947570390476, guid: a1f751a5e42f0e340ad97ed89858c929, type: 3}
-  _fireShake: 0.5
-  _freezeNova: {fileID: 1140935557964873636, guid: 3ec60b518d7cbca468db369a9d002b72, type: 3}
-  _frostGroundPatch: {fileID: 6639331156978392743, guid: 09d9e510d38ab4b49843ed9b3154a394, type: 3}
-  _freezeShake: 0.15
---- !u!114 &300827906
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 300827901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef6f20ec96ac3fe42b64555d983008b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.LightningStormView
-  _context: {fileID: 1247799767}
-  _coreMaterial: {fileID: 2100000, guid: 82f6901305a7b7348a9163a772da59b6, type: 2}
-  _bodyMaterial: {fileID: 2100000, guid: 4ed323ac4020d6446b9159e252b34dc2, type: 2}
-  _glowMaterial: {fileID: 2100000, guid: ef34267ef7cbd9040ad53f9869abf804, type: 2}
-  _thunderSplash: {fileID: 1300556345}
-  _smokeMaterial: {fileID: 2100000, guid: 7d36cef4162e55a4fb4774f3e3cf08ba, type: 2}
-  _shakeTrauma: 0.5
---- !u!114 &300827907
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 300827901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f77e43d3ad73cc4e81dbd2d4ab14387, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.V4CardVfx
-  _context: {fileID: 1247799767}
-  _softMaterial: {fileID: 2100000, guid: 7d36cef4162e55a4fb4774f3e3cf08ba, type: 2}
-  _quakeShakePulse: 0.12
-  _logPrefab: {fileID: 5467130179978715683, guid: 6d1a18af5c08b154585aed70b28b45aa, type: 3}
---- !u!114 &300827909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 300827901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0c08a31b8df92348b609477cd5ea1ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.FeedbackDirector
-  _context: {fileID: 1247799767}
-  _enemyHit: {fileID: 8300000, guid: 676793e8b24f07a49a5aac3b0985ad69, type: 3}
-  _enemyDeaths:
-  - {fileID: 8300000, guid: ca7e829e9f876ea4a95a4edad95deb8e, type: 3}
-  - {fileID: 8300000, guid: 18f19d03b5eb5f6438c7255ed4adfd44, type: 3}
-  - {fileID: 8300000, guid: 1a197a36b1e09c44cb1d60ee4ceec601, type: 3}
-  - {fileID: 8300000, guid: 5f02d8d8a7340884fbac3973015477d1, type: 3}
-  _towerHit: {fileID: 8300000, guid: 676793e8b24f07a49a5aac3b0985ad69, type: 3}
-  _cardPlayed: {fileID: 8300000, guid: ca77d13bf4f3b7442b324e68259c72e1, type: 3}
-  _buildingPlaced: {fileID: 8300000, guid: cc685207a46826746af448ba3a0eaa07, type: 3}
-  _knightSpawn: {fileID: 8300000, guid: ca77d13bf4f3b7442b324e68259c72e1, type: 3}
-  _levelUp: {fileID: 8300000, guid: 77d6356f3f181f04c86c084a2ff5267d, type: 3}
-  _victory: {fileID: 8300000, guid: 98046261e6947b64eb462140e10a5b35, type: 3}
-  _defeat: {fileID: 8300000, guid: 46dcfa1187f4a1e4cb3793dd1351f669, type: 3}
-  _sfxVolume: 0.8
 --- !u!1 &324120706
 GameObject:
   m_ObjectHideFlags: 0
@@ -1823,6 +1667,91 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
+--- !u!1001 &1967370155952082542
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 376971121675854347, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 376971121675854347, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 376971121675854347, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 376971121675854347, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 376971121675854347, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 376971121675854347, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 376971121675854347, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 376971121675854347, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 376971121675854347, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 376971121675854347, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1708911565643111034, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: _context
+      value: 
+      objectReference: {fileID: 1247799767}
+    - target: {fileID: 2708859401058599862, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: _context
+      value: 
+      objectReference: {fileID: 1247799767}
+    - target: {fileID: 2708859401058599862, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: _thunderSplash
+      value: 
+      objectReference: {fileID: 1300556345}
+    - target: {fileID: 3227671822173771447, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: _context
+      value: 
+      objectReference: {fileID: 1247799767}
+    - target: {fileID: 3741975691934451393, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: _context
+      value: 
+      objectReference: {fileID: 1247799767}
+    - target: {fileID: 4371848605754147072, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: _context
+      value: 
+      objectReference: {fileID: 1247799767}
+    - target: {fileID: 5168311276957130814, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: _context
+      value: 
+      objectReference: {fileID: 1247799767}
+    - target: {fileID: 8058997634507234191, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: m_Name
+      value: Juice
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
 --- !u!1001 &4687329169336883082
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1990,7 +1919,7 @@ SceneRoots:
   - {fileID: 1247799772}
   - {fileID: 2019923221}
   - {fileID: 1564541632}
-  - {fileID: 300827904}
+  - {fileID: 1967370155952082542}
   - {fileID: 1247945087}
   - {fileID: 1231567873}
   - {fileID: 2142342689}
