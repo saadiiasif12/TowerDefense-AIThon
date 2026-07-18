@@ -28,6 +28,10 @@ namespace RoyalSiege.Core
         {
             if (_titleGroup != null) _titleGroup.alpha = 0f;
 
+            // Nothing competes with the load during a static splash — stream at full speed.
+            var previousPriority = Application.backgroundLoadingPriority;
+            Application.backgroundLoadingPriority = ThreadPriority.High;
+
             // Kick the Game scene load immediately — it streams while the splash shows.
             var load = SceneManager.LoadSceneAsync(_gameSceneName, LoadSceneMode.Single);
             load.allowSceneActivation = false;
@@ -43,6 +47,7 @@ namespace RoyalSiege.Core
             }
 
             if (_titleGroup != null) _titleGroup.alpha = 1f;
+            Application.backgroundLoadingPriority = previousPriority; // back to normal for gameplay
             load.allowSceneActivation = true; // hand over — Awake/Start of Game run now
         }
     }
