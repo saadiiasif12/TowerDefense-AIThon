@@ -61,7 +61,7 @@ namespace RoyalSiege.UI
             _canvas = GetComponentInParent<Canvas>();
             var canvasRect = (RectTransform)_canvas.transform;
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _proxy = CardDragProxy.Create(canvasRect, font);
+            _proxy = CardDragProxy.Create(canvasRect);
             _floatingLabel = FloatingCardLabel.Create(canvasRect, font);
             _deckCycle = DeckCycleAnimator.Create(canvasRect, font, _animConfig,
                 _frameSprite, _gemSprite, _slots, _nextSlot);
@@ -205,12 +205,14 @@ namespace RoyalSiege.UI
                 if (!wasDragging && _placement.IsDragging)
                 {
                     _dragStarted = true;
-                    var card = _context.Deck.Hand[slot];
+                    // Clone the slot's live card visual BEFORE hiding it, so the floating card is
+                    // pixel-identical to the tray card (art window / cost badge never reflow).
+                    var lift = _slots[slot].LiftRect;
+                    var cardSize = _slots[slot].CardSize;
                     _slots[slot].SetCarried(true);
                     float dragScale = _animConfig != null ? _animConfig.dragScale : 1.12f;
                     float smooth = _animConfig != null ? _animConfig.dragSmoothTime : 0f;
-                    _proxy.Show(card.icon, _frameSprite, _gemSprite,
-                        card.cost.ToString("0"), OffsetAboveFinger(position), dragScale, smooth);
+                    _proxy.Show(lift, cardSize, OffsetAboveFinger(position), dragScale, smooth);
                 }
             }
 

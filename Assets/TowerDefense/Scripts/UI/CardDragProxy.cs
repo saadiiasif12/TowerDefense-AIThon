@@ -7,9 +7,11 @@ namespace RoyalSiege.UI
     /// <summary>
     /// The mini card that follows the finger during a drag (spec: zero-lag follow, scale
     /// driven by POSITION not time — 100% at the hand shrinking to 50% toward the board).
-    /// 17-Jul UI pass: shows the real card art inside the blue Frame with a lightning cost
-    /// badge. On a successful deploy it dissolves in ~120 ms; on cancel it tweens home.
-    /// Built once at runtime by HandBarView; one instance is enough (single-touch rule).
+    /// The floating card is a PIXEL-EXACT CLONE of the slot's resting card visual (its "Lift"
+    /// subtree), so the picked-up card matches the tray card exactly — no reflow of the art
+    /// window or cost badge (18-Jul fix: the old hand-built proxy used different art insets /
+    /// gem size / card size and visibly misaligned on pickup). On a successful deploy it
+    /// dissolves in ~120 ms; on cancel it tweens home. Built once, cloned per drag.
     /// </summary>
     public sealed class CardDragProxy : MonoBehaviour
     {
@@ -19,10 +21,7 @@ namespace RoyalSiege.UI
         private RectTransform _rect;
         private RectTransform _canvasRect;
         private CanvasGroup _group;
-        private Image _art;
-        private Image _frame;
-        private Image _gem;
-        private Text _cost;
+        private GameObject _clone;   // per-drag copy of the slot's card visual
 
         private float _dissolveT = -1f;
         private float _returnT = -1f;
@@ -38,70 +37,28 @@ namespace RoyalSiege.UI
         private Vector2 _velocity;         // SmoothDamp state (no per-frame alloc)
         private float _smoothTime;
 
-        public static CardDragProxy Create(RectTransform canvasRect, Font font)
+        public static CardDragProxy Create(RectTransform canvasRect)
         {
             var go = new GameObject("CardDragProxy", typeof(RectTransform), typeof(CanvasGroup));
             var proxy = go.AddComponent<CardDragProxy>();
             proxy._canvasRect = canvasRect;
             proxy._rect = (RectTransform)go.transform;
             proxy._rect.SetParent(canvasRect, false);
-            proxy._rect.sizeDelta = new Vector2(165f, 210f);
             proxy._group = go.GetComponent<CanvasGroup>();
             proxy._group.blocksRaycasts = false;
             proxy._group.interactable = false;
-
-            // Art inside the frame window (same insets as CardSlotView).
-            proxy._art = Sub(proxy._rect, "Art", new Vector2(0.075f, 0.225f), new Vector2(0.925f, 0.815f));
-            proxy._frame = Sub(proxy._rect, "Frame", Vector2.zero, Vector2.one);
-
-            var badge = new GameObject("Cost", typeof(RectTransform));
-            var badgeRect = (RectTransform)badge.transform;
-            badgeRect.SetParent(proxy._rect, false);
-            badgeRect.anchorMin = new Vector2(0.5f, 0f); badgeRect.anchorMax = new Vector2(0.5f, 0f);
-            badgeRect.sizeDelta = new Vector2(70f, 46f);
-            badgeRect.anchoredPosition = new Vector2(0f, 20f);
-            proxy._gem = Sub(badgeRect, "Gem", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f));
-            proxy._gem.rectTransform.sizeDelta = new Vector2(26f, 42f);
-            proxy._gem.rectTransform.anchoredPosition = new Vector2(16f, 0f);
-            proxy._cost = MakeText(badgeRect, font, 34);
 
             go.SetActive(false);
             return proxy;
         }
 
-        private static Image Sub(RectTransform parent, string name, Vector2 aMin, Vector2 aMax)
-        {
-            var go = new GameObject(name, typeof(RectTransform), typeof(Image));
-            var rect = (RectTransform)go.transform;
-            rect.SetParent(parent, false);
-            rect.anchorMin = aMin; rect.anchorMax = aMax;
-            rect.offsetMin = Vector2.zero; rect.offsetMax = Vector2.zero;
-            var img = go.GetComponent<Image>();
-            img.raycastTarget = false;
-            return img;
-        }
-
-        private static Text MakeText(RectTransform parent, Font font, int size)
-        {
-            var go = new GameObject("Num", typeof(RectTransform), typeof(Text));
-            var rect = (RectTransform)go.transform;
-            rect.SetParent(parent, false);
-            rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one;
-            rect.offsetMin = new Vector2(34f, 0f); rect.offsetMax = Vector2.zero;
-            var text = go.GetComponent<Text>();
-            text.font = font;
-            text.fontSize = size;
-            text.fontStyle = FontStyle.Bold;
-            text.alignment = TextAnchor.MiddleLeft;
-            text.color = new Color(1f, 0.85f, 0.2f);
-            text.raycastTarget = false;
-            var outline = go.AddComponent<Outline>();
-            outline.effectColor = new Color(0f, 0f, 0f, 0.85f);
-            outline.effectDistance = new Vector2(2f, -2f);
-            return text;
-        }
-
-        public void Show(Sprite art, Sprite frame, Sprite gem, string cost, Vector2 screenPosition,
+        /// <summary>
+        /// Show a pixel-identical copy of the slot's RESTING card visual. <paramref name="sourceLift"/>
+        /// is the slot's "Lift" container (already carrying this card's art/frame/cost). The clone
+        /// is reset to the resting transform (no select-scale/lift) and its gold selection glow is
+        /// hidden, so the floating card reads exactly like the card sitting in the tray.
+        /// </summary>
+        public void Show(RectTransform sourceLift, Vector2 cardSize, Vector2 screenPosition,
             float dragScale = 1.12f, float smoothTime = 0f)
         {
             _dissolveT = -1f;
@@ -111,10 +68,26 @@ namespace RoyalSiege.UI
             _smoothTime = smoothTime;
             _velocity = Vector2.zero;
             _group.alpha = 1f;
-            _art.sprite = art; _art.enabled = art != null; _art.color = Color.white;
-            _frame.sprite = frame;
-            _gem.sprite = gem;
-            _cost.text = cost;
+
+            if (_clone != null) Destroy(_clone);
+            _rect.sizeDelta = cardSize;
+
+            if (sourceLift != null)
+            {
+                _clone = Instantiate(sourceLift.gameObject, _rect);
+                var cr = (RectTransform)_clone.transform;
+                cr.anchorMin = sourceLift.anchorMin;
+                cr.anchorMax = sourceLift.anchorMax;
+                cr.pivot = sourceLift.pivot;
+                cr.sizeDelta = sourceLift.sizeDelta;
+                cr.anchoredPosition = Vector2.zero; // resting position (source may be lift-tweened)
+                cr.localScale = Vector3.one;         // resting scale (source may be select-scaled)
+                _clone.SetActive(true);
+                // The floating card should read like the card at REST — kill the selection glow.
+                var glow = cr.Find("Glow");
+                if (glow != null) glow.gameObject.SetActive(false);
+            }
+
             gameObject.SetActive(true);
             _rect.anchoredPosition = ScreenToCanvas(screenPosition);
             _rect.localScale = Vector3.one * _dragScale;
@@ -159,6 +132,7 @@ namespace RoyalSiege.UI
             _dissolveT = -1f;
             _returnT = -1f;
             _onReturned = null;
+            if (_clone != null) { Destroy(_clone); _clone = null; }
             gameObject.SetActive(false);
         }
 
