@@ -20,5 +20,5 @@ MonoBehaviour:
   muzzleVfx: {fileID: 0}
   impactVfx: {fileID: 2903903874165968388, guid: eae6aa925f652d54c96b7f4f6d3dcd9b, type: 3}
   impactTint: {r: 1, g: 1, b: 1, a: 1}
-  spinDegreesPerSecond: 720
+  spinDegreesPerSecond: 0
   impactShake: 0.06
