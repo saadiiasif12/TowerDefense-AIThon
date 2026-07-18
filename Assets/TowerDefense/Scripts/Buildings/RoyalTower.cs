@@ -32,7 +32,16 @@ namespace RoyalSiege.Buildings
         public bool IsBuilding => false;
         public bool BlocksPlacement => true;
         public float FootprintRadius => _config != null ? _config.towerFootprintRadius : 1.5f;
-        public void TakeDamage(float amount) => _health?.TakeDamage(amount);
+        /// <summary>Popup anchor: just above the tower roof (view-only).</summary>
+        private const float PopupHeight = 2.6f;
+        public void TakeDamage(float amount)
+        {
+            if (_health == null || !_health.IsAlive || amount <= 0f) return;
+            _health.TakeDamage(amount);
+            // Damage popup the moment damage lands (null-safe: test scenes have no manager).
+            Juice.DamagePopupManager.Instance?.ShowDamage(
+                amount, transform.position + Vector3.up * PopupHeight, isCritical: false);
+        }
 
         private ITargetRegistry _registry;
         private IProjectileLauncher _launcher;
