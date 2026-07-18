@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using RoyalSiege.Core;
+using TMPro;
 
 namespace RoyalSiege.UI
 {
@@ -22,15 +23,15 @@ namespace RoyalSiege.UI
         [Header("Parts (preset on the prefab — restyle freely)")]
         [SerializeField] private GameObject _panel;
         [SerializeField] private Image _banner;        // ribbon image (pass/fail sprite swapped)
-        [SerializeField] private Text _title;
-        [SerializeField] private Text _subtitle;
+        [SerializeField] private TextMeshProUGUI _title;
+        [SerializeField] private TextMeshProUGUI _subtitle;
         [SerializeField] private Image _king;          // happy/sad illustration
         [Tooltip("Red circle + number shown on DEFEAT only.")]
         [SerializeField] private GameObject _waveCircle;
-        [SerializeField] private Text _waveNumber;
-        [SerializeField] private Text _detail;         // stars + HP on victory
+        [SerializeField] private TextMeshProUGUI _waveNumber;
+        [SerializeField] private TextMeshProUGUI _detail;         // stars + HP on victory
         [SerializeField] private Button _actionButton;
-        [SerializeField] private Text _actionLabel;
+        [SerializeField] private TextMeshProUGUI _actionLabel;
 
         [Header("Outcome art (swapped by code)")]
         [SerializeField] private Sprite _titleBannerPass;   // title_base_passl
