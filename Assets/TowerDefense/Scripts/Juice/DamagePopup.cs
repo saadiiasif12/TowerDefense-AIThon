@@ -26,8 +26,8 @@ namespace RoyalSiege.Juice
         private Material _textMaterial;      // per-popup instance, created once at pool build
         private Color _outlineBase;
         private Color _underlayBase;
-        private Color _faceColor;
-        private Color _backgroundBase;
+        private Color _faceColor;            // 18-Jul: AUTHORED on the prefab, cached at Init
+        private Color _backgroundBase;       // 18-Jul: AUTHORED on the prefab, cached at Init
         private Vector3 _origin;
         private float _driftX;
         private float _scaleMul = 1f;
@@ -41,14 +41,15 @@ namespace RoyalSiege.Juice
             _outlineBase = _textMaterial.GetColor(OutlineColorId);
             _underlayBase = _textMaterial.HasProperty(UnderlayColorId)
                 ? _textMaterial.GetColor(UnderlayColorId) : new Color(0f, 0f, 0f, 0.5f);
+            // 18-Jul ruling: text/plate colors are PRESET ON THE PREFAB — code never
+            // overrides the RGB at runtime (only alpha animates during the fade).
+            _faceColor = _text.color;
+            _backgroundBase = _background != null ? _background.color : Color.clear;
         }
 
-        /// <summary>Arm and show this popup. Label/colors are pre-resolved by the manager.</summary>
-        public void Show(string label, Color faceColor, Color backgroundColor, float scaleMul,
-            Vector3 origin, float driftX)
+        /// <summary>Arm and show this popup. Colors come from the prefab; crits scale up only.</summary>
+        public void Show(string label, float scaleMul, Vector3 origin, float driftX)
         {
-            _faceColor = faceColor;
-            _backgroundBase = backgroundColor;
             _origin = origin;
             _driftX = driftX;
             _scaleMul = scaleMul;
@@ -59,13 +60,13 @@ namespace RoyalSiege.Juice
             gameObject.SetActive(true); // BEFORE measuring — inactive TMP reports garbage bounds
 
             _text.text = label;
-            _text.color = faceColor;
+            _text.color = _faceColor; // restore full alpha from the authored color
             // Preferred values are reliable without a full mesh rebuild; clamp as a safety net.
             Vector2 textSize = _text.GetPreferredValues(label);
             _background.size = new Vector2(
                 Mathf.Min(textSize.x, 4f) + _backgroundPadding.x,
                 Mathf.Min(textSize.y, 2f) + _backgroundPadding.y);
-            _background.color = backgroundColor;
+            _background.color = _backgroundBase;
         }
 
         /// <summary>Spawn position this popup is anchored to (anti-overlap checks).</summary>
