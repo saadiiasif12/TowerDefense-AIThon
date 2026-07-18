@@ -38,7 +38,17 @@ namespace RoyalSiege.Buildings
 
         private float Radius => _config != null ? _config.deploymentRadius : 5f;
 
-        private void OnEnable() => Rebuild();
+        private void OnEnable()
+        {
+            // The arena is a PREFAB (18-Jul): a prefab can't serialize a scene ref, so find
+            // the tower at runtime/editor when the slot is empty (same pattern as the HUD).
+            if (_tower == null)
+            {
+                var tower = FindFirstObjectByType<RoyalTower>();
+                if (tower != null) _tower = tower.transform;
+            }
+            Rebuild();
+        }
 
         private void OnDisable()
         {

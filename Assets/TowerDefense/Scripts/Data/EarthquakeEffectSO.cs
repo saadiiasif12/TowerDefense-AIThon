@@ -51,7 +51,9 @@ namespace RoyalSiege.Data
                 {
                     var enemy = _buffer[i];
                     enemy.ApplySlow(_def.slowStrength, SlowRefresh);
-                    enemy.TakeDamage(_def.damagePerSecond * dt);
+                    // 18-Jul: DoT path — same health drain, but feedback (flinch/flash/number)
+                    // aggregates instead of vibrating the victim at 10 Hz for the whole zone.
+                    enemy.TakeDotDamage(_def.damagePerSecond * dt);
                 }
                 return _remaining > 0f;
             }

@@ -290,6 +290,21 @@ namespace RoyalSiege.Juice
                         var emit = new ParticleSystem.EmitParams { position = at };
                         emit.velocity = new Vector3(Mathf.Cos(a) * 0.4f, 2.2f + Hash01(seed * 13) * 1.5f, Mathf.Sin(a) * 0.4f);
                         _pebblePs.Emit(emit, 1);
+
+                        // 18-Jul: wind-blown smoke plumes — bigger, slower puffs that drift
+                        // sideways out of the fissures (sells the pressure escaping the ground).
+                        if (Hash01(seed * 31) > 0.45f)
+                        {
+                            var plume = new ParticleSystem.EmitParams
+                            {
+                                position = at + Vector3.up * 0.15f,
+                                startColor = new Color(0.45f, 0.4f, 0.34f, 0.4f),
+                                startSize = 0.9f + Hash01(seed * 47) * 0.7f,
+                                startLifetime = 1.2f + Hash01(seed * 61) * 0.6f,
+                                velocity = new Vector3(Mathf.Cos(a) * (1.1f + Hash01(seed * 73)), 0.7f, Mathf.Sin(a) * (1.1f + Hash01(seed * 73)))
+                            };
+                            _dustPs.Emit(plume, 1);
+                        }
                     }
                 }
                 else if (sealT >= 1f)
