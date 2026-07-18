@@ -39,6 +39,15 @@ namespace RoyalSiege.UI
         [SerializeField] private Sprite _kingHappy;         // ill_pass
         [SerializeField] private Sprite _kingSad;           // ill_fail
 
+        [Header("King reaction flipbook (18-Jul — looping sprite-sheet reactions)")]
+        [SerializeField] private UiSpriteSheetFlipbook _kingFlipbook;
+        [SerializeField] private Texture _kingHappySheet;   // thumka_king_sheet
+        [SerializeField] private Texture _kingSadSheet;     // fail_king_sheet
+
+        [Header("Audio")]
+        [Tooltip("Played on the Revive tap — on a DontDestroyOnLoad temp source so the scene reload can't cut it.")]
+        [SerializeField] private AudioClip _reviveSfx;
+
         private bool _victory;
         // 18-Jul tower cinematic gate: on DEFEAT the tower's fire-blast/ruin sequence starts
         // BEFORE this handler runs (TowerLevelView subscribed first), so the fail screen
@@ -108,6 +117,7 @@ namespace RoyalSiege.UI
                 if (_title != null) _title.text = "Campaign Complete!";
                 if (_subtitle != null) _subtitle.text = "The realm is safe!";
                 if (_king != null && _kingHappy != null) _king.sprite = _kingHappy;
+                if (_kingFlipbook != null && _kingHappySheet != null) _kingFlipbook.SetSheet(_kingHappySheet);
                 if (_waveCircle != null) _waveCircle.SetActive(false);
                 if (_detail != null) _detail.text =
                     new string('★', result.Stars) + new string('☆', 3 - result.Stars)
@@ -120,6 +130,7 @@ namespace RoyalSiege.UI
                 if (_title != null) _title.text = "The tower was invaded!";
                 if (_subtitle != null) _subtitle.text = "Do something fast!";
                 if (_king != null && _kingSad != null) _king.sprite = _kingSad;
+                if (_kingFlipbook != null && _kingSadSheet != null) _kingFlipbook.SetSheet(_kingSadSheet);
                 if (_waveCircle != null) _waveCircle.SetActive(true);
                 if (_waveNumber != null) _waveNumber.text = result.WaveReached.ToString();
                 if (_detail != null) _detail.text = "";
@@ -140,7 +151,19 @@ namespace RoyalSiege.UI
         public void OnAction()
         {
             if (_victory) CampaignProfile.Clear();
+            else PlayPersistent(_reviveSfx);
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        private static void PlayPersistent(AudioClip clip)
+        {
+            if (clip == null) return;
+            var go = new GameObject("ReviveSfx");
+            DontDestroyOnLoad(go);
+            var source = go.AddComponent<AudioSource>();
+            source.spatialBlend = 0f;
+            source.PlayOneShot(clip);
+            Destroy(go, clip.length + 0.1f);
         }
     }
 }

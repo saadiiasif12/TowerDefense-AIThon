@@ -44,6 +44,10 @@ MonoBehaviour:
     towerLevel: 5
     unlockCard: {fileID: 11400000, guid: 393b92cc110b7a349853ed11a41955e0, type: 2}
     isStageComplete: 0
+  - afterWave: 44
+    towerLevel: 0
+    unlockCard: {fileID: 0}
+    isStageComplete: 1
   startingCards:
   - {fileID: 11400000, guid: a804d7429b9a40c458419a28b3f29cf1, type: 2}
   - {fileID: 11400000, guid: 501c647c1abf6ae4ea051eaaae4ace7c, type: 2}

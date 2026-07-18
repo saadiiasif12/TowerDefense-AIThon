@@ -37,6 +37,8 @@ namespace RoyalSiege.Data
         [Header("Juice")]
         [Tooltip("Death burst played instead of the generic puff (e.g. bone shatter for the Skeleton). Optional.")]
         public ParticleSystem deathVfx;
+        [Tooltip("Weapon-hit sound when THIS enemy's attack lands (melee strike or projectile impact). Optional — null = silent.")]
+        public AudioClip attackHitSfx;
         [Tooltip("Hit-stagger: a MOVING enemy stops and plays the hurt flinch for this long when damaged, then resumes. 0 = disabled. Attacking/frozen enemies never stagger.")]
         public float hurtStaggerSeconds = 0.35f;
         [Tooltip("Minimum seconds between staggers so rapid hits (Tesla, Arrows) can't stun-lock a unit into never advancing.")]

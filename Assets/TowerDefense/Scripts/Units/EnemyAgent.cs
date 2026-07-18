@@ -458,12 +458,16 @@ namespace RoyalSiege.Units
                 _deps.Launcher.Fire(from, _target, damage, _def.projectile, OnProjectileImpact);
             }
             else
+            {
                 _target.TakeDamage(damage);
+                _deps.Events.RaiseEnemyAttackImpact(_def, _logicPosition); // weapon-hit SFX
+            }
         }
 
         /// <summary>Mage-style splash: full damage to OTHER structures near the impact.</summary>
         private void OnProjectileImpact(Vector3 point, IDamageable primary)
         {
+            _deps.Events.RaiseEnemyAttackImpact(_def, point); // weapon-hit SFX at the landing
             if (_def.splashRadius <= 0f) return;
             float damage = _def.damage * _deps.DamageMultiplier;
             _deps.Registry.StructuresInRadius(point, _def.splashRadius, SplashBuffer);

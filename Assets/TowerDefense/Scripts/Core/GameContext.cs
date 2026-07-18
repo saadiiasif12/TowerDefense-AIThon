@@ -124,7 +124,7 @@ namespace RoyalSiege.Core
             _orbSpawner.Init(Events, Energy, _economyConfig, _tickSystem);
             _placement.Init(_gameCamera, CardPlay, validator, buildingFactory, spellCaster, _gameConfig, center, knightFactory);
 
-            var checkpoints = new CheckpointService(_progression, _royalTower, Deck, _gameConfig, Events, _tickSystem, profile);
+            var checkpoints = new CheckpointService(_progression, _campaign, _royalTower, Deck, _gameConfig, Events, _tickSystem, profile);
             var evaluator = new WinLoseEvaluator(_royalTower, Waves, registry, _gameConfig, Events, _tickSystem);
 
             _tickSystem.Register(Waves);
