@@ -207,13 +207,14 @@ GameObject:
   - component: {fileID: 5544981216006349757}
   - component: {fileID: 974866104961086642}
   - component: {fileID: 6970721683805828497}
+  - component: {fileID: 9148305710333966413}
   m_Layer: 0
   m_Name: Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5544981216006349757
 RectTransform:
   m_ObjectHideFlags: 0
@@ -277,6 +278,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &9148305710333966413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2947297526897757119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0790cd51c2940774e9f95c09ffeba34b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.UiEntranceAnimator
+  _stagger: 0.08
+  _duration: 0.32
+  _startScale: 0.55
 --- !u!1 &3234899625169125011
 GameObject:
   m_ObjectHideFlags: 0
@@ -332,7 +348,7 @@ MonoBehaviour:
   _title: {fileID: 4485472801463965903}
   _subtitle: {fileID: 8516626948695110105}
   _king: {fileID: 8190894750434398957}
-  _waveCircle: {fileID: 4943679699213851275}
+  _waveCircle: {fileID: 0}
   _waveNumber: {fileID: 4282857895281143795}
   _detail: {fileID: 0}
   _actionButton: {fileID: 3176116396790227220}
@@ -341,6 +357,117 @@ MonoBehaviour:
   _titleBannerFail: {fileID: 21300000, guid: 45bdfccbbf8039347ad9467df0aeb4de, type: 3}
   _kingHappy: {fileID: 21300000, guid: 3e19f3cea693fe54a9d803075d8eab9d, type: 3}
   _kingSad: {fileID: 21300000, guid: 0998f339b99b39948a62887ba5111b75, type: 3}
+  _kingFlipbook: {fileID: 9167044425608074699}
+  _kingHappySheet: {fileID: 2800000, guid: dd2204fcfce2de64191694ab487da0b7, type: 3}
+  _kingSadSheet: {fileID: 2800000, guid: dd1bec4c2f3ac204eb88ba3e289f4ea1, type: 3}
+  _reviveSfx: {fileID: 8300000, guid: e6dfc0a1bc337fb4ba3a77fe435a3122, type: 3}
+--- !u!1 &3306390273596380846
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5069244153989773925}
+  - component: {fileID: 1067437858812713921}
+  - component: {fileID: 3500152548742304855}
+  - component: {fileID: 4846682986543689733}
+  - component: {fileID: 9167044425608074699}
+  m_Layer: 0
+  m_Name: KingFlipbook
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5069244153989773925
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3306390273596380846}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 784475514965829776}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &1067437858812713921
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3306390273596380846}
+  m_CullTransparentMesh: 1
+--- !u!114 &3500152548742304855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3306390273596380846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RawImage
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 2800000, guid: dd2204fcfce2de64191694ab487da0b7, type: 3}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0.00048828125
+    y: 0.80024415
+    width: 0.19902344
+    height: 0.19951172
+--- !u!114 &4846682986543689733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3306390273596380846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.AspectRatioFitter
+  m_AspectMode: 3
+  m_AspectRatio: 0.7186441
+--- !u!114 &9167044425608074699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3306390273596380846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22115126c7f21dd4eb2f11ec7cd39301, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.UiSpriteSheetFlipbook
+  _sheet: {fileID: 2800000, guid: dd2204fcfce2de64191694ab487da0b7, type: 3}
+  _columns: 5
+  _rows: 5
+  _frameCount: 0
+  _swapSpeed: 15
+  _loop: 1
+  _playOnEnable: 1
 --- !u!1 &4943679699213851275
 GameObject:
   m_ObjectHideFlags: 0
@@ -1172,7 +1299,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5069244153989773925}
   m_Father: {fileID: 5544981216006349757}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -1195,7 +1323,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8896062267747843438}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 

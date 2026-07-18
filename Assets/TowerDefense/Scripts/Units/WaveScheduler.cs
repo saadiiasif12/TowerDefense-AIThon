@@ -53,6 +53,18 @@ namespace RoyalSiege.Units
         public int WaveCount => _campaign.TotalWaves;
         /// <summary>1-based number of the wave currently fighting (or last started).</summary>
         public int CurrentWaveNumber { get; private set; }
+
+        /// <summary>Stage index (0-based) the given global wave belongs to; wraps past the last wave so a looping campaign maps wave 45 back onto stage 0.</summary>
+        public int StageIndexOf(int globalWave)
+        {
+            int total = WaveCount;
+            if (total <= 0) return -1;
+            int wrapped = ((globalWave - 1) % total + total) % total + 1;
+            return _campaign.Locate(wrapped, out int stage, out _) ? stage : -1;
+        }
+
+        /// <summary>Stage of the next wave to start — what the environment should show during a gap (valid at load and behind checkpoint screens; mid-fight it may already point at the upcoming stage).</summary>
+        public int PendingStageIndex => StageIndexOf(_nextGlobalWave);
         public bool CampaignComplete => _phase == Phase.Complete;
         /// <summary>Gap countdown for UI; -1 while a wave is being fought.</summary>
         public float TimeToNextWave => _phase == Phase.Gap ? Mathf.Max(0f, _gapRemaining) : -1f;
@@ -105,7 +117,14 @@ namespace RoyalSiege.Units
                         _events.RaiseWaveCleared(CurrentWaveNumber);
                         if (_nextGlobalWave > WaveCount)
                         {
-                            _phase = Phase.Complete;
+                            if (_campaign.loopStages)
+                            {
+                                // Endless journey: last stage cleared → back to stage 1 wave 1.
+                                _nextGlobalWave = 1;
+                                _phase = Phase.Gap;
+                                _gapRemaining = _campaign.clearGapSeconds;
+                            }
+                            else _phase = Phase.Complete;
                         }
                         else
                         {

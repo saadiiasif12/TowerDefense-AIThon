@@ -25,6 +25,7 @@ MonoBehaviour:
   projectile: {fileID: 0}
   engageRadiusFromCenter: 12
   deathVfx: {fileID: 0}
+  attackHitSfx: {fileID: 8300000, guid: 018df704e6039824b8499e54cfa83ca7, type: 3}
   hurtStaggerSeconds: 0.35
   hurtCooldownSeconds: 0
   walkAnimSpeedMultiplier: 3

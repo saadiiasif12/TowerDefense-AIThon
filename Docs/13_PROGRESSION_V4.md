@@ -15,8 +15,10 @@
 ## 1. Journey
 - **Stage 1** = waves 1–20 · **Stage 2** = waves 21–44 (global numbering).
 - Every 10th wave from 20: Ogre wave (20, 30, 40) + the 44 finale (2 Ogres).
-- **Checkpoints (5)**: after w4, w12, w24, w40 (level-up screens) + after w20 (stage complete). Tower death → retry from latest checkpoint.
+- **Checkpoints (6)**: after w4, w12, w24, w40 (level-up screens) + after w20 AND w44 (stage complete). Tower death → retry from latest checkpoint.
 - Stage header UI: progress bar fills across the stage (x/20 then x/24); wave counter shows global number.
+- **18-Jul user ruling — ENDLESS LOOP:** with only 2 stages, the journey never ends: w44 clear → stage-complete screen (stars) → back to **stage 1 wave 1**, forever (S1→S2→S1→S2→…). `CampaignSO.loopStages` (= 1 on `Campaign_RoyalDefense`) drives it; `WaveScheduler` wraps `_nextGlobalWave` past the last wave, so `CampaignComplete`/victory never fire while looping (defeat is still the only match end). Progress persists across loops: tower level and card unlocks are KEPT — `CheckpointService` never downgrades the tower (`max(checkpoint.towerLevel, current)`), never re-enqueues an already-unlocked card, and a repeat level-up checkpoint with nothing new shows NO modal (silent save + full-heal, no pause); stage-complete screens always show. The profile's `nextWave` wraps too (44 clear saves `nextWave=1`), so retry/resume lands in the right loop position.
+- **Per-stage environment (18 Jul):** `Arenas/Arena` (stage 1) vs `Arenas/Arena_Stage2` (stage 2), each self-contained (own DeploymentRing/Ground/props). New `StageEnvironmentView` (on the `Arenas` root, view-only) activates element `stageIndex % count`: applies on load from `WaveScheduler.PendingStageIndex` (resume boots into the right biome), re-applies on every `WaveStarted`, and PRE-SWAPS on a stage-complete `CheckpointReached` so the modal hides the switch — Continue reveals the new arena.
 
 ## 2. Cards (10)
 Starting six from wave 1: **Cannon, Log, Arrows, Earthquake, Frost-ball, Knights**. Unlocks in order at checkpoints 1–4: **Fireball → Tesla → X-Bow → Lightning**.

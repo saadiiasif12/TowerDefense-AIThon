@@ -25,11 +25,19 @@ namespace RoyalSiege.Juice
         [SerializeField] private AudioClip _cardPlayed;      // deploy pop
         [SerializeField] private AudioClip _buildingPlaced;  // heavy thud
         [SerializeField] private AudioClip _knightSpawn;
+        [SerializeField] private AudioClip _knightHit;       // knight's sword lands (clash)
+
+        [Header("Spells (played on cast/impact per card id)")]
+        [SerializeField] private AudioClip _arrowRain;       // Arrows — volley falls (cast)
+        [SerializeField] private AudioClip _fireballBlast;   // Fireball — meteor impact
+        [SerializeField] private AudioClip _freeze;          // Frost-ball — nova at landing
+        [SerializeField] private AudioClip _earthquake;      // Earthquake — zone opens
+        [SerializeField] private AudioClip _logRoll;         // Log — landing + roll
 
         [Header("Flow")]
         [SerializeField] private AudioClip _levelUp;         // checkpoint fanfare note
-        [SerializeField] private AudioClip _victory;
-        [SerializeField] private AudioClip _defeat;          // heavy thunder
+        [SerializeField] private AudioClip _victory;         // stage complete / campaign victory
+        [SerializeField] private AudioClip _defeat;          // tower destroyed
 
         [Header("Mix")]
         [SerializeField, Range(0f, 1f)] private float _sfxVolume = 0.8f;
@@ -42,6 +50,8 @@ namespace RoyalSiege.Juice
         private float _lastHitSound;    // realtime throttles
         private float _lastTowerSound;
         private float _lastHitHaptic;
+        private float _lastWeaponSound;
+        private float _lastKnightSound;
 
         private void Start()
         {
@@ -65,6 +75,10 @@ namespace RoyalSiege.Juice
             _events.CardPlayed += OnCardPlayed;
             _events.BuildingPlaced += OnBuildingPlaced;
             _events.KnightSpawned += OnKnightSpawned;
+            _events.KnightStruck += OnKnightStruck;
+            _events.EnemyAttackImpact += OnEnemyAttackImpact;
+            _events.SpellCast += OnSpellCast;
+            _events.SpellResolved += OnSpellResolved;
             _events.CheckpointReached += OnCheckpoint;
             _events.MatchEnded += OnMatchEnded;
         }
@@ -78,6 +92,10 @@ namespace RoyalSiege.Juice
             _events.CardPlayed -= OnCardPlayed;
             _events.BuildingPlaced -= OnBuildingPlaced;
             _events.KnightSpawned -= OnKnightSpawned;
+            _events.KnightStruck -= OnKnightStruck;
+            _events.EnemyAttackImpact -= OnEnemyAttackImpact;
+            _events.SpellCast -= OnSpellCast;
+            _events.SpellResolved -= OnSpellResolved;
             _events.CheckpointReached -= OnCheckpoint;
             _events.MatchEnded -= OnMatchEnded;
         }
@@ -129,9 +147,42 @@ namespace RoyalSiege.Juice
             Play(_knightSpawn, 0.5f, 1.05f, 1.25f);
         }
 
+        private void OnKnightStruck(Vector3 position)
+        {
+            if (Time.realtimeSinceStartup - _lastKnightSound < 0.1f) return; // 4 knights can swing at once
+            _lastKnightSound = Time.realtimeSinceStartup;
+            Play(_knightHit, 0.45f, 0.95f, 1.1f);
+        }
+
+        private void OnEnemyAttackImpact(EnemyDefinitionSO def, Vector3 position)
+        {
+            if (def == null || def.attackHitSfx == null) return;
+            if (Time.realtimeSinceStartup - _lastWeaponSound < 0.08f) return; // packs swing together
+            _lastWeaponSound = Time.realtimeSinceStartup;
+            Play(def.attackHitSfx, 0.5f, 0.95f, 1.08f);
+        }
+
+        private void OnSpellCast(SpellCardSO card, Vector3 point)
+        {
+            // Falling-volley sounds start at cast so the whistle rides the fall.
+            if (card.id == "Arrows") Play(_arrowRain, 0.8f, 1f, 1.05f);
+        }
+
+        private void OnSpellResolved(SpellCardSO card, Vector3 point, System.Collections.Generic.IReadOnlyList<Vector3> hits)
+        {
+            switch (card.id)
+            {
+                case "Fireball": Play(_fireballBlast, 0.9f, 0.98f, 1.04f); break;
+                case "Freeze": Play(_freeze, 0.8f, 0.98f, 1.04f); break;
+                case "Earthquake": Play(_earthquake, 0.85f, 1f, 1f); break;
+                case "Log": Play(_logRoll, 0.8f, 0.98f, 1.04f); break;
+            }
+        }
+
         private void OnCheckpoint(CheckpointReachedArgs args)
         {
-            Play(_levelUp, 0.85f, 1f, 1f);
+            // Stage clears get the big win sting; level-ups keep the fanfare note.
+            Play(args.IsStageComplete ? _victory : _levelUp, 0.85f, 1f, 1f);
             HapticPatterns.PlayPreset(HapticPatterns.PresetType.Success);
         }
 
