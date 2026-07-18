@@ -150,6 +150,7 @@ MonoBehaviour:
   _segmentGap: 5
   _normalColor: {r: 1, g: 0.78, b: 0.12, a: 1}
   _capColor: {r: 1, g: 0.95, b: 0.5, a: 1}
+  _animConfig: {fileID: 11400000, guid: ffac82365feb7e64d913ba4e23f53583, type: 2}
 --- !u!114 &4394233422570863962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,6 +171,7 @@ MonoBehaviour:
   - {fileID: 584939900768608468}
   - {fileID: 782501333272912617}
   _nextSlot: {fileID: 4571178144614732993}
+  _animConfig: {fileID: 11400000, guid: ffac82365feb7e64d913ba4e23f53583, type: 2}
   _frameSprite: {fileID: 21300000, guid: 571d4991fc7acda4f8be5433628af92e, type: 3}
   _gemSprite: {fileID: 21300000, guid: 2080fc6f76fcdd34b82bfcca194dd6f7, type: 3}
 --- !u!114 &4863120699905256512
@@ -185,9 +187,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.MatchEndView
   _context: {fileID: 0}
-  _panel: {fileID: 7618421811245879849}
-  _titleLabel: {fileID: 1665709565597358031}
-  _detailLabel: {fileID: 7123613502859547409}
+  _titleBannerPass: {fileID: 0}
+  _titleBannerFail: {fileID: 0}
+  _kingHappy: {fileID: 0}
+  _kingSad: {fileID: 0}
+  _buttonBase: {fileID: 0}
+  _circleSprite: {fileID: 0}
 --- !u!114 &6813862837004063808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,6 +206,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.CheckpointScreenView
   _context: {fileID: 0}
+  _titleBanner: {fileID: 0}
+  _kingHappy: {fileID: 0}
+  _buttonBase: {fileID: 0}
+  _cardFrame: {fileID: 0}
 --- !u!1 &1006527060339913488
 GameObject:
   m_ObjectHideFlags: 0

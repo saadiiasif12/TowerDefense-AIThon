@@ -835,6 +835,7 @@ MonoBehaviour:
   _buildingGhost: {fileID: 2008488035}
   _spellGhost: {fileID: 787831484}
   _gridOverlay: {fileID: 1247799773}
+  _deployRing: {fileID: 7325348969411947754}
 --- !u!114 &1247799770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1716,6 +1717,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0fabd01970b9b774988945e4b91ff544, type: 3}
+--- !u!114 &7325348969411947754 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5006360868882088781, guid: 0fabd01970b9b774988945e4b91ff544, type: 3}
+  m_PrefabInstance: {fileID: 7325348969411947753}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5919d73c44453b4db1c7556b7bb77ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Buildings.DeployRingView
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

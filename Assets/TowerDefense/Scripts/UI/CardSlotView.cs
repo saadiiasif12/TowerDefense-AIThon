@@ -44,24 +44,29 @@ namespace RoyalSiege.UI
         private HandBarView _owner;
         private CardDefinitionSO _card;
         private bool _affordable = true;
+        private Data.CardInteractionAnimationConfig _config;
 
         private bool _selected;
         private float _selectT = 1f;
         private float _refillT = 1f;
         private float _shakeT = 1f;
         private bool _carried;
+        private bool _holdEmpty;              // 18-Jul deck cycle: stay empty until the flyer lands
         private CardDefinitionSO _pendingCard;
         private bool _hasPendingCard;
+        private float _affordPulseT = 1f;     // 18-Jul: highlight pulse when affordable again
+        private float _squashT = 1f;          // 18-Jul: cancel-landing / refill-landing squash
 
         public bool IsCarried => _carried;
         public CardDefinitionSO Card => _card;
         public bool IsNext => _isNext;
         public RectTransform Rect => (RectTransform)transform;
 
-        public void Init(int slot, HandBarView owner)
+        public void Init(int slot, HandBarView owner, Data.CardInteractionAnimationConfig config = null)
         {
             _slot = slot;
             _owner = owner;
+            _config = config;
             if (_glow != null) _glow.gameObject.SetActive(false);
             if (_costBadge != null) _costBadge.SetActive(false);
         }
@@ -70,7 +75,7 @@ namespace RoyalSiege.UI
 
         public void SetCard(CardDefinitionSO card)
         {
-            if (_carried) { _pendingCard = card; _hasPendingCard = true; return; }
+            if (_carried || _holdEmpty) { _pendingCard = card; _hasPendingCard = true; return; }
             ApplyCard(card);
         }
 
@@ -93,11 +98,15 @@ namespace RoyalSiege.UI
             if (_cooldownOverlay != null) _cooldownOverlay.fillAmount = Mathf.Clamp01(cooldown01);
             bool playable = affordable && cooldown01 <= 0f;
             if (playable == _affordable) return;
+            bool becameAffordable = playable && !_affordable;
             _affordable = playable;
 
             if (_art != null) _art.color = playable ? Color.white : new Color(0.38f, 0.4f, 0.46f, 1f);
             if (_gem != null) _gem.color = playable ? Color.white : GemLocked;
             if (_costLabel != null) _costLabel.color = playable ? Color.white : new Color(0.72f, 0.72f, 0.78f);
+
+            // 18-Jul: energy just reached the cost — soft highlight pulse welcomes it back.
+            if (becameAffordable && !_carried && !_holdEmpty) _affordPulseT = 0f;
         }
 
         // ---------------- interaction states ----------------
@@ -135,6 +144,35 @@ namespace RoyalSiege.UI
             }
         }
 
+        /// <summary>
+        /// 18-Jul deck cycle: the card was COMMITTED — stop being carried but keep the slot
+        /// visibly empty (dark placeholder) until the Next-Up flyer lands. SetCard keeps
+        /// buffering into pending while held.
+        /// </summary>
+        public void ReleaseCarriedHoldEmpty()
+        {
+            _carried = false;
+            _holdEmpty = true;
+            Deselect();
+            if (_lift != null) _lift.gameObject.SetActive(false);
+        }
+
+        /// <summary>The flyer landed: show the new card with a restrained squash-settle.</summary>
+        public void CompleteRefill()
+        {
+            _holdEmpty = false;
+            if (_lift != null) _lift.gameObject.SetActive(true);
+            if (_hasPendingCard)
+            {
+                ApplyCard(_pendingCard);
+                _hasPendingCard = false;
+            }
+            _squashT = 0f;
+        }
+
+        /// <summary>Cancel-return landing squash (1.03×0.97 → 1×1).</summary>
+        public void PlayLandingSquash() => _squashT = 0f;
+
         public void PlayRefillPop() => _refillT = 0f;
         public void ShakeUnaffordable() => _shakeT = 0f;
 
@@ -171,11 +209,36 @@ namespace RoyalSiege.UI
             float shakeX = 0f;
             if (_shakeT < 1f)
             {
-                _shakeT = Mathf.Min(1f, _shakeT + dt / ShakeSeconds);
+                float shakeSeconds = _config != null ? _config.insufficientEnergyShakeDuration : ShakeSeconds;
+                _shakeT = Mathf.Min(1f, _shakeT + dt / shakeSeconds);
                 shakeX = Mathf.Sin(_shakeT * 24f) * ShakePx * (1f - _shakeT);
             }
 
-            _lift.localScale = Vector3.one * (selectScale * refillScale);
+            // 18-Jul: affordable-again highlight pulse (soft glow + tiny scale swell).
+            float affordScale = 1f;
+            if (_affordPulseT < 1f)
+            {
+                float pulseSeconds = _config != null ? _config.affordablePulseDuration : 0.15f;
+                _affordPulseT = Mathf.Min(1f, _affordPulseT + dt / pulseSeconds);
+                float wave = Mathf.Sin(_affordPulseT * Mathf.PI);
+                affordScale = 1f + 0.05f * wave;
+                if (_art != null) _art.color = Color.Lerp(Color.white, new Color(1f, 1f, 0.85f), wave * 0.6f);
+            }
+
+            // 18-Jul: landing squash (cancel-return / refill settle) — X and Y separately.
+            float squashX = 1f, squashY = 1f;
+            if (_squashT < 1f)
+            {
+                float squashSeconds = _config != null ? _config.cancelLandingDuration : 0.07f;
+                float sqX = _config != null ? _config.cancelLandingSquashX : 1.03f;
+                float sqY = _config != null ? _config.cancelLandingSquashY : 0.97f;
+                _squashT = Mathf.Min(1f, _squashT + dt / squashSeconds);
+                squashX = Mathf.Lerp(sqX, 1f, _squashT);
+                squashY = Mathf.Lerp(sqY, 1f, _squashT);
+            }
+
+            float baseScale = selectScale * refillScale * affordScale;
+            _lift.localScale = new Vector3(baseScale * squashX, baseScale * squashY, 1f);
             _lift.anchoredPosition = new Vector2(shakeX, lift);
 
             if (_glow != null && _glow.gameObject.activeSelf)
@@ -195,8 +258,8 @@ namespace RoyalSiege.UI
 
         // ---------------- pointer forwarding ----------------
 
-        public void OnPointerDown(PointerEventData e) { if (_slot >= 0) _owner.OnSlotPointerDown(_slot, e.position); }
-        public void OnDrag(PointerEventData e) { if (_slot >= 0) _owner.OnSlotDrag(_slot, e.position); }
-        public void OnPointerUp(PointerEventData e) { if (_slot >= 0) _owner.OnSlotPointerUp(_slot, e.position); }
+        public void OnPointerDown(PointerEventData e) { if (_slot >= 0) _owner.OnSlotPointerDown(_slot, e.position, e.pointerId); }
+        public void OnDrag(PointerEventData e) { if (_slot >= 0) _owner.OnSlotDrag(_slot, e.position, e.pointerId); }
+        public void OnPointerUp(PointerEventData e) { if (_slot >= 0) _owner.OnSlotPointerUp(_slot, e.position, e.pointerId); }
     }
 }

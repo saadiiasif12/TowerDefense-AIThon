@@ -36,6 +36,17 @@ namespace RoyalSiege.Buildings
         private int _builtCount;
         private float _builtLength, _builtWidth;
 
+        // 18-Jul drag highlight: the circle rests slightly dimmed and brightens to pure
+        // white while a card is being dragged (MPB — the shared material stays untouched).
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly Color RestColor = new(0.82f, 0.82f, 0.82f, 1f);
+        private MaterialPropertyBlock _mpb;
+        private float _highlight;          // 0 rest → 1 dragging
+        private float _highlightTarget;
+
+        /// <summary>Brighten while a card is held (called by PlacementController).</summary>
+        public void SetDragHighlight(bool on) => _highlightTarget = on ? 1f : 0f;
+
         private float Radius => _config != null ? _config.deploymentRadius : 5f;
 
         private void OnEnable()
@@ -65,6 +76,17 @@ namespace RoyalSiege.Buildings
             if (!Mathf.Approximately(_builtRadius, Radius) || _builtCount != _dashCount ||
                 !Mathf.Approximately(_builtLength, _dashLength) || !Mathf.Approximately(_builtWidth, _dashWidth))
                 Rebuild();
+
+            // Drag highlight (runtime only; MPB keeps the shared material clean).
+            if (Application.isPlaying && !Mathf.Approximately(_highlight, _highlightTarget))
+            {
+                _highlight = Mathf.MoveTowards(_highlight, _highlightTarget, Time.unscaledDeltaTime * 8f);
+                _mpb ??= new MaterialPropertyBlock();
+                var mr = GetComponent<MeshRenderer>();
+                mr.GetPropertyBlock(_mpb);
+                _mpb.SetColor(BaseColorId, Color.Lerp(RestColor, Color.white, _highlight));
+                mr.SetPropertyBlock(_mpb);
+            }
         }
 
         /// <summary>Regenerate the dash quads for the current radius/tuning (in-memory only).</summary>
