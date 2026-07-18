@@ -26,6 +26,13 @@ namespace RoyalSiege.Units
         private const float LungePunch = 0.28f;
         private const float DeathDespawnSeconds = 1.6f; // hold the corpse so the death anim plays before pooling
 
+        [Tooltip("Knight-ONLY walk-anim speed factor (multiplies the foot-synced cadence). The " +
+                 "short-stride walk clip needs ~2.5x to grip the ground at moveSpeed 1.6, which " +
+                 "reads frantic; <1 calms the legs (a little slide is fine at this camera). 1 = " +
+                 "fully synced/fast. Mirrors the enemies' per-def walk multiplier but stays local " +
+                 "to the Knight — nothing else reads this field.")]
+        [SerializeField, Range(0.1f, 1f)] private float _walkAnimSpeedMultiplier = 0.6f;
+
         private TroopCardSO _card;
         private KnightRuntimeDeps _deps;
         private Health _health;
@@ -83,6 +90,9 @@ namespace RoyalSiege.Units
             if (GetComponent<OutlineView>() == null) gameObject.AddComponent<OutlineView>();
             if (_animator == null) _animator = GetComponent<UnitAnimator>();
             _animator?.Rebind();
+            // Knight-only: calm the walk cadence so the fast synced legs read as a smooth march
+            // (pooled reuse re-applies it — Rebind never touches the multiplier).
+            _animator?.ConfigureWalk(_walkAnimSpeedMultiplier);
             _despawnTimer = 0f;
 
             _deps.Registry.Register(this);

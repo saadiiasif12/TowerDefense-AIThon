@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using RoyalSiege.Core;
+using TMPro;
 
 namespace RoyalSiege.UI
 {
@@ -11,7 +12,7 @@ namespace RoyalSiege.UI
     public sealed class WaveBannerView : MonoBehaviour
     {
         [SerializeField] private GameContext _context;
-        [SerializeField] private Text _waveLabel;
+        [SerializeField] private TextMeshProUGUI _waveLabel;
         [SerializeField] private Text _bonusLabel;
         [Tooltip("Stage progress as a Unity Slider (9-sliced base + fill).")]
         [SerializeField] private Slider _stageSlider;
