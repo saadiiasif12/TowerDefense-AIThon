@@ -41,13 +41,6 @@ namespace RoyalSiege.Data
             context.Runtime.AddZone(new LogRoll(this, context.Runtime, context.Point, RollDirection));
         }
 
-        /// <summary>
-        /// 18-Jul user delta: the Log is placeable ANYWHERE — it always rolls forward and hits
-        /// whatever its fixed lane happens to cross (possibly nothing), so it never needs an
-        /// enemy under the drop point. (The map-circle bound still applies in PlacementValidator.)
-        /// </summary>
-        public override bool HasTargets(SpellCardSO card, Vector3 point, ITargetQuery query, Vector3 mapCenter) => true;
-
         /// <summary>One rolling log instance. Each enemy is hit at most once per roll.</summary>
         private sealed class LogRoll : ISpellZone
         {

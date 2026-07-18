@@ -43,24 +43,13 @@ namespace RoyalSiege.Data
         }
     }
 
-    /// <summary>Strategy base: new spells are new subclasses + an asset — no switch statements.</summary>
+    /// <summary>
+    /// Strategy base: new spells are new subclasses + an asset — no switch statements.
+    /// Note: spells carry no placement gate — 18-Jul ruling made every spell castable
+    /// anywhere inside the map circle (PlacementValidator.IsValidSpellSpot).
+    /// </summary>
     public abstract class SpellEffectSO : ScriptableObject
     {
-        private static readonly List<IEnemyTarget> ValidationBuffer = new();
-
         public abstract void Apply(in SpellContext context);
-
-        /// <summary>
-        /// Placement gate (17-Jul rule: a spell must actually connect with something).
-        /// Default = point-AoE: at least one live enemy whose center is inside the drawn
-        /// radius. Directional spells override this to test their real swept area — the
-        /// tiny drop radius says nothing about where a rolling Log will connect.
-        /// Called before the cast, so it works off the query rather than SpellContext.
-        /// </summary>
-        public virtual bool HasTargets(SpellCardSO card, Vector3 point, ITargetQuery query, Vector3 mapCenter)
-        {
-            query.EnemiesInRadius(point, card.radius, ValidationBuffer);
-            return ValidationBuffer.Count > 0;
-        }
     }
 }
