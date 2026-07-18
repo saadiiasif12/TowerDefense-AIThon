@@ -714,9 +714,13 @@ MonoBehaviour:
   _hideDuringUpgrade:
   - {fileID: 497038797034581244}
   - {fileID: 5980970925437001288}
-  _sinkSeconds: 1
-  _riseSeconds: 1.1
+  _sinkSeconds: 1.2
+  _riseSeconds: 1.32
   _moveRumblePerSecond: 1.45
+  _shakeHorizontalDamp: 0.25
+  _preDelaySeconds: 1.2
+  _postDelaySeconds: 1.2
+  _failBlastScale: 2
   _kingRoot: {fileID: 497038797034581244}
   _kingHeightOffset: 0
 --- !u!114 &5280723715067923698

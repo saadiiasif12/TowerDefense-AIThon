@@ -42,6 +42,14 @@ namespace RoyalSiege.Buildings
         [Tooltip("Continuous camera rumble fed per second while a tower is moving (sink start → rise end). " +
                  "Must exceed CameraShaker's decay (1.4/s) or the shake dies out between the dust beats.")]
         [SerializeField] private float _moveRumblePerSecond = 1.45f;
+        [Tooltip("Left-right shake damp during the tower cinematics (0..1): low = mostly vertical ground rumble.")]
+        [Range(0f, 1f)] [SerializeField] private float _shakeHorizontalDamp = 0.25f;
+        [Tooltip("Beat of stillness BEFORE the old tower starts sinking (and before the defeat blast).")]
+        [SerializeField] private float _preDelaySeconds = 0.8f;
+        [Tooltip("Beat AFTER the new tower (or ruin) has settled before the screen is allowed to show.")]
+        [SerializeField] private float _postDelaySeconds = 0.8f;
+        [Tooltip("Scale applied to the defeat fire blast so it covers the WHOLE tower.")]
+        [SerializeField] private float _failBlastScale = 2.0f;
         // (_swapSeconds/_flashColor of the old scale-surge removed — superseded by the elevator)
         [Header("King placement (18 Jul — the 4 tower arts have different roof heights)")]
         [Tooltip("KingRoot — auto-repositioned so the king stands on the ACTIVE model's roof.")]
@@ -125,6 +133,7 @@ namespace RoyalSiege.Buildings
         private void OnDestroy()
         {
             if (_events != null) _events.MatchEnded -= OnMatchEnded;
+            SetShakeBias(false); // never leave the shared shaker damped if a sequence is cut short
         }
 
         private void OnMatchEnded(MatchResult result)
@@ -150,20 +159,37 @@ namespace RoyalSiege.Buildings
         private IEnumerator Collapse()
         {
             _events?.RaiseTowerTransitionStarted();
+            SetShakeBias(true); // mostly-vertical quake character, same as the level-up
 
-            // Fire explosion engulfs the tower the moment it "dies".
-            Vector3 blastPoint = transform.position + Vector3.up * 1.2f;
+            // Beat of stillness before the catastrophe — the death registers first.
+            yield return WaitUnscaled(_preDelaySeconds);
+
+            // Fire explosion engulfs the WHOLE tower. The blast prefab's systems use
+            // scalingMode=Local (root scale is ignored), so the size boost is applied
+            // per-system on THIS instance — the shared prefab (Fireball spell) is untouched.
+            Vector3 blastPoint = transform.position + Vector3.up * 1.6f;
             if (_failBlastVfx != null)
             {
                 var fx = Instantiate(_failBlastVfx, blastPoint, Quaternion.identity);
+                float k = Mathf.Max(0.1f, _failBlastScale);
+                foreach (var psys in fx.GetComponentsInChildren<ParticleSystem>(true))
+                {
+                    // Only the volumetric parts grow (fire core, smoke, shockwave, embers).
+                    // The wispy highlight sheets and the ground scorch quad turn into big
+                    // blocky shapes when enlarged — they stay at their authored size.
+                    string n = psys.gameObject.name;
+                    if (n.Contains("Highlights") || n.Contains("Scorch")) continue;
+                    var m = psys.main;
+                    m.startSizeMultiplier *= k;
+                    m.startSpeedMultiplier *= 1f + (k - 1f) * 0.7f; // spread grows a bit less than size
+                }
                 fx.Play(true);
                 Destroy(fx.gameObject, 5f);
             }
             _shaker?.AddTrauma(0.85f); // heavy blast
 
             // A beat inside the fireball before the swap — the explosion hides the cut.
-            float wait = 0f;
-            while (wait < 0.18f) { wait += Time.unscaledDeltaTime; yield return null; }
+            yield return WaitUnscaled(0.18f);
 
             foreach (var m in _levelModels) if (m != null) m.gameObject.SetActive(false);
             if (_hideOnFail != null)
@@ -181,10 +207,10 @@ namespace RoyalSiege.Buildings
             }
             _failModel.localScale = _failBaseScale;
 
-            // Let the fire read for a moment before the fail screen covers it.
-            wait = 0f;
-            while (wait < 0.5f) { wait += Time.unscaledDeltaTime; yield return null; }
+            // Let the fire and the ruin read before the fail screen covers them.
+            yield return WaitUnscaled(_postDelaySeconds);
 
+            SetShakeBias(false);
             _running = null;
             _events?.RaiseTowerTransitionCompleted(); // NOW the fail screen may show
         }
@@ -229,6 +255,18 @@ namespace RoyalSiege.Buildings
             _shaker?.AddTrauma(trauma);
         }
 
+        /// <summary>Unscaled-time wait usable inside the cinematics (game clock is paused).</summary>
+        private static IEnumerator WaitUnscaled(float seconds)
+        {
+            float t = 0f;
+            while (t < seconds) { t += Time.unscaledDeltaTime; yield return null; }
+        }
+
+        private void SetShakeBias(bool cinematic)
+        {
+            if (_shaker != null) _shaker.HorizontalDamp = cinematic ? _shakeHorizontalDamp : 1f;
+        }
+
         /// <summary>
         /// 18-Jul level-up cinematic: king + mortar hide → OLD tower SINKS into the ground
         /// (dust + shake) → NEW tower RISES out of the ground (dust + shake) → king + mortar
@@ -252,6 +290,12 @@ namespace RoyalSiege.Buildings
             // The king and mortar rig vanish for the whole swap (they'd float mid-air).
             if (_hideDuringUpgrade != null)
                 foreach (var h in _hideDuringUpgrade) if (h != null) h.gameObject.SetActive(false);
+
+            // Ground-quake shake character: mostly vertical, only a little left-right.
+            SetShakeBias(true);
+
+            // Beat of stillness before the ground opens — sells the "something is happening".
+            yield return WaitUnscaled(_preDelaySeconds);
 
             // ---- OLD TOWER SINKS ----
             // Camera rumbles CONTINUOUSLY from here until the rise completes: each moving
@@ -313,6 +357,10 @@ namespace RoyalSiege.Buildings
                 Destroy(fx.gameObject, 3f);
             }
 
+            // Let the finished tower breathe before the screen covers it.
+            yield return WaitUnscaled(_postDelaySeconds);
+
+            SetShakeBias(false);
             _running = null;
             _events?.RaiseTowerTransitionCompleted(); // NOW the level-up screen may show
         }
