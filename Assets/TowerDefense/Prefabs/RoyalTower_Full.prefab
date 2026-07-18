@@ -686,6 +686,8 @@ MonoBehaviour:
   - {fileID: 1947799372287183633}
   - {fileID: 6271447148172470046}
   _upgradeVfx: {fileID: 8137173455560979978, guid: b57b09c750e16ae4ead8c8e889642181, type: 3}
+  _dustVfx: {fileID: 1060690276677704234, guid: fa29b896bc5e7f640b73501e6e2d6e77, type: 3}
+  _failBlastVfx: {fileID: 5962631947570390476, guid: a1f751a5e42f0e340ad97ed89858c929, type: 3}
   _hideOnInit:
   - {fileID: 2467080259100477992}
   - {fileID: 3586164213123138887}
@@ -693,8 +695,12 @@ MonoBehaviour:
   _hideOnFail:
   - {fileID: 497038797034581244}
   - {fileID: 5980970925437001288}
-  _swapSeconds: 0.55
-  _flashColor: {r: 1, g: 0.92, b: 0.55, a: 1}
+  _hideDuringUpgrade:
+  - {fileID: 497038797034581244}
+  - {fileID: 5980970925437001288}
+  _sinkSeconds: 1
+  _riseSeconds: 1.1
+  _moveRumblePerSecond: 1.45
   _kingRoot: {fileID: 497038797034581244}
   _kingHeightOffset: 0
 --- !u!114 &5280723715067923698

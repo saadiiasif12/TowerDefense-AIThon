@@ -35,6 +35,13 @@ namespace RoyalSiege.UI
 
         private System.Action _dismiss;
         private int _checkpointsSeen;
+        // 18-Jul tower cinematic gate: the tower's sink/rise sequence starts BEFORE
+        // CheckpointReached is raised (same call stack), so when a transition is running the
+        // screen buffers and shows on TowerTransitionCompleted. Timeout = never soft-lock.
+        private bool _transitionRunning;
+        private bool _showPending;
+        private float _pendingTimeout;
+        private const float ShowTimeoutSeconds = 6f;
 
         private void Start()
         {
@@ -42,14 +49,47 @@ namespace RoyalSiege.UI
             if (_panel != null) _panel.SetActive(false);
             if (_continueButton != null) _continueButton.onClick.AddListener(OnContinue);
             if (_context != null && _context.Events != null)
+            {
                 _context.Events.CheckpointReached += OnCheckpoint;
+                _context.Events.TowerTransitionStarted += OnTransitionStarted;
+                _context.Events.TowerTransitionCompleted += OnTransitionCompleted;
+            }
         }
 
         private void OnDestroy()
         {
             if (_continueButton != null) _continueButton.onClick.RemoveListener(OnContinue);
             if (_context != null && _context.Events != null)
+            {
                 _context.Events.CheckpointReached -= OnCheckpoint;
+                _context.Events.TowerTransitionStarted -= OnTransitionStarted;
+                _context.Events.TowerTransitionCompleted -= OnTransitionCompleted;
+            }
+        }
+
+        private void OnTransitionStarted() => _transitionRunning = true;
+
+        private void OnTransitionCompleted()
+        {
+            _transitionRunning = false;
+            if (_showPending) ShowPanel();
+        }
+
+        private void Update()
+        {
+            if (!_showPending) return;
+            _pendingTimeout -= Time.unscaledDeltaTime;
+            if (_pendingTimeout <= 0f) ShowPanel(); // failsafe: sequence never signalled
+        }
+
+        private void ShowPanel()
+        {
+            _showPending = false;
+            if (_panel != null)
+            {
+                _panel.transform.SetAsLastSibling(); // always above the rest of the HUD
+                _panel.SetActive(true);
+            }
         }
 
         private void OnCheckpoint(CheckpointReachedArgs args)
@@ -86,11 +126,14 @@ namespace RoyalSiege.UI
                 if (_unlockDescription != null) _unlockDescription.text = args.Unlock.description;
             }
 
-            if (_panel != null)
+            // Tower cinematic first, screen second (18-Jul sequence spec). If no tower
+            // transition is running (e.g. stage-complete without a level change), show now.
+            if (_transitionRunning)
             {
-                _panel.transform.SetAsLastSibling(); // always above the rest of the HUD
-                _panel.SetActive(true);
+                _showPending = true;
+                _pendingTimeout = ShowTimeoutSeconds;
             }
+            else ShowPanel();
         }
 
         /// <summary>Wired to the Continue button (also callable from custom UI).</summary>
