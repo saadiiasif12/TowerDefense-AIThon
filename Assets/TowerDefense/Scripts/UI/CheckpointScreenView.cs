@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using RoyalSiege.Core;
+using TMPro;
 
 namespace RoyalSiege.UI
 {
@@ -19,17 +20,17 @@ namespace RoyalSiege.UI
         [Header("Parts (preset on the prefab — restyle freely)")]
         [Tooltip("Root panel shown on checkpoint, hidden on Continue.")]
         [SerializeField] private GameObject _panel;
-        [SerializeField] private Text _title;          // "Level Up!" / "Stage Complete!"
-        [SerializeField] private Text _subtitle;       // "You saved the tower!"
-        [SerializeField] private Text _detail;         // checkpoint count / stars
+        [SerializeField] private TextMeshProUGUI _title;          // "Level Up!" / "Stage Complete!"
+        [SerializeField] private TextMeshProUGUI _subtitle;       // "You saved the tower!"
+        [SerializeField] private TextMeshProUGUI _detail;         // checkpoint count / stars
         [Tooltip("Whole 'Cards Unlocked' group — hidden when the checkpoint has no unlock.")]
         [SerializeField] private GameObject _unlockGroup;
         [SerializeField] private Image _unlockIcon;
-        [SerializeField] private Text _unlockLabel;
+        [SerializeField] private TextMeshProUGUI _unlockLabel;
         [Tooltip("The unlocked card's energy cost (number next to the mana gem).")]
-        [SerializeField] private Text _unlockCost;
+        [SerializeField] private TextMeshProUGUI _unlockCost;
         [Tooltip("The unlocked card's description text.")]
-        [SerializeField] private Text _unlockDescription;
+        [SerializeField] private TextMeshProUGUI _unlockDescription;
         [SerializeField] private Button _continueButton;
 
         private System.Action _dismiss;

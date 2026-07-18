@@ -1360,6 +1360,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 9069069455070055251}
     m_Modifications:
+    - target: {fileID: 2947297526897757119, guid: 518079b44ffe86d4589bd8b067568c23, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3234899625169125011, guid: 518079b44ffe86d4589bd8b067568c23, type: 3}
       propertyPath: m_Name
       value: MatchEndScreen
