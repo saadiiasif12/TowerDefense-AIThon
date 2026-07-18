@@ -29,6 +29,7 @@ MonoBehaviour:
   hurtStaggerSeconds: 0.3
   hurtCooldownSeconds: 6
   walkAnimSpeedMultiplier: 2.51
+  attackAnimSpeedMultiplier: 0.65
   unitRadius: 0.85
   targetPriority: 1
   bounty: 5
