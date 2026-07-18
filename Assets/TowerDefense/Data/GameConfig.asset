@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27ebbcff5489f90458847cc880a9361d, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.GameConfigSO
-  towerHp: 4000
-  towerFootprintRadius: 1.5
+  towerHp: 2000
+  towerFootprintRadius: 1.55
   kingAttack:
     damage: 93
     attackRate: 1
