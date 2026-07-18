@@ -46,6 +46,10 @@ namespace RoyalSiege.Data
                  "frantic at full sync because it moves fast), >1 = busier.")]
         [FormerlySerializedAs("walkAnimSpeedScale")]
         [Range(0.25f, 4f)] public float walkAnimSpeedMultiplier = 1f;
+        [Tooltip("THIS enemy's attack-animation speed multiplier, applied on top of the period-fit " +
+                 "clamp. 1 = default pacing; <1 = slower/heavier swings (e.g. Ogre 0.65), >1 = snappier. " +
+                 "Purely visual — damage timing (attackRate/impactFraction) is unaffected.")]
+        [Range(0.25f, 4f)] public float attackAnimSpeedMultiplier = 1f;
 
         [Header("Behaviour")]
         [Tooltip("Personal-space radius for separation steering and formation spacing.")]
