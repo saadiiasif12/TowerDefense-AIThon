@@ -29,6 +29,8 @@ namespace RoyalSiege.Data
         public float splashRadius = 0f;
         [Tooltip("Null = melee. Set for ranged enemies.")]
         public ProjectileSettingsSO projectile;
+        [Tooltip("If true, the scheduled attack impact is released by an AnimationEvent on the attack clip (AnimEvent_Throw) instead of the impactFraction timer — the projectile leaves exactly on the clip's release frame. Falls back to the timer if the event never arrives (2× attackRate timeout).")]
+        public bool attackImpactOnAnimEvent = false;
         [Tooltip("An enemy may only ATTACK once it is within this distance of the map center — ranged enemies must enter the territory first instead of standing off at the outskirts (17-Jul rule). Melee enemies are unaffected in practice.")]
         public float engageRadiusFromCenter = 12f;
 
