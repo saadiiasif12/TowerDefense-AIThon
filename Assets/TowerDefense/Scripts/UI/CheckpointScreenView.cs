@@ -26,6 +26,10 @@ namespace RoyalSiege.UI
         [SerializeField] private GameObject _unlockGroup;
         [SerializeField] private Image _unlockIcon;
         [SerializeField] private Text _unlockLabel;
+        [Tooltip("The unlocked card's energy cost (number next to the mana gem).")]
+        [SerializeField] private Text _unlockCost;
+        [Tooltip("The unlocked card's description text.")]
+        [SerializeField] private Text _unlockDescription;
         [SerializeField] private Button _continueButton;
 
         private System.Action _dismiss;
@@ -76,6 +80,9 @@ namespace RoyalSiege.UI
                     _unlockIcon.sprite = args.Unlock.icon;
                     _unlockIcon.enabled = args.Unlock.icon != null;
                 }
+                // 18-Jul: the reveal also teaches the card — energy cost + description.
+                if (_unlockCost != null) _unlockCost.text = args.Unlock.cost.ToString("0");
+                if (_unlockDescription != null) _unlockDescription.text = args.Unlock.description;
             }
 
             if (_panel != null)
