@@ -45,6 +45,12 @@ namespace RoyalSiege.Placement
         private Transform _labelRoot;
         private Camera _camera;
 
+        // 18-Jul Log preview: a straight LANE (roll path) instead of the circular radius.
+        private Transform _lane;
+        private MeshRenderer _laneRenderer;
+        private MaterialPropertyBlock _laneBlock;
+        private bool _laneMode;
+
         private void Awake()
         {
             _block = new MaterialPropertyBlock();
@@ -64,7 +70,37 @@ namespace RoyalSiege.Placement
         {
             CacheBaseScale();
             gameObject.SetActive(true);
+            _laneMode = false;
+            if (_lane != null) _lane.gameObject.SetActive(false);
+            _rangeRing?.SetVisible(true);
             _rangeRing?.SetRadius(rangeRadius);
+            BeginShow(cardName);
+        }
+
+        /// <summary>
+        /// 18-Jul Log preview: no circle — a straight lane extending `length` along the FIXED
+        /// world roll direction, `width` wide, with the far edge marking the exact range.
+        /// The ghost's own disc still marks the drop point; the ring is hidden.
+        /// </summary>
+        public void ShowLane(float length, float width, Vector3 direction, string cardName)
+        {
+            CacheBaseScale();
+            gameObject.SetActive(true);
+            _laneMode = true;
+            _rangeRing?.SetVisible(false);
+            EnsureLane();
+            _lane.gameObject.SetActive(true);
+            _lane.rotation = Quaternion.LookRotation(direction); // world roll direction, root never rotates
+            _lane.localPosition = Vector3.zero;
+            // quad is 1×1 with the pivot at the near edge — scale to lane size, compensating
+            // the ghost root's authored scale (Ghost_Spell ships at 0.6×).
+            _lane.localScale = new Vector3(
+                width / Mathf.Max(0.01f, _baseScale.x), 1f, length / Mathf.Max(0.01f, _baseScale.z));
+            BeginShow(cardName);
+        }
+
+        private void BeginShow(string cardName)
+        {
             _showT = 0f;
             _fade = 0f;
             _fadeTarget = 0f;   // stays invisible until the pointer crosses into the field
@@ -75,6 +111,34 @@ namespace RoyalSiege.Placement
             _label.text = cardName ?? "";
             _labelRoot.gameObject.SetActive(!string.IsNullOrEmpty(cardName));
             ApplyVisuals();
+        }
+
+        /// <summary>Flat forward strip, near edge at the ghost origin (built once, pooled).</summary>
+        private void EnsureLane()
+        {
+            if (_lane != null) return;
+            var go = new GameObject("RollLane", typeof(MeshFilter), typeof(MeshRenderer));
+            _lane = go.transform;
+            _lane.SetParent(transform, false);
+
+            // 1×1 ground quad with the pivot at the NEAR edge (extends +Z when scaled).
+            var mesh = new Mesh { name = "RollLane" };
+            mesh.vertices = new[]
+            {
+                new Vector3(-0.5f, 0.04f, 0f), new Vector3(0.5f, 0.04f, 0f),
+                new Vector3(-0.5f, 0.04f, 1f), new Vector3(0.5f, 0.04f, 1f)
+            };
+            mesh.triangles = new[] { 0, 2, 1, 1, 2, 3 };
+            mesh.normals = new[] { Vector3.up, Vector3.up, Vector3.up, Vector3.up };
+            mesh.hideFlags = HideFlags.DontSave;
+            go.GetComponent<MeshFilter>().sharedMesh = mesh;
+
+            _laneRenderer = go.GetComponent<MeshRenderer>();
+            // reuse the proven translucent ghost material so the lane tints exactly like the disc
+            if (_tintTargets != null && _tintTargets.Length > 0 && _tintTargets[0] != null)
+                _laneRenderer.sharedMaterial = _tintTargets[0].sharedMaterial;
+            _laneRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            _laneBlock = new MaterialPropertyBlock();
         }
 
         public void Hide()
@@ -192,6 +256,16 @@ namespace RoyalSiege.Placement
                 _block.SetColor(ColorId, color);
                 _block.SetColor(BaseColorId, color);
                 _tintTargets[i].SetPropertyBlock(_block);
+            }
+
+            // Lane mode: the roll path tints exactly like the disc (slightly softer alpha).
+            if (_laneMode && _laneRenderer != null)
+            {
+                var laneColor = color; laneColor.a *= 0.7f;
+                _laneRenderer.GetPropertyBlock(_laneBlock);
+                _laneBlock.SetColor(ColorId, laneColor);
+                _laneBlock.SetColor(BaseColorId, laneColor);
+                _laneRenderer.SetPropertyBlock(_laneBlock);
             }
 
             if (_labelRoot != null && _labelRoot.gameObject.activeSelf)

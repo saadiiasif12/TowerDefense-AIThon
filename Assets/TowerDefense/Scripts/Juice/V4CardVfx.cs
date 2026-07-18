@@ -58,6 +58,8 @@ namespace RoyalSiege.Juice
 
         private sealed class LogRollView
         {
+            public enum Phase { Falling, Rolling, Fading }
+
             public GameObject Root;
             public Transform Model;
             public Vector3 Start;
@@ -68,7 +70,18 @@ namespace RoyalSiege.Juice
             public Vector3 Axle;      // horizontal axis the log lies along + rolls about
             public Quaternion BaseRot; // orientation with the log's long axis on the axle
             public float Radius;      // measured from the model (drives ground height + roll speed)
+
+            // 18-Jul: fall-in → roll → fade-out. Fall time = the card's fallDelaySeconds so
+            // the damage zone (which resolves after that delay) starts rolling ON the landing.
+            public Phase State;
+            public float FallDuration;
+            public float FallAge;
+            public float FadeAge;
+            public Material[] FadeMaterials; // per-instance clones (opaque until the fade)
         }
+
+        private const float LogFallHeight = 4f;
+        private const float LogFadeSeconds = 0.3f;
 
         private void Start()
         {
@@ -116,7 +129,10 @@ namespace RoyalSiege.Juice
                     if (card.effect is LogEffectSO log)
                     {
                         // Fixed forward roll (18-Jul) — read the SAME direction the sim uses.
-                        StartLog(point, log.RollDirection, log.rollDistance, log.rollSpeed);
+                        // Fall time = the card's fallDelaySeconds: damage resolves after that
+                        // delay, so the zone starts sweeping exactly when the log lands.
+                        StartLog(point, log.RollDirection, log.rollDistance, log.rollSpeed,
+                            card.fallDelaySeconds);
                     }
                     break;
             }
@@ -185,7 +201,8 @@ namespace RoyalSiege.Juice
 
         // ---------------- log roll ----------------
 
-        private void StartLog(Vector3 point, Vector3 direction, float distance, float speed)
+        private void StartLog(Vector3 point, Vector3 direction, float distance, float speed,
+            float fallSeconds)
         {
             LogRollView log = null;
             for (int i = 0; i < _logs.Count; i++)
@@ -202,7 +219,15 @@ namespace RoyalSiege.Juice
             log.Axle = Vector3.Cross(Vector3.up, direction).normalized;
             log.BaseRot = Quaternion.LookRotation(log.Axle, Vector3.up);
             log.Model.rotation = log.BaseRot;
-            log.Root.transform.position = point + Vector3.up * log.Radius;
+
+            // 18-Jul: drop in from above first, roll on landing, fade at the end of the range.
+            log.FallDuration = Mathf.Max(0.01f, fallSeconds);
+            log.FallAge = 0f;
+            log.FadeAge = 0f;
+            log.State = fallSeconds > 0.02f ? LogRollView.Phase.Falling : LogRollView.Phase.Rolling;
+            RestoreLogOpaque(log); // pooled reuse: back to solid before showing
+            log.Root.transform.position = point
+                + Vector3.up * (log.Radius + (log.State == LogRollView.Phase.Falling ? LogFallHeight : 0f));
             log.Root.SetActive(true);
         }
 
@@ -242,9 +267,59 @@ namespace RoyalSiege.Juice
             }
 
             var log = new LogRollView { Root = root, Model = model, Radius = radius };
+
+            // Per-instance material clones so the end-of-range FADE can animate alpha
+            // (kept opaque during fall+roll; switched to transparent only while fading).
+            var mats = new List<Material>();
+            foreach (var r in model.GetComponentsInChildren<Renderer>(true))
+                mats.AddRange(r.materials); // .materials instances the clones once
+            log.FadeMaterials = mats.ToArray();
+
             root.SetActive(false);
             _logs.Add(log);
             return log;
+        }
+
+        /// <summary>Switch the log's materials to alpha-blended for the end-of-range fade.</summary>
+        private static void MakeLogFadeable(LogRollView log)
+        {
+            foreach (var m in log.FadeMaterials)
+            {
+                m.SetFloat("_Surface", 1f);
+                m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                m.SetFloat("_ZWrite", 0f);
+                m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+                m.SetOverrideTag("RenderType", "Transparent");
+                m.renderQueue = 3000;
+            }
+        }
+
+        /// <summary>Back to fully opaque (pooled reuse) — solid while falling and rolling.</summary>
+        private static void RestoreLogOpaque(LogRollView log)
+        {
+            if (log.FadeMaterials == null) return;
+            foreach (var m in log.FadeMaterials)
+            {
+                if (m.HasProperty("_BaseColor")) { var c = m.GetColor("_BaseColor"); c.a = 1f; m.SetColor("_BaseColor", c); }
+                if (m.HasProperty("_Color")) { var c = m.GetColor("_Color"); c.a = 1f; m.SetColor("_Color", c); }
+                m.SetFloat("_Surface", 0f);
+                m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.One);
+                m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.Zero);
+                m.SetFloat("_ZWrite", 1f);
+                m.DisableKeyword("_SURFACE_TYPE_TRANSPARENT");
+                m.SetOverrideTag("RenderType", "Opaque");
+                m.renderQueue = 2000;
+            }
+        }
+
+        private static void SetLogAlpha(LogRollView log, float alpha)
+        {
+            foreach (var m in log.FadeMaterials)
+            {
+                if (m.HasProperty("_BaseColor")) { var c = m.GetColor("_BaseColor"); c.a = alpha; m.SetColor("_BaseColor", c); }
+                if (m.HasProperty("_Color")) { var c = m.GetColor("_Color"); c.a = alpha; m.SetColor("_Color", c); }
+            }
         }
 
         /// <summary>Rolling radius = half the model's smaller cross-section (long axis is +Z).
@@ -318,22 +393,52 @@ namespace RoyalSiege.Juice
                 var log = _logs[i];
                 if (!log.Root.activeSelf) continue;
 
-                float step = log.Speed * dt;
-                log.Travelled += step;
-                Vector3 at = log.Start + log.Direction * Mathf.Min(log.Travelled, log.Distance) + Vector3.up * log.Radius;
-                log.Root.transform.position = at;
-                // Roll: spin about the axle by arc length / radius so the log grips the ground.
-                float rollDeg = log.Travelled / log.Radius * Mathf.Rad2Deg;
-                log.Model.rotation = Quaternion.AngleAxis(rollDeg, log.Axle) * log.BaseRot;
-                if ((int)(log.Travelled * 6f) != (int)((log.Travelled - step) * 6f))
-                    EmitDust(at - log.Direction * 0.4f + Vector3.down * 0.2f, 1, 0.4f, new Color(0.55f, 0.48f, 0.35f, 0.5f));
-
-                // End of run: dust puff + disappear (no scale change — the log stays authored size).
-                if (log.Travelled >= log.Distance)
+                // 18-Jul three-phase run: FALL from above (gravity ease-in, landing puff),
+                // then ROLL straight for exactly rollDistance, then FADE out in place.
+                if (log.State == LogRollView.Phase.Falling)
                 {
-                    EmitDust(log.Root.transform.position, 6, 0.6f, new Color(0.45f, 0.35f, 0.2f, 0.6f));
-                    log.Root.SetActive(false);
+                    log.FallAge += dt;
+                    float t = Mathf.Clamp01(log.FallAge / log.FallDuration);
+                    float height = LogFallHeight * (1f - t * t); // accelerating drop
+                    log.Root.transform.position = log.Start + Vector3.up * (log.Radius + height);
+                    if (t >= 1f)
+                    {
+                        log.State = LogRollView.Phase.Rolling;
+                        // Landing slam: dirt kicked outward + a thud of dust under the log.
+                        EmitDust(log.Start + Vector3.up * 0.1f, 8, 0.7f, new Color(0.5f, 0.42f, 0.3f, 0.6f));
+                        CameraShaker.Main?.AddTrauma(0.12f);
+                    }
+                    continue;
                 }
+
+                if (log.State == LogRollView.Phase.Rolling)
+                {
+                    float step = log.Speed * dt;
+                    log.Travelled += step;
+                    Vector3 at = log.Start + log.Direction * Mathf.Min(log.Travelled, log.Distance) + Vector3.up * log.Radius;
+                    log.Root.transform.position = at;
+                    // Roll: spin about the axle by arc length / radius so the log grips the ground.
+                    float rollDeg = log.Travelled / log.Radius * Mathf.Rad2Deg;
+                    log.Model.rotation = Quaternion.AngleAxis(rollDeg, log.Axle) * log.BaseRot;
+                    if ((int)(log.Travelled * 6f) != (int)((log.Travelled - step) * 6f))
+                        EmitDust(at - log.Direction * 0.4f + Vector3.down * 0.2f, 1, 0.4f, new Color(0.55f, 0.48f, 0.35f, 0.5f));
+
+                    // End of run: stop in place and dissolve (no scale change — authored size).
+                    if (log.Travelled >= log.Distance)
+                    {
+                        EmitDust(log.Root.transform.position, 6, 0.6f, new Color(0.45f, 0.35f, 0.2f, 0.6f));
+                        log.State = LogRollView.Phase.Fading;
+                        log.FadeAge = 0f;
+                        MakeLogFadeable(log);
+                    }
+                    continue;
+                }
+
+                // Fading: alpha 1 → 0 over LogFadeSeconds, then back to the pool.
+                log.FadeAge += dt;
+                float fade = Mathf.Clamp01(log.FadeAge / LogFadeSeconds);
+                SetLogAlpha(log, 1f - fade);
+                if (fade >= 1f) log.Root.SetActive(false);
             }
         }
 
