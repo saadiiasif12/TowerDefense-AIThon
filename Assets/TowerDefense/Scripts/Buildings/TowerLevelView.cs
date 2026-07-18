@@ -216,19 +216,22 @@ namespace RoyalSiege.Buildings
         }
 
         /// <summary>Level changed — animate the seamless upgrade (or init instantly if fresh).
-        /// Pass instant=true (resume/retry load) to snap without the surge animation.</summary>
-        public void SetLevel(int level, bool instant = false)
+        /// Pass instant=true (resume/retry load) to snap without the surge animation.
+        /// Returns TRUE only when the sink/rise cinematic actually STARTS (so a screen-first
+        /// caller knows whether to wait for TowerTransitionCompleted before resuming).</summary>
+        public bool SetLevel(int level, bool instant = false)
         {
             CacheScales();
-            if (_failed) return; // ruin is terminal — never resurrect a level model over it
+            if (_failed) return false; // ruin is terminal — never resurrect a level model over it
             // LAST-TOWER RULE (18-Jul): the clamp maps any level beyond the art list onto the
             // final model, and the same-art early-return below then SKIPS the whole elevator
             // cinematic (no sink/rise, no dust, no delays — the screen shows immediately).
             // The animation only plays when there IS a next tower art ahead.
             level = Mathf.Clamp(level, 1, _levelModels.Length);
-            if (_currentLevel == 0) { Init(_events, level); return; }
-            if (level == _currentLevel) return;
+            if (_currentLevel == 0) { Init(_events, level); return false; }
+            if (level == _currentLevel) return false; // same art (last-tower rule) → no cinematic
             if (_running != null) StopCoroutine(_running);
+            bool animated = false;
             if (instant)
             {
                 for (int i = 0; i < _levelModels.Length; i++)
@@ -243,8 +246,10 @@ namespace RoyalSiege.Buildings
             else
             {
                 _running = StartCoroutine(Upgrade(_currentLevel, level));
+                animated = true;
             }
             _currentLevel = level;
+            return animated;
         }
 
         /// <summary>Ground dust burst at the tower base + camera shake (every sink/rise beat).</summary>
