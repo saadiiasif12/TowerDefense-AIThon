@@ -19,6 +19,19 @@ namespace RoyalSiege.Juice
         private Vector3 _appliedOffset;
         private float _appliedRoll;
 
+        private static CameraShaker _main;
+        /// <summary>The main camera's shaker (lazy, survives scene reloads). Null-safe to call.</summary>
+        public static CameraShaker Main
+        {
+            get
+            {
+                if (_main == null && Camera.main != null) _main = Camera.main.GetComponent<CameraShaker>();
+                return _main;
+            }
+        }
+
+        private void OnDestroy() { if (_main == this) _main = null; }
+
         /// <summary>0.1 ≈ tiny tick, 0.35 ≈ solid thud, 0.6 ≈ big blast. Clamped to 1.</summary>
         public void AddTrauma(float amount) => _trauma = Mathf.Clamp01(_trauma + amount);
 

@@ -67,6 +67,8 @@ namespace RoyalSiege.Core
         public event Action<int, int, int> WaveProgressChanged;           // stageIndex(0-based), waveInStage(1-based), wavesInStage
         public event Action<CheckpointReachedArgs> CheckpointReached;     // level-up / stage-complete screen
         public event Action<int> TowerLeveledUp;                          // new 1-based level (visual upgrade)
+        // ---- 18-Jul juice ----
+        public event Action<Vector3, float, bool> EnemyDamaged;           // position, amount, wasKillingBlow (floating numbers)
 
         public void RaiseEnemyKilled(EnemyKilledArgs args) => EnemyKilled?.Invoke(args);
         public void RaiseEnergyChanged(float current, float max) => EnergyChanged?.Invoke(current, max);
@@ -90,6 +92,8 @@ namespace RoyalSiege.Core
         public void RaiseWaveProgressChanged(int stage, int waveInStage, int wavesInStage) => WaveProgressChanged?.Invoke(stage, waveInStage, wavesInStage);
         public void RaiseCheckpointReached(CheckpointReachedArgs args) => CheckpointReached?.Invoke(args);
         public void RaiseTowerLeveledUp(int level) => TowerLeveledUp?.Invoke(level);
+        public void RaiseEnemyDamaged(Vector3 position, float amount, bool killingBlow)
+            => EnemyDamaged?.Invoke(position, amount, killingBlow);
     }
 
     /// <summary>What the checkpoint screen needs to show (v4 §9).</summary>

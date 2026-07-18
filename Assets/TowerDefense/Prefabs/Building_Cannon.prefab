@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7615117036191203341}
   - component: {fileID: 7305980447165805722}
   - component: {fileID: 6922787871786862232}
+  - component: {fileID: 2067627512121409658}
   m_Layer: 0
   m_Name: Building_Cannon
   m_TagString: Untagged
@@ -81,6 +82,7 @@ MonoBehaviour:
   _yawPivot: {fileID: 8199918371783304778}
   _recoilNode: {fileID: 6871979727506605870}
   _muzzle: {fileID: 3747534117981463474}
+  _loadedAmmo: {fileID: 0}
   _turnDegreesPerSecond: 420
   _yawModelOffsetDegrees: 0
   _recoilDistance: 0.16
@@ -88,6 +90,18 @@ MonoBehaviour:
   _anticipationDistance: 0.05
   _scalePunchMode: 0
   _spawnPunchSeconds: 0.35
+--- !u!114 &2067627512121409658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2147769655540901295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 126d0ce3a7fbdcc4aa2b4b3a97c407bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.OutlineView
 --- !u!1 &2706085963893905716
 GameObject:
   m_ObjectHideFlags: 0

@@ -30,6 +30,12 @@ namespace RoyalSiege.Combat
         void ApplySlow(float strength, float seconds);
         /// <summary>v4: displace by this planar vector, scaled by the unit's knockback factor (Ogre 0).</summary>
         void ApplyKnockback(Vector3 displacement);
+        /// <summary>
+        /// 18-Jul: damage-over-time tick (Earthquake). Same health loss as TakeDamage but the
+        /// per-hit FEEDBACK (flinch, hit flash, damage number) is aggregated by the receiver —
+        /// a 10 Hz DoT must not vibrate the victim or spam numbers every tick.
+        /// </summary>
+        void TakeDotDamage(float amount) => TakeDamage(amount);
     }
 
     /// <summary>A player structure (building, Royal Tower or knight) as seen by enemies.</summary>

@@ -18,3 +18,4 @@ MonoBehaviour:
   width: 1.6
   knockback: 1.2
   interruptStun: 0.15
+  rollDirection: {x: 0, y: 0, z: 1}

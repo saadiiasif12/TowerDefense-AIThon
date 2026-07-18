@@ -109,6 +109,7 @@ MonoBehaviour:
   _rangeRing: {fileID: 6189836824096857175}
   _validColor: {r: 0.2, g: 1, b: 0.3, a: 0.6}
   _invalidColor: {r: 1, g: 0.25, b: 0.2, a: 0.6}
+  _config: {fileID: 11400000, guid: ffac82365feb7e64d913ba4e23f53583, type: 2}
 --- !u!1 &6706744566912398535
 GameObject:
   m_ObjectHideFlags: 0
