@@ -20,31 +20,38 @@ namespace RoyalSiege.Units
             return _center + new Vector3(Mathf.Sin(angleRad), 0f, Mathf.Cos(angleRad)) * _mapRadius;
         }
 
+        // Golden-angle conjugate: successive unit indices land ~137.5° apart, so a group of
+        // one enemy type fans out quasi-uniformly around the WHOLE tower — never a clustered
+        // pack — while staying fully deterministic (the project's zero-RNG guarantee).
+        private const float GoldenAngleFraction = 0.61803398875f;
+
         /// <summary>
-        /// Deterministic loose formation (zero-RNG guarantee): units fan out along the map
-        /// edge ARC (columns) and in staggered ranks behind it (rows), WIDELY spaced, plus a
-        /// per-unit hash scatter so a pack arrives as a spread, slightly irregular crowd
-        /// instead of a tidy single-file stack (18-Jul: enemies felt too bunched/rigid).
+        /// Full-ring scatter (18-Jul rule): each unit of a group spawns at its OWN bearing
+        /// spread around the entire tower instead of clustering near one map-edge point, so a
+        /// wave arrives from random positions all around rather than as a single pack. The
+        /// spawn DISTANCE (map radius) is preserved — only the angle varies, plus a small
+        /// radial jitter so two quasi-uniform neighbours never share an exact spot. Fully
+        /// deterministic: <paramref name="groupSeed"/> rotates the whole ring per wave/group
+        /// so no two waves march in from the same bearings.
         /// </summary>
-        public Vector3 GetWithFormationOffset(int index, int unitIndexInGroup, float unitRadius)
+        public Vector3 GetRingScatter(int groupSeed, int unitIndexInGroup, float unitRadius)
         {
-            int col = (unitIndexInGroup % 5) - 2;             // -2..2 across the arc
-            int row = unitIndexInGroup / 5;                    // ranks behind the edge
-            // Wider than before (was max(0.9, r*2.6)) so there is real air between enemies.
+            // Per-group rotation of the whole ring + golden-angle step per unit gives even
+            // full-circle COVERAGE; a strong per-unit angular jitter (±~0.10 turns ≈ ±36°)
+            // then breaks the too-regular spacing so gaps between enemies look irregular
+            // (some cluster, some spread) — organic, not a metronome ring. Still zero-RNG.
+            float angularJitter = (Hash01((groupSeed * 92083) ^ ((unitIndexInGroup + 11) * 51787)) - 0.5f) * 0.20f;
+            float turns = Hash01(groupSeed * 374761393 + 668265263)
+                          + unitIndexInGroup * GoldenAngleFraction
+                          + angularJitter;
+            float angleRad = (turns - Mathf.Floor(turns)) * 2f * Mathf.PI;
+
+            // Small radial jitter breaks ties between golden-angle neighbours and adds depth,
+            // kept modest so the intended spawn distance is essentially unchanged.
             float spacing = Mathf.Max(2.0f, unitRadius * 4.0f);
-
-            // Deterministic per-unit scatter — breaks the rigid grid without any RNG. Kept small
-            // relative to the spacing so a jittered pair can never end up overlapping.
-            float radialJitter  = (Hash01((index * 73856093) ^ (unitIndexInGroup * 19349663)) - 0.5f) * spacing * 0.4f;
-            float angularJitter = (Hash01((index * 83492791) ^ ((unitIndexInGroup + 7) * 12582917)) - 0.5f) * 0.4f;
-
-            // Column spread as an angle so spacing stays constant on the circle.
-            float arcDegreesPerColumn = spacing / _mapRadius * Mathf.Rad2Deg;
-            float angleRad = (index * 45f + (col + angularJitter) * arcDegreesPerColumn) * Mathf.Deg2Rad;
-
-            // Ranks step outward; alternate columns stagger half a step (quincunx) so no two
-            // units share a lane toward the center, then the radial jitter loosens it further.
-            float radius = _mapRadius + row * spacing + (Mathf.Abs(col) % 2) * spacing * 0.5f + radialJitter;
+            float radialJitter = (Hash01((groupSeed * 40503) ^ ((unitIndexInGroup + 3) * 20903)) - 0.5f)
+                                 * spacing * 0.5f;
+            float radius = _mapRadius + radialJitter;
 
             return _center + new Vector3(Mathf.Sin(angleRad), 0f, Mathf.Cos(angleRad)) * radius;
         }
