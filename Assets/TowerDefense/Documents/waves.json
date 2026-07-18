@@ -1,0 +1,123 @@
+{
+  "comment": "Waves spawn on absolute timers (startTime, seconds from match start) regardless of whether the previous wave is cleared — this is the anti-stall mechanism. spawnPoints: 0=N,1=NE,2=E,3=SE,4=S,5=SW,6=W,7=NW. groupDelay = seconds between sub-groups. unlockCards fire a banner at wave start.",
+  "spawnPointCount": 8,
+  "waves": [
+    {
+      "wave": 1,
+      "startTime": 0,
+      "unlockCards": ["cannon", "arrows", "fireball"],
+      "groups": [
+        { "enemy": "goblin", "count": 4, "spawnPoint": 0, "groupDelay": 0 }
+      ]
+    },
+    {
+      "wave": 2,
+      "startTime": 45,
+      "unlockCards": [],
+      "groups": [
+        { "enemy": "goblin", "count": 3, "spawnPoint": 0, "groupDelay": 0 },
+        { "enemy": "goblin", "count": 3, "spawnPoint": 2, "groupDelay": 0 }
+      ]
+    },
+    {
+      "wave": 3,
+      "startTime": 90,
+      "unlockCards": ["tesla"],
+      "groups": [
+        { "enemy": "mage", "count": 2, "spawnPoint": 4, "groupDelay": 0 }
+      ]
+    },
+    {
+      "wave": 4,
+      "startTime": 140,
+      "unlockCards": [],
+      "groups": [
+        { "enemy": "goblin", "count": 5, "spawnPoint": 6, "groupDelay": 0 },
+        { "enemy": "mage", "count": 1, "spawnPoint": 0, "groupDelay": 2 }
+      ]
+    },
+    {
+      "wave": 5,
+      "startTime": 190,
+      "unlockCards": ["freeze"],
+      "groups": [
+        { "enemy": "ogre", "count": 1, "spawnPoint": 0, "groupDelay": 0 }
+      ]
+    },
+    {
+      "wave": 6,
+      "startTime": 240,
+      "unlockCards": [],
+      "groups": [
+        { "enemy": "goblin", "count": 4, "spawnPoint": 1, "groupDelay": 0 },
+        { "enemy": "goblin", "count": 4, "spawnPoint": 5, "groupDelay": 2 },
+        { "enemy": "mage", "count": 2, "spawnPoint": 3, "groupDelay": 4 }
+      ]
+    },
+    {
+      "wave": 7,
+      "startTime": 300,
+      "unlockCards": ["xbow"],
+      "energyRegenOverride": 1.5,
+      "groups": [
+        { "enemy": "ogre", "count": 1, "spawnPoint": 0, "groupDelay": 0 },
+        { "enemy": "ogre", "count": 1, "spawnPoint": 4, "groupDelay": 0 }
+      ]
+    },
+    {
+      "wave": 8,
+      "startTime": 360,
+      "unlockCards": [],
+      "groups": [
+        { "enemy": "goblin", "count": 5, "spawnPoint": 2, "groupDelay": 0 },
+        { "enemy": "goblin", "count": 5, "spawnPoint": 6, "groupDelay": 2 },
+        { "enemy": "mage", "count": 2, "spawnPoint": 0, "groupDelay": 3 },
+        { "enemy": "ogre", "count": 1, "spawnPoint": 4, "groupDelay": 5 }
+      ]
+    },
+    {
+      "wave": 9,
+      "startTime": 430,
+      "unlockCards": ["lightning"],
+      "groups": [
+        { "enemy": "mage", "count": 3, "spawnPoint": 1, "groupDelay": 0 },
+        { "enemy": "ogre", "count": 2, "spawnPoint": 5, "groupDelay": 3 }
+      ]
+    },
+    {
+      "wave": 10,
+      "startTime": 500,
+      "unlockCards": [],
+      "groups": [
+        { "enemy": "goblin", "count": 3, "spawnPoint": 0, "groupDelay": 0 },
+        { "enemy": "goblin", "count": 3, "spawnPoint": 2, "groupDelay": 3 },
+        { "enemy": "goblin", "count": 3, "spawnPoint": 4, "groupDelay": 6 },
+        { "enemy": "goblin", "count": 3, "spawnPoint": 6, "groupDelay": 9 },
+        { "enemy": "mage", "count": 2, "spawnPoint": 1, "groupDelay": 5 }
+      ]
+    },
+    {
+      "wave": 11,
+      "startTime": 570,
+      "unlockCards": [],
+      "groups": [
+        { "enemy": "ogre", "count": 1, "spawnPoint": 0, "groupDelay": 0 },
+        { "enemy": "ogre", "count": 1, "spawnPoint": 4, "groupDelay": 0 },
+        { "enemy": "ogre", "count": 1, "spawnPoint": 2, "groupDelay": 5 },
+        { "enemy": "goblin", "count": 4, "spawnPoint": 6, "groupDelay": 3 }
+      ]
+    },
+    {
+      "wave": 12,
+      "startTime": 645,
+      "unlockCards": [],
+      "isBossWave": true,
+      "groups": [
+        { "enemy": "ogre_warlord", "count": 1, "spawnPoint": 0, "groupDelay": 0 },
+        { "enemy": "goblin", "count": 3, "spawnPoint": 2, "groupDelay": 10 },
+        { "enemy": "goblin", "count": 3, "spawnPoint": 6, "groupDelay": 10 },
+        { "enemy": "mage", "count": 2, "spawnPoint": 4, "groupDelay": 12 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28a5e278bbdad7e4085f21d2d04d19b9, type: 3}
+  m_Name: EnemyV4_Hellspawn2
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.EnemyDefinitionSO
+  id: Hellspawn2
+  displayName: Hellspawn Artillery
+  prefab: {fileID: 7226527311606813120, guid: 94bf2d3599f87ab4cb224b1856a56ea1, type: 3}
+  hp: 800
+  moveSpeed: 0.8
+  damage: 90
+  attackRate: 1.6
+  attackRange: 5
+  impactFraction: 0.4
+  splashRadius: 1
+  projectile: {fileID: 11400000, guid: 732099c54dadfa14e861daac744e432a, type: 2}
+  attackImpactOnAnimEvent: 1
+  engageRadiusFromCenter: 12
+  deathVfx: {fileID: 0}
+  hurtStaggerSeconds: 0.35
+  hurtCooldownSeconds: 0
+  walkAnimSpeedMultiplier: 1
+  unitRadius: 0.65
+  targetPriority: 0
+  bounty: 1
+  knockbackFactor: 0.5
+  modelScale: 1.2
+  isBoss: 0
+  slamInterval: 0
+  slamDamage: 100
+  slamRadius: 2.5
+  slamTelegraphSeconds: 1

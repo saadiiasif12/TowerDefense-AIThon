@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28a5e278bbdad7e4085f21d2d04d19b9, type: 3}
+  m_Name: EnemyV4_Goblin2
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.EnemyDefinitionSO
+  id: Goblin2
+  displayName: Spear Goblin
+  prefab: {fileID: 7791316405672678054, guid: 1272212b1509d0c4398cf69d4aa794b9, type: 3}
+  hp: 320
+  moveSpeed: 1.3
+  damage: 70
+  attackRate: 1.4
+  attackRange: 0.5
+  impactFraction: 0.4
+  splashRadius: 0
+  projectile: {fileID: 0}
+  engageRadiusFromCenter: 12
+  deathVfx: {fileID: 0}
+  hurtStaggerSeconds: 0.35
+  hurtCooldownSeconds: 0
+  walkAnimSpeedMultiplier: 2.5
+  unitRadius: 0.4
+  targetPriority: 0
+  bounty: 1
+  knockbackFactor: 0.5
+  modelScale: 1.15
+  isBoss: 0
+  slamInterval: 0
+  slamDamage: 100
+  slamRadius: 2.5
+  slamTelegraphSeconds: 1

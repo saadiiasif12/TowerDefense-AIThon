@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1ff34830ccec8c45b4a637a7d41f7c1, type: 3}
+  m_Name: Card_Log
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.SpellCardSO
+  id: Log
+  displayName: Log
+  description: Rolls 9 tiles outward, damaging and knocking back everything in its
+    lane.
+  icon: {fileID: 21300000, guid: ae2774bed7aac4d4b8fe99a2d95bc3ad, type: 3}
+  cost: 2
+  cooldown: 5
+  radius: 0.8
+  effect: {fileID: 11400000, guid: fddc03e6c68b3fd45840514053bcc798, type: 2}
+  fallDelaySeconds: 0.35

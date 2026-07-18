@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1ff34830ccec8c45b4a637a7d41f7c1, type: 3}
+  m_Name: Card_Fireball
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.SpellCardSO
+  id: Fireball
+  displayName: Fireball
+  description: A meteor crashes down, blasting enemies in a radius of 2.5 and knocking
+    them back.
+  icon: {fileID: 21300000, guid: f8345d573addb5e4b9f3980eeefb11be, type: 3}
+  cost: 4
+  cooldown: 9
+  radius: 2.5
+  effect: {fileID: 11400000, guid: 8605edab448b59b499d51c69356bf7fe, type: 2}
+  fallDelaySeconds: 0.5
