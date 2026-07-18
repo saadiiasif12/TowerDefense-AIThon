@@ -157,14 +157,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5380179222065104578}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.7160411, z: 0}
+  m_LocalRotation: {x: 0, y: -0.38268343, z: 0, w: 0.92387956}
+  m_LocalPosition: {x: -0.138, y: 0.7160411, z: 0.138}
   m_LocalScale: {x: 0.3846154, y: 0.5555556, z: 0.3846154}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4089134258086166601}
   m_Father: {fileID: 7628973665681816515}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -45, z: 0}
 --- !u!1 &6532557318018367920
 GameObject:
   m_ObjectHideFlags: 0
@@ -579,7 +579,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6377237829693905731, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.92387956
       objectReference: {fileID: 0}
     - target: {fileID: 6377237829693905731, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
       propertyPath: m_LocalRotation.x
@@ -587,7 +587,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6377237829693905731, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.38268343
       objectReference: {fileID: 0}
     - target: {fileID: 6377237829693905731, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
       propertyPath: m_LocalRotation.z
@@ -599,7 +599,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6377237829693905731, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 6377237829693905731, guid: 5213101e1957a3d42b412bf6f0d4b042, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -663,7 +663,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.WorldHealthBar
   _width: 1
   _thickness: 0.09
-  _yOffset: 1.7
+  _yOffset: 2.15
   _fillColor: {r: 0.25, g: 0.9, b: 0.2, a: 1}
   _lowColor: {r: 0.95, g: 0.25, b: 0.15, a: 1}
   _hideWhenFull: 0
