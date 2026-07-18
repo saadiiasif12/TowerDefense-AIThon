@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Juice.SkyfallEffect
   _template: {fileID: 8093163048942028705}
+  _config: {fileID: 11400000, guid: eb70626727b6d9a479884b2a69e7d654, type: 2}
   _count: 20
   _dropHeight: 7.5
   _lateralOffset: {x: -3.2, y: -1.3}

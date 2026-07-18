@@ -49,5 +49,11 @@ namespace RoyalSiege.Data
         public float dragThresholdPx = 40f;
         [Tooltip("Ghost hovers this many tiles above the fingertip (toward screen-up).")]
         public float ghostOffsetTiles = 1.5f;
+
+        [Header("Sky")]
+        [Tooltip("Shared world-space origin for anything that falls from the sky (fireball " +
+                 "meteor, arrow volley, future skyfall objects). One fixed point so every " +
+                 "sky entrance reads consistent.")]
+        public Vector3 skyPoint = new Vector3(1.19098997f, 36.4000015f, 3.86999989f);
     }
 }
