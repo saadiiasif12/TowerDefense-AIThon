@@ -54,6 +54,7 @@ namespace RoyalSiege.Juice
             public float Elapsed;
             public float NextRumble;
             public float NextDust;
+            public bool Quiet; // stamp-only (no rumble pulses / dust / pebbles) — e.g. lightning strikes
         }
 
         private sealed class LogRollView
@@ -161,7 +162,15 @@ namespace RoyalSiege.Juice
 
         // ---------------- earthquake crack ----------------
 
-        private void StartCrack(Vector3 point, float radius, float duration)
+        /// <summary>
+        /// Ground-crack stamp for OTHER views (18-Jul: lightning strikes reuse the quake
+        /// texture, smaller) — same decal, open and seal animation, but none of the quake's
+        /// rumble pulses, dust or pebbles (the caller brings its own impact feedback).
+        /// </summary>
+        public void StampCrack(Vector3 point, float radius, float duration) =>
+            StartCrack(point, radius, duration, quiet: true);
+
+        private void StartCrack(Vector3 point, float radius, float duration, bool quiet = false)
         {
             CrackDecal crack = null;
             for (int i = 0; i < _cracks.Count; i++)
@@ -174,6 +183,7 @@ namespace RoyalSiege.Juice
             crack.Elapsed = 0f;
             crack.NextRumble = 0f;
             crack.NextDust = 0f;
+            crack.Quiet = quiet;
             crack.Root.transform.SetPositionAndRotation(
                 point + Vector3.up * 0.04f,
                 // Deterministic per-cast spin so repeat casts don't look copy-pasted.
@@ -351,7 +361,7 @@ namespace RoyalSiege.Juice
                 crack.Root.transform.localScale = Vector3.one * (crack.Radius * 2f * Mathf.Lerp(0.35f, 1f, EaseOutBack(openT)));
                 crack.Mat.color = new Color(1f, 1f, 1f, Mathf.Lerp(openT, 0f, sealT));
 
-                if (crack.Elapsed < crack.Duration)
+                if (crack.Elapsed < crack.Duration && !crack.Quiet)
                 {
                     if ((crack.NextRumble -= dt) <= 0f) { crack.NextRumble = 0.45f; _shaker?.AddTrauma(_quakeShakePulse); }
                     if ((crack.NextDust -= dt) <= 0f)

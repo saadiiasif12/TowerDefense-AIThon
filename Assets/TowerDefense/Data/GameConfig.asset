@@ -38,3 +38,4 @@ MonoBehaviour:
   threeStarHpPct: 0.8
   dragThresholdPx: 40
   ghostOffsetTiles: 1.5
+  skyPoint: {x: 1.19099, y: 36.4, z: 3.87}

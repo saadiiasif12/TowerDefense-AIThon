@@ -52,6 +52,10 @@ namespace RoyalSiege.Juice
         [Header("Impact")]
         [SerializeField] private Material _smokeMaterial;
         [SerializeField] private float _shakeTrauma = 0.5f;
+        [Tooltip("Small ground crack under each struck victim — reuses the quake's crack decal (18-Jul user ask).")]
+        [SerializeField] private float _crackRadius = 0.8f;
+        [SerializeField] private float _crackSeconds = 0.8f;
+        private V4CardVfx _cardVfx;
 
         // ---- runtime ----
         private sealed class Bolt
@@ -110,6 +114,7 @@ namespace RoyalSiege.Juice
             _clock = clock;
             _shaker = shaker;
             _camera = Camera.main;
+            _cardVfx = FindFirstObjectByType<V4CardVfx>(); // quake-crack stamps under strikes (null-safe)
 
             if (_thunderSplash != null)
             {
@@ -164,21 +169,33 @@ namespace RoyalSiege.Juice
         {
             Vector3 contact = ground + Vector3.up * 0.4f;
 
-            // Sky origin OFF-SCREEN (user ruling 17-Jul: a bolt starting mid-screen looks bad):
-            // project the contact to the viewport and place the origin past the TOP edge at the
-            // same camera depth, with a small hashed horizontal drift so simultaneous bolts
-            // never read as parallel copies.
-            float drift = (Mathf.Abs(Mathf.Sin(ground.x * 12.9898f + ground.z * 78.233f)) - 0.5f) * 0.16f;
+            // Scorched ground: the quake's crack texture, stamped small under the victim.
+            if (_cardVfx != null) _cardVfx.StampCrack(ground, _crackRadius, _crackSeconds);
+
+            // Sky origin = the shared GameConfig.skyPoint (18-Jul ruling: ALL sky spells
+            // enter from ONE fixed world point — supersedes the 17-Jul top-screen-edge
+            // projection). Bolts to different victims still fan and jag individually.
+            // Fallback (no GameContext, e.g. a bare harness scene): the old off-screen
+            // viewport origin with hashed drift.
+            var cfg = _context != null ? _context.GameConfig : null;
             Vector3 sky;
-            if (_camera != null)
+            if (cfg != null)
             {
-                Vector3 vp = _camera.WorldToViewportPoint(contact);
-                float vx = Mathf.Clamp(vp.x + drift, 0.05f, 0.95f);
-                sky = _camera.ViewportToWorldPoint(new Vector3(vx, 1.18f, vp.z));
+                sky = cfg.skyPoint;
             }
             else
             {
-                sky = contact + new Vector3(drift * 10f, 24f, 0f);
+                float drift = (Mathf.Abs(Mathf.Sin(ground.x * 12.9898f + ground.z * 78.233f)) - 0.5f) * 0.16f;
+                if (_camera != null)
+                {
+                    Vector3 vp = _camera.WorldToViewportPoint(contact);
+                    float vx = Mathf.Clamp(vp.x + drift, 0.05f, 0.95f);
+                    sky = _camera.ViewportToWorldPoint(new Vector3(vx, 1.18f, vp.z));
+                }
+                else
+                {
+                    sky = contact + new Vector3(drift * 10f, 24f, 0f);
+                }
             }
 
             Bolt bolt = null;
