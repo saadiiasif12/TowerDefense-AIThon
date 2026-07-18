@@ -61,6 +61,10 @@ namespace RoyalSiege.UI
         public CardDefinitionSO Card => _card;
         public bool IsNext => _isNext;
         public RectTransform Rect => (RectTransform)transform;
+        /// <summary>The card-visual container the drag proxy clones for a pixel-exact floating card.</summary>
+        public RectTransform LiftRect => _lift;
+        /// <summary>Slot size, so the floating clone matches the tray card dimensions exactly.</summary>
+        public Vector2 CardSize => ((RectTransform)transform).rect.size;
 
         public void Init(int slot, HandBarView owner, Data.CardInteractionAnimationConfig config = null)
         {

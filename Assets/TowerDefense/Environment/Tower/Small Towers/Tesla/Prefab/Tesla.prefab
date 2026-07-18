@@ -14,15 +14,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5197384311714305784, guid: 0a58e0f22bb4c2f4dbb743dcb26a369c, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.7692308
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 5197384311714305784, guid: 0a58e0f22bb4c2f4dbb743dcb26a369c, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.7692308
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 5197384311714305784, guid: 0a58e0f22bb4c2f4dbb743dcb26a369c, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.7692308
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 5197384311714305784, guid: 0a58e0f22bb4c2f4dbb743dcb26a369c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -64,6 +64,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5197384311714305784, guid: 0a58e0f22bb4c2f4dbb743dcb26a369c, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -84,27 +88,27 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: a6eebb8798b179d4fb37892ec30488d4, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a6eebb8798b179d4fb37892ec30488d4, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a6eebb8798b179d4fb37892ec30488d4, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a6eebb8798b179d4fb37892ec30488d4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.40176216
+      value: 24.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a6eebb8798b179d4fb37892ec30488d4, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.000000095137466
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a6eebb8798b179d4fb37892ec30488d4, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.916824
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a6eebb8798b179d4fb37892ec30488d4, type: 3}
       propertyPath: m_LocalRotation.w
