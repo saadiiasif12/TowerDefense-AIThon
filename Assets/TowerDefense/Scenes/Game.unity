@@ -395,7 +395,7 @@ MonoBehaviour:
   _context: {fileID: 1247799767}
   _arrowVolleyPrefab: {fileID: 3767597746862682603, guid: e91d8270d80b2bc4183accf34eaa01a4, type: 3}
   _meteorPrefab: {fileID: 8228662346123858856, guid: c428cacef9356244d8e9f804fd14b31a, type: 3}
-  _fireBlast: {fileID: 7817829927753830091, guid: 2fd0c822c48e1194f90f1cccf3e2c165, type: 3}
+  _fireBlast: {fileID: 5962631947570390476, guid: a1f751a5e42f0e340ad97ed89858c929, type: 3}
   _fireShake: 0.5
   _freezeNova: {fileID: 1140935557964873636, guid: 3ec60b518d7cbca468db369a9d002b72, type: 3}
   _frostGroundPatch: {fileID: 6639331156978392743, guid: 09d9e510d38ab4b49843ed9b3154a394, type: 3}

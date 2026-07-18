@@ -124,6 +124,7 @@ namespace RoyalSiege.Combat
                 _target.TakeDamage(_damage);
                 _vfx?.Spawn(_settings.impactVfx, impactPoint + Vector3.up * _settings.impactHeightOffset,
                     Quaternion.identity, 1f, _settings.impactTint);
+                if (_settings.impactShake > 0f) CameraShaker.Main?.AddTrauma(_settings.impactShake);
                 _onImpact?.Invoke(impactPoint, _target);
                 Finish();
             }
