@@ -71,6 +71,15 @@ namespace RoyalSiege.Combat
             _lastPosition = _start;
             _active = true;
 
+            // Face the flight direction from frame one — a pooled projectile otherwise wears
+            // the PREVIOUS flight's final rotation for its first visible frame. For spinners
+            // this is also the tumble's reference plane: LookRotation puts local +Z on the
+            // flight line, so the constant Rotate about local X below reads as a clean,
+            // smooth end-over-end flip along the throw.
+            Vector3 aim = target.Position + Vector3.up * settings.impactHeightOffset - _start;
+            if (aim.sqrMagnitude > 0.0001f)
+                transform.rotation = Quaternion.LookRotation(aim.normalized);
+
             // Hard-reset every pooled FX at the new spawn point: no stale trail segments,
             // no leftover particles from the previous flight flashing on reuse.
             foreach (var trail in _trails) trail.Clear();

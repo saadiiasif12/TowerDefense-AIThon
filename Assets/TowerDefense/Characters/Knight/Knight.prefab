@@ -133,6 +133,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: KnightModel
       objectReference: {fileID: 0}
+    - target: {fileID: 5511234900273268333, guid: 6f304fa1f16c4e449adee24f1f454f79, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: eae8eb8098cee60419131f3c87a5978d, type: 2}
     - target: {fileID: 5866666021909216657, guid: 6f304fa1f16c4e449adee24f1f454f79, type: 3}
       propertyPath: m_Controller
       value: 

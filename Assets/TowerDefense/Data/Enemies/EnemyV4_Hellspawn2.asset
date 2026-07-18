@@ -20,7 +20,7 @@ MonoBehaviour:
   damage: 90
   attackRate: 1.6
   attackRange: 5
-  impactFraction: 0.4
+  impactFraction: 0.25
   splashRadius: 1
   projectile: {fileID: 11400000, guid: 732099c54dadfa14e861daac744e432a, type: 2}
   attackImpactOnAnimEvent: 1
