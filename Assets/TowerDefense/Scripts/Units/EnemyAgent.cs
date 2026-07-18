@@ -39,6 +39,9 @@ namespace RoyalSiege.Units
         private HitReaction _hitReaction;
         private EnemyLifecycleView _lifecycle;
         private EnemyThrowView _throwView;
+        private AnimationEventRelay _throwEventRelay;
+        private bool _impactPending;         // armed by AttackCycle, released by the anim event
+        private float _impactPendingTimeout; // fallback: fire anyway if the event never arrives
 
         private IStructureTarget _target;
         private Vector3 _previousPosition;
@@ -148,6 +151,21 @@ namespace RoyalSiege.Units
             // this def actually fires a projectile — a melee def sharing the prefab stays empty.
             if (_throwView == null) _throwView = GetComponent<EnemyThrowView>();
             _throwView?.Init(_deps.Clock, _def.projectile != null);
+            // Anim-event-released attacks (Hellspawns): the relay lives on the Animator's own
+            // GameObject (Unity only delivers clip events there) and forwards the release
+            // frame back to this agent. Plain assignment — pooled reuse can't double-subscribe.
+            _impactPending = false;
+            _throwEventRelay = null;
+            if (_def.attackImpactOnAnimEvent)
+            {
+                var eventAnimator = GetComponentInChildren<Animator>(true);
+                if (eventAnimator != null)
+                {
+                    _throwEventRelay = eventAnimator.GetComponent<AnimationEventRelay>()
+                        ?? eventAnimator.gameObject.AddComponent<AnimationEventRelay>();
+                    _throwEventRelay.ThrowReleased = OnThrowAnimEvent;
+                }
+            }
             _animator?.Rebind();
             // Deterministic walk-cycle phase from the spawn position — pack members animate
             // out of step with each other without introducing any RNG.
@@ -210,6 +228,18 @@ namespace RoyalSiege.Units
             bool insideTerritory = RangeMath.IsInside(_deps.MapCenter, _logicPosition, _def.engageRadiusFromCenter);
             bool inRange = insideTerritory && edgeDistance <= _def.attackRange;
             _attack.Tick(dt, inRange);
+
+            // Armed throw waiting for its release frame — if the animation event never comes
+            // (culled/disabled animator), fire on the timeout so the attack is never lost.
+            if (_impactPending)
+            {
+                _impactPendingTimeout -= dt;
+                if (_impactPendingTimeout <= 0f)
+                {
+                    _impactPending = false;
+                    ExecuteAttackImpact();
+                }
+            }
 
             Vector3 separation = ComputeSeparation();
 
@@ -331,6 +361,29 @@ namespace RoyalSiege.Units
         private void OnAttackSwing() => _animator?.PlayAttack(_def.attackRate);
 
         private void OnAttackImpact()
+        {
+            // Anim-event mode: the 10 Hz cycle stays the authority on WHEN an attack is due,
+            // but the launch itself waits for the clip's release frame (AnimEvent_Throw) so
+            // the projectile leaves the hand exactly on the throw pose. The timeout fires the
+            // hit anyway if the event never arrives (animator culled/disabled) — never drop DPS.
+            if (_def.attackImpactOnAnimEvent && _throwEventRelay != null)
+            {
+                _impactPending = true;
+                _impactPendingTimeout = _def.attackRate * 2f;
+                return;
+            }
+            ExecuteAttackImpact();
+        }
+
+        /// <summary>Release frame of the throw clip (relayed AnimationEvent).</summary>
+        private void OnThrowAnimEvent()
+        {
+            if (!_impactPending || _dead || _status.IsBlocked) return;
+            _impactPending = false;
+            ExecuteAttackImpact();
+        }
+
+        private void ExecuteAttackImpact()
         {
             if (_dead || _target == null || !_target.IsAlive) return;
 
