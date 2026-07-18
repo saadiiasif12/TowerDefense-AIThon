@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.SpellCardSO
   id: Fireball
   displayName: Fireball
-  description: 
+  description: A meteor crashes down, blasting enemies in a radius of 2.5 and knocking
+    them back.
   icon: {fileID: 21300000, guid: f8345d573addb5e4b9f3980eeefb11be, type: 3}
   cost: 4
   cooldown: 9
