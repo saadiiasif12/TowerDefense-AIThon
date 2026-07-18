@@ -118,12 +118,17 @@ namespace RoyalSiege.Buildings
                 firePoint: _kingView == null ? (Func<Vector3>)null : () => _kingView.CastPoint);
         }
 
+        private int _pendingVisualLevel = -1;
+
         /// <summary>
         /// v4 checkpoint level-up (§7): new max HP with a FULL HEAL (the mercy component),
         /// king damage retuned, ranges untouched. Raises TowerLeveledUp for the visuals.
         /// instantVisual=true (resume/retry scene load) snaps the model without the surge.
+        /// deferVisual=true (screen-first level-up flow) applies the STATS now but HOLDS the
+        /// sink/rise model swap until <see cref="PlayPendingLevelVisual"/> — so the level-up
+        /// screen shows first and the tower animation plays only after Continue is tapped.
         /// </summary>
-        public void ApplyLevel(int level, TowerLevelDef def, bool instantVisual = false)
+        public void ApplyLevel(int level, TowerLevelDef def, bool instantVisual = false, bool deferVisual = false)
         {
             Level = level;
             if (_health != null) _health.Damaged -= OnHealthDamaged;
@@ -131,8 +136,24 @@ namespace RoyalSiege.Buildings
             _health.Damaged += OnHealthDamaged;
             BuildKingAttack(def.kingDamage);
             _events.RaiseTowerDamaged(_health.Current, def.hp); // refresh HP bar to the new full
-            _levelView?.SetLevel(level, instantVisual); // juicy seamless model swap (view-only)
+            if (deferVisual)
+                _pendingVisualLevel = level;                    // hold the model swap for later
+            else
+                _levelView?.SetLevel(level, instantVisual);     // juicy seamless model swap (view-only)
             _events.RaiseTowerLeveledUp(level);
+        }
+
+        /// <summary>
+        /// Screen-first flow: play the level-up model swap that <see cref="ApplyLevel"/> deferred.
+        /// Returns TRUE if the sink/rise cinematic actually started (FALSE = no visual change,
+        /// e.g. stage-complete or the last tower art — the caller may resume gameplay at once).
+        /// </summary>
+        public bool PlayPendingLevelVisual()
+        {
+            if (_pendingVisualLevel < 0 || _levelView == null) { _pendingVisualLevel = -1; return false; }
+            int level = _pendingVisualLevel;
+            _pendingVisualLevel = -1;
+            return _levelView.SetLevel(level);
         }
 
         private static StructureAttack CreateAttack(AttackStats stats, ITargetRegistry registry,
