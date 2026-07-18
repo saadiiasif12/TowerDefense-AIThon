@@ -79,7 +79,9 @@ namespace RoyalSiege.Core
             // transitions heal, repeat checkpoints heal — §9 + loop ruling).
             int targetLevel = Mathf.Clamp(Mathf.Max(checkpoint.towerLevel, _tower.Level), 1, _progression.towerLevels.Count);
             bool leveledUp = targetLevel > _tower.Level;
-            _tower.ApplyLevel(targetLevel, _progression.towerLevels[targetLevel - 1]);
+            // Screen-first flow: apply the stats now but DEFER the sink/rise model swap — it
+            // plays only after the player closes the level-up screen (see OnCheckpointDismissed).
+            _tower.ApplyLevel(targetLevel, _progression.towerLevels[targetLevel - 1], deferVisual: true);
 
             // Loop-safe: a card unlocks ONCE — repeat loops must not enqueue a duplicate.
             bool newUnlock = checkpoint.unlockCard != null
@@ -112,7 +114,31 @@ namespace RoyalSiege.Core
             _events.RaiseCheckpointReached(new CheckpointReachedArgs(
                 globalWave, leveledUp ? targetLevel : 0, newUnlock ? checkpoint.unlockCard : null,
                 checkpoint.isStageComplete, stars,
-                dismissed: () => _clock.IsPaused = false));
+                dismissed: OnCheckpointDismissed));
+        }
+
+        /// <summary>
+        /// Level-up screen closed (Continue). NOW play the deferred tower sink/rise, and resume
+        /// gameplay — which starts the next wave — only AFTER that animation finishes. If there
+        /// is no model swap to play (stage-complete, or the last tower art), resume immediately.
+        /// The sim stays paused throughout; the cinematic runs on unscaled time.
+        /// </summary>
+        private void OnCheckpointDismissed()
+        {
+            bool animating = _tower.PlayPendingLevelVisual();
+            if (animating)
+            {
+                void Resume()
+                {
+                    _events.TowerTransitionCompleted -= Resume;
+                    _clock.IsPaused = false; // animation done → next wave may begin
+                }
+                _events.TowerTransitionCompleted += Resume;
+            }
+            else
+            {
+                _clock.IsPaused = false;
+            }
         }
     }
 }
