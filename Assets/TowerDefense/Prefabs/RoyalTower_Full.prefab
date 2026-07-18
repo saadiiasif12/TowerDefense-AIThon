@@ -703,7 +703,7 @@ MonoBehaviour:
   - {fileID: 6271447148172470046}
   _upgradeVfx: {fileID: 8137173455560979978, guid: b57b09c750e16ae4ead8c8e889642181, type: 3}
   _dustVfx: {fileID: 1060690276677704234, guid: fa29b896bc5e7f640b73501e6e2d6e77, type: 3}
-  _failBlastVfx: {fileID: 5962631947570390476, guid: a1f751a5e42f0e340ad97ed89858c929, type: 3}
+  _failBlastVfx: {fileID: 7531343778894439220, guid: 6fa76e80f6050b94a807f7f9ab985761, type: 3}
   _hideOnInit:
   - {fileID: 2467080259100477992}
   - {fileID: 3586164213123138887}
@@ -720,7 +720,7 @@ MonoBehaviour:
   _shakeHorizontalDamp: 0.25
   _preDelaySeconds: 1.2
   _postDelaySeconds: 1.2
-  _failBlastScale: 2
+  _failBlastScale: 1.4
   _kingRoot: {fileID: 497038797034581244}
   _kingHeightOffset: 0
 --- !u!114 &5280723715067923698

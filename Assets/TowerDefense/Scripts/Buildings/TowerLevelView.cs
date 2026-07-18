@@ -221,6 +221,10 @@ namespace RoyalSiege.Buildings
         {
             CacheScales();
             if (_failed) return; // ruin is terminal — never resurrect a level model over it
+            // LAST-TOWER RULE (18-Jul): the clamp maps any level beyond the art list onto the
+            // final model, and the same-art early-return below then SKIPS the whole elevator
+            // cinematic (no sink/rise, no dust, no delays — the screen shows immediately).
+            // The animation only plays when there IS a next tower art ahead.
             level = Mathf.Clamp(level, 1, _levelModels.Length);
             if (_currentLevel == 0) { Init(_events, level); return; }
             if (level == _currentLevel) return;
