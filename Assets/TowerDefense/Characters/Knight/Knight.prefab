@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff8223567bbf4954e81b6740d515d841, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Units.KnightUnit
-  _walkAnimSpeedMultiplier: 0.25
+  _walkAnimSpeedMultiplier: 0.4
 --- !u!114 &6666245707430346128
 MonoBehaviour:
   m_ObjectHideFlags: 0
