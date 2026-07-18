@@ -419,6 +419,10 @@ namespace RoyalSiege.Units
             // hit anyway if the event never arrives (animator culled/disabled) — never drop DPS.
             if (_def.attackImpactOnAnimEvent && _throwEventRelay != null)
             {
+                // A previous swing's armed throw that never got its release frame (event/arm
+                // race, state crossfade swallowing the event) is fired NOW rather than being
+                // silently overwritten — an armed attack must never be dropped (DPS guarantee).
+                if (_impactPending) ExecuteAttackImpact();
                 _impactPending = true;
                 _impactPendingTimeout = _def.attackRate * 2f;
                 return;

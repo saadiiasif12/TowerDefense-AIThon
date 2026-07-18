@@ -19,9 +19,13 @@ MonoBehaviour:
     waves:
     - label: w1
       groups:
-      - enemy: {fileID: 11400000, guid: dff69d5ed844a2d4a9d5d21c6cdf9644, type: 2}
-        count: 5
+      - enemy: {fileID: 11400000, guid: 884871a55fb24be4fbf252f65dd0461a, type: 2}
+        count: 3
         spawnPointIndex: 3
+        delayAfterWaveStart: 0
+      - enemy: {fileID: 11400000, guid: f694ceb94c1052f41b2d4cefda3c1a86, type: 2}
+        count: 2
+        spawnPointIndex: 0
         delayAfterWaveStart: 0
     - label: w2
       groups:
