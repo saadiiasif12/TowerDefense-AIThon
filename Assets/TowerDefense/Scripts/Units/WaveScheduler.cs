@@ -137,7 +137,11 @@ namespace RoyalSiege.Units
             {
                 for (int u = 0; u < group.count; u++)
                 {
-                    float t = group.delayAfterWaveStart + u * _campaign.unitSpawnInterval;
+                    // Deterministic per-unit timing jitter (zero-RNG) so a group trickles in a
+                    // little irregularly instead of a metronome burst (18-Jul: felt too uniform).
+                    float jitter = Hash01((_nextGlobalWave * 6151) ^ ((u + group.spawnPointIndex * 31) * 3079))
+                                   * _campaign.unitSpawnInterval * 1.4f;
+                    float t = group.delayAfterWaveStart + u * _campaign.unitSpawnInterval + jitter;
                     _pending.Add(new SpawnEvent(t, group.enemy, group.spawnPointIndex, u));
                     _totalThisWave++;
                 }
@@ -154,6 +158,13 @@ namespace RoyalSiege.Units
         private void OnEnemyKilled(EnemyKilledArgs args)
         {
             if (args.WaveIndex == CurrentWaveNumber - 1) _killedThisWave++;
+        }
+
+        /// <summary>Deterministic integer hash → [0,1). Keeps the zero-RNG guarantee for spawn timing.</summary>
+        private static float Hash01(int n)
+        {
+            n = (n << 13) ^ n;
+            return ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 2147483647f;
         }
     }
 }

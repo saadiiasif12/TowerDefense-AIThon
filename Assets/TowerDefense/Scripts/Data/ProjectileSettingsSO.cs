@@ -33,5 +33,7 @@ namespace RoyalSiege.Data
         public Color impactTint = Color.white;
         [Tooltip("Visual tumble around the flight axis (cannonballs). 0 = face velocity (bolts).")]
         public float spinDegreesPerSecond;
+        [Tooltip("Camera trauma added when this projectile lands (0.1 tick / 0.35 thud / 0.6 blast). 0 = none.")]
+        [Range(0f, 1f)] public float impactShake;
     }
 }

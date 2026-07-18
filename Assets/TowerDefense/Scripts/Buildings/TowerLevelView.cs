@@ -28,6 +28,11 @@ namespace RoyalSiege.Buildings
         [SerializeField] private Transform[] _hideOnFail;
         [SerializeField] private float _swapSeconds = 0.55f;
         [SerializeField] private Color _flashColor = new(1f, 0.92f, 0.55f); // golden
+        [Header("King placement (18 Jul — the 4 tower arts have different roof heights)")]
+        [Tooltip("KingRoot — auto-repositioned so the king stands on the ACTIVE model's roof.")]
+        [SerializeField] private Transform _kingRoot;
+        [Tooltip("World-Y offset from the measured roof top to KingRoot (0 = the approved look on the old tower).")]
+        [SerializeField] private float _kingHeightOffset;
 
         private Vector3[] _baseScales;
         private Vector3 _failBaseScale = Vector3.one;
@@ -63,8 +68,43 @@ namespace RoyalSiege.Buildings
                     _levelModels[i].gameObject.SetActive(i == _currentLevel - 1);
                 }
 
+            AlignKing(_currentLevel);
+
             _events = events;
             if (_events != null) _events.MatchEnded += OnMatchEnded;
+        }
+
+        /// <summary>
+        /// The 4 tower arts have different roof heights (measured world tops 3.09/2.52/2.28/2.38)
+        /// — one fixed king height can't fit them all. Reads the level model's renderer bounds at
+        /// its BASE scale and drops KingRoot exactly on the roof (+ the artistic offset).
+        /// </summary>
+        private void AlignKing(int level)
+        {
+            if (_kingRoot == null) return;
+            float top = RoofTopY(level);
+            if (float.IsNaN(top)) return;
+            var p = _kingRoot.position;
+            _kingRoot.position = new Vector3(p.x, top + _kingHeightOffset, p.z);
+        }
+
+        /// <summary>World Y of the level model's highest point at its base scale (NaN if unknown).</summary>
+        private float RoofTopY(int level)
+        {
+            var model = Get(level);
+            if (model == null) return float.NaN;
+            // Measure at base scale with the model briefly active (bounds need active renderers).
+            Vector3 savedScale = model.localScale;
+            bool savedActive = model.gameObject.activeSelf;
+            model.localScale = Scale(level);
+            if (!savedActive) model.gameObject.SetActive(true);
+            float top = float.NaN;
+            var renderers = model.GetComponentsInChildren<Renderer>();
+            foreach (var r in renderers)
+                top = float.IsNaN(top) ? r.bounds.max.y : Mathf.Max(top, r.bounds.max.y);
+            if (!savedActive) model.gameObject.SetActive(false);
+            model.localScale = savedScale;
+            return top;
         }
 
         private void OnDestroy()
@@ -135,6 +175,7 @@ namespace RoyalSiege.Buildings
                         _levelModels[i].localScale = _baseScales[i];
                         _levelModels[i].gameObject.SetActive(i == level - 1);
                     }
+                AlignKing(level);
                 _running = null;
             }
             else
@@ -148,6 +189,12 @@ namespace RoyalSiege.Buildings
         {
             Transform oldM = Get(fromLevel), newM = Get(toLevel);
             Vector3 oldBase = Scale(fromLevel), newBase = Scale(toLevel);
+
+            // King rides the swap: lerp from the old roof height to the new one (measured
+            // at base scale BEFORE the pop starts, so mid-pop bounds never lie).
+            float kingFromY = _kingRoot != null ? _kingRoot.position.y : 0f;
+            float newTop = RoofTopY(toLevel);
+            float kingToY = float.IsNaN(newTop) ? kingFromY : newTop + _kingHeightOffset;
 
             Vector3 topPoint = transform.position + Vector3.up * 2.4f;
             if (_upgradeVfx != null)
@@ -174,6 +221,12 @@ namespace RoyalSiege.Buildings
                 // new model pops UP (ease-out-back), old model shrinks OUT — overlap = seamless.
                 if (newM != null) newM.localScale = newBase * Mathf.Max(0.01f, EaseOutBack(e));
                 if (oldM != null) oldM.localScale = oldBase * Mathf.Max(0.001f, 1f - Mathf.SmoothStep(0f, 1f, e));
+                // the king glides onto the new roof while the flash masks the swap
+                if (_kingRoot != null)
+                {
+                    var kp = _kingRoot.position;
+                    _kingRoot.position = new Vector3(kp.x, Mathf.Lerp(kingFromY, kingToY, Mathf.SmoothStep(0f, 1f, e)), kp.z);
+                }
                 // flash: fast bloom, slow fade
                 flash.intensity = 9f * Mathf.Sin(Mathf.Clamp01(e) * Mathf.PI);
                 yield return null;
@@ -181,6 +234,11 @@ namespace RoyalSiege.Buildings
 
             if (newM != null) newM.localScale = newBase;
             if (oldM != null) { oldM.localScale = oldBase; oldM.gameObject.SetActive(false); }
+            if (_kingRoot != null)
+            {
+                var kEnd = _kingRoot.position;
+                _kingRoot.position = new Vector3(kEnd.x, kingToY, kEnd.z);
+            }
             Destroy(lightGo);
             _running = null;
         }

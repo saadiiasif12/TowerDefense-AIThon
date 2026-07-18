@@ -20,13 +20,33 @@ namespace RoyalSiege.Data
         [Min(0f)] public float knockback = 1.2f;
         [Tooltip("Wind-up interrupt applied with the push.")]
         [Min(0f)] public float interruptStun = 0.15f;
+        [Tooltip("18-Jul: the log ALWAYS rolls this fixed world direction (XZ) no matter where " +
+                 "it is dropped. +Z = 'up the screen / forward' for the fixed game camera.")]
+        public Vector3 rollDirection = Vector3.forward;
+
+        /// <summary>Normalized planar roll direction; falls back to +Z if authored as zero.</summary>
+        public Vector3 RollDirection
+        {
+            get
+            {
+                Vector3 d = RangeMath.Flatten(rollDirection);
+                return d.sqrMagnitude < 1e-4f ? Vector3.forward : d.normalized;
+            }
+        }
 
         public override void Apply(in SpellContext context)
         {
             if (context.Runtime == null) return;
-            Vector3 direction = RangeMath.PlanarDirection(context.Runtime.MapCenter, context.Point);
-            context.Runtime.AddZone(new LogRoll(this, context.Runtime, context.Point, direction));
+            // Fixed forward roll from the drop point (18-Jul delta — no longer radial from center).
+            context.Runtime.AddZone(new LogRoll(this, context.Runtime, context.Point, RollDirection));
         }
+
+        /// <summary>
+        /// 18-Jul user delta: the Log is placeable ANYWHERE — it always rolls forward and hits
+        /// whatever its fixed lane happens to cross (possibly nothing), so it never needs an
+        /// enemy under the drop point. (The map-circle bound still applies in PlacementValidator.)
+        /// </summary>
+        public override bool HasTargets(SpellCardSO card, Vector3 point, ITargetQuery query, Vector3 mapCenter) => true;
 
         /// <summary>One rolling log instance. Each enemy is hit at most once per roll.</summary>
         private sealed class LogRoll : ISpellZone

@@ -30,6 +30,14 @@ namespace RoyalSiege.UI
         private Vector2 _returnTo;
         private Action _onReturned;
 
+        // 18-Jul CR-style drag: fixed drag scale + fade toward the battlefield preview.
+        private float _dragScale = 1.12f;
+        private float _fadeTarget = 1f;
+        private float _fadeSpeed = 12f;   // 1/duration, set per fade
+        private float _fade = 1f;
+        private Vector2 _velocity;         // SmoothDamp state (no per-frame alloc)
+        private float _smoothTime;
+
         public static CardDragProxy Create(RectTransform canvasRect, Font font)
         {
             var go = new GameObject("CardDragProxy", typeof(RectTransform), typeof(CanvasGroup));
@@ -93,27 +101,47 @@ namespace RoyalSiege.UI
             return text;
         }
 
-        public void Show(Sprite art, Sprite frame, Sprite gem, string cost, Vector2 screenPosition)
+        public void Show(Sprite art, Sprite frame, Sprite gem, string cost, Vector2 screenPosition,
+            float dragScale = 1.12f, float smoothTime = 0f)
         {
             _dissolveT = -1f;
             _returnT = -1f;
+            _fade = 1f; _fadeTarget = 1f;
+            _dragScale = dragScale;
+            _smoothTime = smoothTime;
+            _velocity = Vector2.zero;
             _group.alpha = 1f;
             _art.sprite = art; _art.enabled = art != null; _art.color = Color.white;
             _frame.sprite = frame;
             _gem.sprite = gem;
             _cost.text = cost;
             gameObject.SetActive(true);
-            Follow(screenPosition, 0f);
+            _rect.anchoredPosition = ScreenToCanvas(screenPosition);
+            _rect.localScale = Vector3.one * _dragScale;
         }
 
-        /// <summary>Zero-lag follow; scale/alpha are pure functions of position (the shrink01 input).</summary>
-        public void Follow(Vector2 screenPosition, float shrink01)
+        /// <summary>
+        /// Follow the (already finger-offset) screen position. Direct tracking, or a very
+        /// small SmoothDamp when a smoothTime was configured — responsive, never floaty.
+        /// </summary>
+        public void Follow(Vector2 screenPosition)
         {
             if (_returnT >= 0f || _dissolveT >= 0f) return;
-            _rect.anchoredPosition = ScreenToCanvas(screenPosition);
-            float scale = Mathf.Lerp(1f, 0.5f, shrink01);
-            _rect.localScale = Vector3.one * scale;
-            _group.alpha = Mathf.Lerp(1f, 0.9f, shrink01);
+            Vector2 target = ScreenToCanvas(screenPosition);
+            _rect.anchoredPosition = _smoothTime <= 0f
+                ? target
+                : Vector2.SmoothDamp(_rect.anchoredPosition, target, ref _velocity, _smoothTime,
+                    float.PositiveInfinity, Time.unscaledDeltaTime);
+            _rect.localScale = Vector3.one * (_dragScale * Mathf.Lerp(0.92f, 1f, _fade));
+            _group.alpha = _fade;
+        }
+
+        /// <summary>Fade toward 0 when the pointer is over the battlefield (the world preview
+        /// takes over) and back to 1 over the HUD. Duration from config.</summary>
+        public void SetFieldFade(bool overField, float duration)
+        {
+            _fadeTarget = overField ? 0f : 1f;
+            _fadeSpeed = duration > 0.001f ? 1f / duration : 1000f;
         }
 
         public void Dissolve() => _dissolveT = 0f;
@@ -143,6 +171,10 @@ namespace RoyalSiege.UI
         private void Update()
         {
             float dt = Time.unscaledDeltaTime;
+
+            // Field fade integrates every frame (drag keeps calling Follow for pos/scale).
+            if (_dissolveT < 0f && _returnT < 0f && !Mathf.Approximately(_fade, _fadeTarget))
+                _fade = Mathf.MoveTowards(_fade, _fadeTarget, _fadeSpeed * dt);
 
             if (_dissolveT >= 0f)
             {

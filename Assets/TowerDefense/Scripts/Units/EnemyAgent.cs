@@ -66,10 +66,52 @@ namespace RoyalSiege.Units
         public float BodyRadius => _def != null ? _def.unitRadius : 0.45f;
         public void TakeDamage(float amount)
         {
+            bool wasAlive = !_dead;
             _health?.TakeDamage(amount);
+            // 18-Jul juice: every landed hit reports position+amount for the floating
+            // damage numbers (killing blows styled bigger by the view).
+            if (wasAlive && amount > 0f && _deps != null)
+                _deps.Events.RaiseEnemyDamaged(_logicPosition, amount + _dotAccumulated, _dead);
+            _dotAccumulated = 0f;
             if (_dead) return; // fatal hits skip the flash — death anim takes over
             _hitReaction?.Play();
             TryHurtStagger();
+        }
+
+        /// <summary>
+        /// 18-Jul: Earthquake-style DoT ticks. Health drains normally but feedback is
+        /// AGGREGATED — one damage number + one soft flash every ~0.9 s instead of a 10 Hz
+        /// vibration (the old per-tick flinch made quaked enemies buzz for the full 4 s).
+        /// No hurt-stagger from DoT at all — the slow is the readable effect.
+        /// </summary>
+        public void TakeDotDamage(float amount)
+        {
+            if (_dead || amount <= 0f) return;
+            bool wasAlive = !_dead;
+            _health?.TakeDamage(amount);
+            _dotAccumulated += amount;
+            _dotFlushTimer += 0f; // timer advances in Tick
+            if (_dead)
+            {
+                // died to the DoT: flush the remainder as the killing-blow number
+                if (wasAlive && _deps != null)
+                    _deps.Events.RaiseEnemyDamaged(_logicPosition, _dotAccumulated, true);
+                _dotAccumulated = 0f;
+            }
+        }
+
+        private float _dotAccumulated;
+        private float _dotFlushTimer;
+
+        private void FlushDotFeedback(float dt)
+        {
+            if (_dotAccumulated <= 0f) { _dotFlushTimer = 0f; return; }
+            _dotFlushTimer += dt;
+            if (_dotFlushTimer < 0.9f) return;
+            _dotFlushTimer = 0f;
+            _deps.Events.RaiseEnemyDamaged(_logicPosition, _dotAccumulated, false);
+            _hitReaction?.Play(); // one soft pulse per flush — not per tick
+            _dotAccumulated = 0f;
         }
 
         /// <summary>
@@ -133,10 +175,16 @@ namespace RoyalSiege.Units
             _isMoving = false;
             _hurtStaggerRemaining = 0f;
             _hurtCooldownRemaining = 0f;
+            _dotAccumulated = 0f;
+            _dotFlushTimer = 0f;
 
             if (_animator == null) _animator = GetComponent<UnitAnimator>();
             // Walk-anim speed = global GameConfig factor × this enemy's per-def scale.
             _animator?.ConfigureWalk(_deps.WalkAnimMultiplier * _def.walkAnimSpeedMultiplier);
+            // 18-Jul stylized look: outline BEFORE the lifecycle view exists — the lifecycle
+            // caches sharedMaterials in ITS Awake and restores them on every ResetForSpawn,
+            // so the outline slot must already be appended when that cache is taken.
+            if (GetComponent<OutlineView>() == null) gameObject.AddComponent<OutlineView>();
             // Lifecycle view FIRST — HitReaction discovers it in Awake and routes its glow there.
             if (_lifecycle == null)
                 _lifecycle = GetComponent<EnemyLifecycleView>() ?? gameObject.AddComponent<EnemyLifecycleView>();
@@ -168,6 +216,7 @@ namespace RoyalSiege.Units
             }
 
             _status.Tick(dt);
+            FlushDotFeedback(dt); // aggregated DoT number/flash (18-Jul)
             _lifecycle?.SetFrozen(_status.IsFrozen);
             if (_status.IsBlocked)
             {

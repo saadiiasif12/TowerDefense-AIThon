@@ -23,6 +23,8 @@ namespace RoyalSiege.UI
 
         private void Start()
         {
+            // HUD prefab can't serialize a scene ref — resolve the GameContext at runtime.
+            if (_context == null) _context = FindFirstObjectByType<GameContext>();
             _bonusLabel.text = "";
             _context.Events.WaveCleared += OnWaveCleared;
             _context.Events.WaveProgressChanged += OnWaveProgress;
@@ -37,8 +39,8 @@ namespace RoyalSiege.UI
 
         private void OnWaveCleared(int wave)
         {
-            _bonusLabel.text = "WAVE " + wave + " CLEARED";
-            _bonusHideAt = Time.time + 2f;
+            // 18-Jul user ruling: no wave information in the header — the stage progress
+            // bar is the only wave feedback. (Kept as a hook for future SFX/haptics.)
         }
 
         private void OnWaveProgress(int stage, int waveInStage, int wavesInStage)
@@ -52,29 +54,13 @@ namespace RoyalSiege.UI
 
         private void Update()
         {
-            if (_bonusHideAt > 0f && Time.time >= _bonusHideAt)
-            {
-                _bonusLabel.text = "";
-                _bonusHideAt = -1f;
-            }
+            if (_context == null || _context.Waves == null) return;
 
-            if (_context.Waves == null) return;
-
-            // Header per mock_1: clean "Stage N" title above the green progress bar.
+            // Header per mock_1 + 18-Jul ruling: clean "Stage N" title above the green stage
+            // progress bar — NO wave information (no countdown, no wave numbers).
             _waveLabel.text = "Stage " + (_stageIndex + 1);
-
-            // The transient line (below the bar) shows the live countdown / final state — the
-            // wave-cleared flash overrides it briefly (kept from the bonus flash).
-            if (_bonusHideAt > 0f) return; // a cleared flash is showing
-            if (_context.Waves.CampaignComplete)
-                _bonusLabel.text = "CAMPAIGN CLEARED";
-            else
-            {
-                float toNext = _context.Waves.TimeToNextWave;
-                _bonusLabel.text = toNext >= 0f
-                    ? "NEXT WAVE IN " + Mathf.CeilToInt(toNext) + "s"
-                    : "WAVE " + _context.Waves.CurrentWaveNumber + " / " + _context.Waves.WaveCount;
-            }
+            if (_context.Waves.CampaignComplete) _bonusLabel.text = "CAMPAIGN CLEARED";
+            else if (_bonusLabel.text.Length > 0) _bonusLabel.text = "";
         }
     }
 }

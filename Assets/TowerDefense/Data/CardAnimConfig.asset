@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f3d4cab3ca26884681b2cb791599cbf, type: 3}
+  m_Name: CardAnimConfig
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.CardInteractionAnimationConfig
+  pressDuration: 0.06
+  pressScale: 1.06
+  pressLiftPixels: 10
+  dragScale: 1.12
+  dragFingerOffsetPixels: 96
+  dragSmoothTime: 0.03
+  fieldBoundaryMarginPixels: 30
+  hudToFieldFadeDuration: 0.08
+  previewInDuration: 0.1
+  previewStartScale: 0.82
+  validPulsePeriod: 0.45
+  validPulseScaleMin: 0.98
+  validPulseScaleMax: 1.02
+  invalidEnterShakeDuration: 0.12
+  invalidEnterShakePixels: 0.06
+  ringBrightenFactor: 1.6
+  commitHoldDuration: 0.06
+  commitConfirmDuration: 0.12
+  commitConfirmScale: 1.06
+  previewFadeOutDuration: 0.12
+  cancelReturnDuration: 0.18
+  cancelLandingDuration: 0.07
+  cancelLandingSquashX: 1.03
+  cancelLandingSquashY: 0.97
+  energySpendTrailDelay: 0.05
+  energyTrailDuration: 0.28
+  energyRegenPopDuration: 0.12
+  energyFlashDuration: 0.1
+  affordablePulseDuration: 0.15
+  insufficientEnergyShakeDuration: 0.18
+  refillDelay: 0.84
+  refillTravelDuration: 0.18
+  refillStartScale: 0.44
+  refillOvershootScale: 1.05
+  refillStartRotation: -6
+  refillArcHeightPixels: 42
+  refillLandingDuration: 0.08
+  nextPreviewCrossfadeDuration: 0.08

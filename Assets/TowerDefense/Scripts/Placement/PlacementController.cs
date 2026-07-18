@@ -20,6 +20,8 @@ namespace RoyalSiege.Placement
         [SerializeField] private GhostView _spellGhost;
         [Tooltip("Optional: snap-grid overlay shown while dragging a building.")]
         [SerializeField] private GridOverlayView _gridOverlay;
+        [Tooltip("Optional: the dashed deployment circle — brightened while dragging (18-Jul).")]
+        [SerializeField] private Buildings.DeployRingView _deployRing;
 
         private Camera _camera;
         private ICardPlayService _playService;
@@ -68,8 +70,20 @@ namespace RoyalSiege.Placement
                 TroopCardSO t => t.unitRadius * 3f, // small deploy-spread marker
                 _ => 1f
             };
-            ghost?.Show(radius);
+            ghost?.Show(radius, card.displayName); // 18-Jul: name floats above the preview
             if (card is BuildingCardSO or TroopCardSO) _gridOverlay?.Show();
+            _deployRing?.SetDragHighlight(true);   // circle brightens while a card is held
+        }
+
+        /// <summary>
+        /// 18-Jul CR-style handoff: the hand tells us whether the pointer is over the
+        /// battlefield (preview visible) or still over the HUD (floating card visible).
+        /// Pure view — validation and commit are untouched.
+        /// </summary>
+        public void SetFieldHover(bool overField)
+        {
+            if (!IsDragging) return;
+            GhostFor(_playService.CardAt(_slot))?.SetFieldVisible(overField);
         }
 
         public void UpdateDrag(Vector2 screenPosition)
@@ -116,6 +130,15 @@ namespace RoyalSiege.Placement
                     case TroopCardSO troop: _knightFactory?.Deploy(troop, _point); break;
                     case SpellCardSO spell: _spellCaster.Cast(spell, _point); break;
                 }
+                // 18-Jul commit confirm: the successful ghost freezes, pulses and fades out
+                // on its own; everything else clears immediately.
+                var committed = GhostFor(card);
+                _slot = -1;
+                if (committed == _buildingGhost) _spellGhost?.Hide(); else _buildingGhost?.Hide();
+                _gridOverlay?.Hide();
+                _deployRing?.SetDragHighlight(false);
+                committed?.PlayCommitConfirm();
+                return;
             }
             CancelDrag();
         }
@@ -126,6 +149,7 @@ namespace RoyalSiege.Placement
             _buildingGhost?.Hide();
             _spellGhost?.Hide();
             _gridOverlay?.Hide();
+            _deployRing?.SetDragHighlight(false);
         }
 
         private GhostView GhostFor(CardDefinitionSO card) =>
