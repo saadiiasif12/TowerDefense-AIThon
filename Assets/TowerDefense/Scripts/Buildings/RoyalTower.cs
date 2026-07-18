@@ -85,19 +85,23 @@ namespace RoyalSiege.Buildings
         private void BuildKingAttack(float damage)
         {
             var king = _config.kingAttack;
+            // 18-Jul user delta: the tower's reach IS the white circle. The attack range is
+            // DERIVED from deploymentRadius (one knob: ring + placement + knight leash +
+            // tower fire range all move together) — kingAttack.range is superseded/ignored.
+            float range = _config.deploymentRadius;
             if (_mortarView != null)
             {
                 // Mortar mode (18-Jul): shells leave the tube mouth; windup charges the tube,
                 // the fire moment kicks the recoil + muzzle flash. King stays out of it.
                 _kingAttack = new StructureAttack(_registry, _launcher, _events,
-                    damage, king.attackRate, king.range, king.impactFraction, king.projectile,
+                    damage, king.attackRate, range, king.impactFraction, king.projectile,
                     onSwing: period => _mortarView.OnSwing(period),
                     onFire: () => _mortarView.OnFire(),
                     firePoint: () => _mortarView.FirePoint);
                 return;
             }
             _kingAttack = new StructureAttack(_registry, _launcher, _events,
-                damage, king.attackRate, king.range, king.impactFraction, king.projectile,
+                damage, king.attackRate, range, king.impactFraction, king.projectile,
                 onSwing: period => _kingView?.OnSwing(period),
                 // Bolt leaves from the king's casting hand, read at the exact fire moment
                 // (impactFraction lands on the hand-extended release pose of the throw anim).
