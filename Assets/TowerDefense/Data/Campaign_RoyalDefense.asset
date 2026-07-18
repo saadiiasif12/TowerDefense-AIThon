@@ -20,7 +20,7 @@ MonoBehaviour:
     - label: w1
       groups:
       - enemy: {fileID: 11400000, guid: dff69d5ed844a2d4a9d5d21c6cdf9644, type: 2}
-        count: 3
+        count: 5
         spawnPointIndex: 3
         delayAfterWaveStart: 0
     - label: w2

@@ -8,26 +8,41 @@ namespace RoyalSiege.Buildings
 {
     /// <summary>
     /// View-only Royal Tower level visuals (never touches gameplay). Holds the 4 pre-placed,
-    /// pre-normalised tower level models (index 0 = level 1); shows the current one and plays a
-    /// juicy SEAMLESS "power surge" when the tower levels up: a light-flash masks the moment,
-    /// the old model shrinks out while the new one scale-pops in (they overlap, so the tower is
-    /// never empty), a burst VFX fires, and the camera shakes. Runs on UNSCALED time so it plays
-    /// even while the checkpoint screen pauses the game clock.
+    /// pre-normalised tower level models (index 0 = level 1). 18-Jul CINEMATIC sequence spec:
+    /// LEVEL UP — king + mortar rig hide, the OLD tower sinks into the ground under a dust
+    /// burst + camera shake, the NEW tower rises out of the ground under a second dust burst
+    /// + shake, then king + mortar reappear with the king's Y re-aligned to the new roof —
+    /// and only THEN the level-up screen shows (GameEvents.TowerTransitionCompleted gates it).
+    /// DEFEAT — the tower goes up in a FIRE BLAST + heavy shake, the ruin crashes in under
+    /// the explosion, then the fail screen shows (same completion gate). Runs on UNSCALED
+    /// time so it plays while the checkpoint/defeat pause holds the game clock.
     /// </summary>
     public sealed class TowerLevelView : MonoBehaviour
     {
         [Tooltip("Tower models, index 0 = Level 1. Pre-placed children, normalised to the same height/base.")]
         [SerializeField] private Transform[] _levelModels;
-        [Tooltip("Optional burst spawned at the tower top on upgrade (sparkles/flash).")]
+        [Tooltip("Celebration flash/sparkle spawned when the NEW tower finishes rising.")]
         [SerializeField] private ParticleSystem _upgradeVfx;
+        [Tooltip("Ground dust burst played when a tower sinks/rises (level-up elevator).")]
+        [SerializeField] private ParticleSystem _dustVfx;
+        [Tooltip("Fire explosion played on DEFEAT as the tower is destroyed.")]
+        [SerializeField] private ParticleSystem _failBlastVfx;
         [Tooltip("Old placeholder/model transforms to hide once the level system takes over.")]
         [SerializeField] private Transform[] _hideOnInit;
         [Tooltip("Ruined tower shown on DEFEAT (tower HP 0), normalised like the level models.")]
         [SerializeField] private Transform _failModel;
         [Tooltip("Hidden when the tower is destroyed (e.g. the King on top).")]
         [SerializeField] private Transform[] _hideOnFail;
-        [SerializeField] private float _swapSeconds = 0.55f;
-        [SerializeField] private Color _flashColor = new(1f, 0.92f, 0.55f); // golden
+        [Tooltip("Hidden while the level-up elevator plays (king root + mortar rig), shown again after.")]
+        [SerializeField] private Transform[] _hideDuringUpgrade;
+        [Tooltip("Seconds for the old tower to sink into the ground.")]
+        [SerializeField] private float _sinkSeconds = 1.0f;
+        [Tooltip("Seconds for the new tower to rise out of the ground.")]
+        [SerializeField] private float _riseSeconds = 1.1f;
+        [Tooltip("Continuous camera rumble fed per second while a tower is moving (sink start → rise end). " +
+                 "Must exceed CameraShaker's decay (1.4/s) or the shake dies out between the dust beats.")]
+        [SerializeField] private float _moveRumblePerSecond = 1.45f;
+        // (_swapSeconds/_flashColor of the old scale-surge removed — superseded by the elevator)
         [Header("King placement (18 Jul — the 4 tower arts have different roof heights)")]
         [Tooltip("KingRoot — auto-repositioned so the king stands on the ACTIVE model's roof.")]
         [SerializeField] private Transform _kingRoot;
@@ -127,21 +142,32 @@ namespace RoyalSiege.Buildings
             _running = StartCoroutine(Collapse());
         }
 
+        /// <summary>
+        /// 18-Jul defeat cinematic: the tower goes up in a FIRE BLAST + heavy camera shake;
+        /// the ruin crashes in UNDER the explosion (the blast masks the swap), then
+        /// TowerTransitionCompleted releases the fail screen.
+        /// </summary>
         private IEnumerator Collapse()
         {
+            _events?.RaiseTowerTransitionStarted();
+
+            // Fire explosion engulfs the tower the moment it "dies".
+            Vector3 blastPoint = transform.position + Vector3.up * 1.2f;
+            if (_failBlastVfx != null)
+            {
+                var fx = Instantiate(_failBlastVfx, blastPoint, Quaternion.identity);
+                fx.Play(true);
+                Destroy(fx.gameObject, 5f);
+            }
+            _shaker?.AddTrauma(0.85f); // heavy blast
+
+            // A beat inside the fireball before the swap — the explosion hides the cut.
+            float wait = 0f;
+            while (wait < 0.18f) { wait += Time.unscaledDeltaTime; yield return null; }
+
             foreach (var m in _levelModels) if (m != null) m.gameObject.SetActive(false);
             if (_hideOnFail != null)
                 foreach (var h in _hideOnFail) if (h != null) h.gameObject.SetActive(false);
-
-            Vector3 topPoint = transform.position + Vector3.up * 2.4f;
-            if (_upgradeVfx != null)
-            {
-                var fx = Instantiate(_upgradeVfx, topPoint, Quaternion.identity);
-                var main = fx.main; main.startColor = new Color(0.5f, 0.5f, 0.5f, 1f); // grey dust
-                fx.Play();
-                Destroy(fx.gameObject, 3f);
-            }
-            _shaker?.AddTrauma(0.8f); // heavy crash
 
             _failModel.gameObject.SetActive(true);
             // Crash-in: overshoot big → squash-settle to base (ease-out-back on a downward hit).
@@ -154,7 +180,13 @@ namespace RoyalSiege.Buildings
                 yield return null;
             }
             _failModel.localScale = _failBaseScale;
+
+            // Let the fire read for a moment before the fail screen covers it.
+            wait = 0f;
+            while (wait < 0.5f) { wait += Time.unscaledDeltaTime; yield return null; }
+
             _running = null;
+            _events?.RaiseTowerTransitionCompleted(); // NOW the fail screen may show
         }
 
         /// <summary>Level changed — animate the seamless upgrade (or init instantly if fresh).
@@ -185,62 +217,104 @@ namespace RoyalSiege.Buildings
             _currentLevel = level;
         }
 
+        /// <summary>Ground dust burst at the tower base + camera shake (every sink/rise beat).</summary>
+        private void DustAndShake(float trauma)
+        {
+            if (_dustVfx != null)
+            {
+                var fx = Instantiate(_dustVfx, transform.position + Vector3.up * 0.15f, Quaternion.identity);
+                fx.Play(true);
+                Destroy(fx.gameObject, 4f);
+            }
+            _shaker?.AddTrauma(trauma);
+        }
+
+        /// <summary>
+        /// 18-Jul level-up cinematic: king + mortar hide → OLD tower SINKS into the ground
+        /// (dust + shake) → NEW tower RISES out of the ground (dust + shake) → king + mortar
+        /// return with the king aligned to the new roof → TowerTransitionCompleted (the
+        /// level-up screen waits for it).
+        /// </summary>
         private IEnumerator Upgrade(int fromLevel, int toLevel)
         {
+            _events?.RaiseTowerTransitionStarted();
+
             Transform oldM = Get(fromLevel), newM = Get(toLevel);
-            Vector3 oldBase = Scale(fromLevel), newBase = Scale(toLevel);
 
-            // King rides the swap: lerp Y from the old roof height to the new one (measured
-            // at base scale BEFORE the pop starts, so mid-pop bounds never lie). X/Z untouched.
-            float kingFromY = _kingRoot != null ? _kingRoot.position.y : 0f;
-            float newTop = RoofTopY(toLevel);
-            float kingToY = float.IsNaN(newTop) ? kingFromY : newTop + _kingHeightOffset;
+            // Measure the model heights first (world-space renderer bounds at base scale) so
+            // each tower sinks/rises by exactly its own height + a safety margin.
+            float baseY = transform.position.y;
+            float oldDepth = Mathf.Max(2f, RoofTopY(fromLevel) - baseY) + 0.6f;
+            float newDepth = Mathf.Max(2f, RoofTopY(toLevel) - baseY) + 0.6f;
+            if (float.IsNaN(oldDepth)) oldDepth = 4f;
+            if (float.IsNaN(newDepth)) newDepth = 4f;
 
-            Vector3 topPoint = transform.position + Vector3.up * 2.4f;
+            // The king and mortar rig vanish for the whole swap (they'd float mid-air).
+            if (_hideDuringUpgrade != null)
+                foreach (var h in _hideDuringUpgrade) if (h != null) h.gameObject.SetActive(false);
+
+            // ---- OLD TOWER SINKS ----
+            // Camera rumbles CONTINUOUSLY from here until the rise completes: each moving
+            // frame feeds a little trauma so the shake never decays out mid-sequence.
+            DustAndShake(0.45f);
+            if (oldM != null)
+            {
+                Vector3 home = oldM.localPosition;
+                float t = 0f;
+                while (t < 1f)
+                {
+                    float dt = Time.unscaledDeltaTime;
+                    t += dt / Mathf.Max(0.05f, _sinkSeconds);
+                    float e = Mathf.Clamp01(t);
+                    e = e * e; // ease-in: starts slow, accelerates into the ground
+                    oldM.localPosition = home + Vector3.down * (oldDepth * e);
+                    _shaker?.AddTrauma(_moveRumblePerSecond * dt); // sustained ground rumble
+                    yield return null;
+                }
+                oldM.gameObject.SetActive(false);
+                oldM.localPosition = home; // restore the authored position for future swaps
+            }
+
+            // ---- NEW TOWER RISES ----
+            DustAndShake(0.45f);
+            if (newM != null)
+            {
+                Vector3 home = newM.localPosition;
+                newM.localPosition = home + Vector3.down * newDepth;
+                newM.gameObject.SetActive(true);
+                float t = 0f;
+                while (t < 1f)
+                {
+                    float dt = Time.unscaledDeltaTime;
+                    t += dt / Mathf.Max(0.05f, _riseSeconds);
+                    float e = Mathf.Clamp01(t);
+                    e = 1f - (1f - e) * (1f - e); // ease-out: bursts up, settles at the top
+                    newM.localPosition = home + Vector3.down * (newDepth * (1f - e));
+                    _shaker?.AddTrauma(_moveRumblePerSecond * dt); // rumble carries through the rise
+                    yield return null;
+                }
+                newM.localPosition = home;
+            }
+
+            // ---- KING + MORTAR RETURN on the finished tower ----
+            if (_hideDuringUpgrade != null)
+                foreach (var h in _hideDuringUpgrade) if (h != null) h.gameObject.SetActive(true);
+            AlignKing(toLevel); // instant snap: king Y = the NEW tower's measured roof height
+
+            // Celebration sparkle at the new rooftop.
             if (_upgradeVfx != null)
             {
+                float top = RoofTopY(toLevel);
+                Vector3 topPoint = float.IsNaN(top)
+                    ? transform.position + Vector3.up * 2.4f
+                    : new Vector3(transform.position.x, top, transform.position.z);
                 var fx = Instantiate(_upgradeVfx, topPoint, Quaternion.identity);
                 fx.Play();
                 Destroy(fx.gameObject, 3f);
             }
-            _shaker?.AddTrauma(0.55f);
 
-            // Golden flash light that blooms then fades — masks the swap for a seamless read.
-            var lightGo = new GameObject("TowerUpgradeFlash");
-            lightGo.transform.position = topPoint;
-            var flash = lightGo.AddComponent<Light>();
-            flash.type = LightType.Point; flash.color = _flashColor; flash.range = 14f; flash.intensity = 0f;
-
-            if (newM != null) { newM.localScale = newBase * 0.35f; newM.gameObject.SetActive(true); }
-
-            float t = 0f;
-            while (t < 1f)
-            {
-                t += Time.unscaledDeltaTime / Mathf.Max(0.05f, _swapSeconds);
-                float e = Mathf.Clamp01(t);
-                // new model pops UP (ease-out-back), old model shrinks OUT — overlap = seamless.
-                if (newM != null) newM.localScale = newBase * Mathf.Max(0.01f, EaseOutBack(e));
-                if (oldM != null) oldM.localScale = oldBase * Mathf.Max(0.001f, 1f - Mathf.SmoothStep(0f, 1f, e));
-                // the king glides onto the new roof while the flash masks the swap
-                if (_kingRoot != null)
-                {
-                    var kp = _kingRoot.position;
-                    _kingRoot.position = new Vector3(kp.x, Mathf.Lerp(kingFromY, kingToY, Mathf.SmoothStep(0f, 1f, e)), kp.z);
-                }
-                // flash: fast bloom, slow fade
-                flash.intensity = 9f * Mathf.Sin(Mathf.Clamp01(e) * Mathf.PI);
-                yield return null;
-            }
-
-            if (newM != null) newM.localScale = newBase;
-            if (oldM != null) { oldM.localScale = oldBase; oldM.gameObject.SetActive(false); }
-            if (_kingRoot != null)
-            {
-                var kEnd = _kingRoot.position;
-                _kingRoot.position = new Vector3(kEnd.x, kingToY, kEnd.z);
-            }
-            Destroy(lightGo);
             _running = null;
+            _events?.RaiseTowerTransitionCompleted(); // NOW the level-up screen may show
         }
 
         private Transform Get(int level) =>
