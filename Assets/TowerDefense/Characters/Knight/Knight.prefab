@@ -78,6 +78,7 @@ MonoBehaviour:
   _yOffset: 1.4
   _lowColor: {r: 0.95, g: 0.25, b: 0.15, a: 1}
   _hideWhenFull: 1
+  _counterParentScale: 1
   _width: 1
   _thickness: 0.13
   _fillColor: {r: 0.35, g: 0.7, b: 1, a: 1}

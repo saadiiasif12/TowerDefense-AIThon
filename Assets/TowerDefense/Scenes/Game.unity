@@ -1170,6 +1170,8 @@ GameObject:
   - component: {fileID: 1247799767}
   - component: {fileID: 1247799773}
   - component: {fileID: 1247799774}
+  - component: {fileID: 1247799776}
+  - component: {fileID: 1247799775}
   m_Layer: 0
   m_Name: GameSystems
   m_TagString: Untagged
@@ -1305,6 +1307,43 @@ MonoBehaviour:
   sustainedPerformanceMode: 0
   optimizeFixedTimestep: 1
   logDeviceInfo: 1
+--- !u!114 &1247799775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247799766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2284ae29497d3b4e9aa32bc642d4382, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.FirstPlayTutorial
+  _context: {fileID: 1247799767}
+  _gestureSeconds: 1.5
+  _font: {fileID: 11400000, guid: afdd698ec8d961e4d8df2e1e6c0904ad, type: 2}
+  _fontMaterial: {fileID: 2100000, guid: 973ea96e143018146a732aa5292750c7, type: 2}
+--- !u!114 &1247799776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247799766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 760baa4c903b9c943b110f96b39841cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.GameIntroSequence
+  _context: {fileID: 1247799767}
+  _camera: {fileID: 338089797}
+  _closeOrthoSize: 5.5
+  _holdOnKingSeconds: 0.45
+  _zoomSeconds: 2.2
+  _headerSlideSeconds: 0.5
+  _footerSlideSeconds: 0.55
+  _cardDealStagger: 0.11
+  _cardPopSeconds: 0.28
 --- !u!1 &1247945086
 GameObject:
   m_ObjectHideFlags: 0
@@ -1805,35 +1844,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4190838407659044547, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4190838407659044547, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4190838407659044547, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 378
       objectReference: {fileID: 0}
     - target: {fileID: 4190838407659044547, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -138
       objectReference: {fileID: 0}
     - target: {fileID: 4326145118173002309, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4326145118173002309, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4326145118173002309, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 986.83496
       objectReference: {fileID: 0}
     - target: {fileID: 4326145118173002309, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -138
       objectReference: {fileID: 0}
     - target: {fileID: 4394233422570863962, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: _context
@@ -1845,35 +1884,35 @@ PrefabInstance:
       objectReference: {fileID: 1247799769}
     - target: {fileID: 4524870216298952824, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4524870216298952824, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4524870216298952824, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 783.88995
       objectReference: {fileID: 0}
     - target: {fileID: 4524870216298952824, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -138
       objectReference: {fileID: 0}
     - target: {fileID: 4872510938967565914, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4872510938967565914, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4872510938967565914, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 580.94495
       objectReference: {fileID: 0}
     - target: {fileID: 4872510938967565914, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -138
       objectReference: {fileID: 0}
     - target: {fileID: 5162031887842230656, guid: a96810d6579c0c941be66f9ea63496ae, type: 3}
       propertyPath: _context
@@ -2124,6 +2163,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: a11ff1401dda24343af5520aee48033a, type: 3}
     - target: {fileID: 3227671822173771447, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: _teslaZap
+      value: 
+      objectReference: {fileID: 8300000, guid: 2bd554d2462ef3d49b6f9b3a4807f06c, type: 3}
+    - target: {fileID: 3227671822173771447, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
       propertyPath: _arrowRain
       value: 
       objectReference: {fileID: 8300000, guid: bd4cf229f57a6234cb4e851aa6478bd6, type: 3}
@@ -2131,6 +2174,10 @@ PrefabInstance:
       propertyPath: _knightHit
       value: 
       objectReference: {fileID: 8300000, guid: 8a7b783657f9ebe4596e1f2f8da323f9, type: 3}
+    - target: {fileID: 3227671822173771447, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
+      propertyPath: _lightning
+      value: 
+      objectReference: {fileID: 8300000, guid: 46dcfa1187f4a1e4cb3793dd1351f669, type: 3}
     - target: {fileID: 3227671822173771447, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
       propertyPath: _cardPlayed
       value: 

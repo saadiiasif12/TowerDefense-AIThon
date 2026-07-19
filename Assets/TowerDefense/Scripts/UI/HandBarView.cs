@@ -41,6 +41,11 @@ namespace RoyalSiege.UI
         private bool _overField;
         private float _handTopScreenY;
         private int _cachedScreenWidth, _cachedScreenHeight;
+        private int _lockedSlot = -1;   // tutorial input gate: -1 = free, else only this slot responds
+
+        /// <summary>Tutorial gate: only <paramref name="slot"/> can be picked up (others ignored). -1 clears.</summary>
+        public void LockToSlot(int slot) => _lockedSlot = slot;
+        public void Unlock() => _lockedSlot = -1;
 
         private readonly CardDefinitionSO[] _lastHand = new CardDefinitionSO[DeckService.HandSize];
         private bool _firstRefresh = true;
@@ -177,6 +182,7 @@ namespace RoyalSiege.UI
         public void OnSlotPointerDown(int slot, Vector2 position, int pointerId)
         {
             if (_matchOver) return;
+            if (_lockedSlot >= 0 && slot != _lockedSlot) return; // tutorial: only the taught card responds
             if (_pressedSlot >= 0) return; // another finger already owns a card
             _pressedSlot = slot;
             _pressedPointerId = pointerId;

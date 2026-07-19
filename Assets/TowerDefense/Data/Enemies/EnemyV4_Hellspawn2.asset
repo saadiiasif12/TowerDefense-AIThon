@@ -28,6 +28,7 @@ MonoBehaviour:
   deathVfx: {fileID: 0}
   attackHitSfx: {fileID: 0}
   hurtSfx: {fileID: 8300000, guid: 88993b906d4443c45b68c8d3e4e0346e, type: 3}
+  hurtSfxVolume: 0.5
   hurtStaggerSeconds: 0.35
   hurtCooldownSeconds: 0
   walkAnimSpeedMultiplier: 1
