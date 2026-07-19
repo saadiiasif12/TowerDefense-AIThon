@@ -30,8 +30,13 @@ namespace RoyalSiege.UI
         [Header("HUD reveal")]
         [SerializeField] private float _headerSlideSeconds = 0.5f;
         [SerializeField] private float _footerSlideSeconds = 0.55f;
-        [SerializeField] private float _cardDealStagger = 0.11f;
-        [SerializeField] private float _cardPopSeconds = 0.28f;
+        [SerializeField] private float _cardDealStagger = 0.13f;
+        [SerializeField] private float _cardPopSeconds = 0.3f;
+        [Tooltip("Swipe/whoosh played as each card deals in.")]
+        [SerializeField] private AudioClip _cardDealSwipe;
+        [SerializeField, Range(0f, 1f)] private float _swipeVolume = 0.5f;
+
+        private AudioSource _audio;
 
         /// <summary>Raised (once) when the whole intro finishes and the sim resumes.</summary>
         public event Action Completed;
@@ -42,7 +47,8 @@ namespace RoyalSiege.UI
 
         private RectTransform _header;   // TopBar
         private RectTransform _footer;   // BottomBanner
-        private RectTransform[] _cards;  // the hand slots (+ energy) to pop in
+        private RectTransform[] _cards;  // the 4 hand slots — each deals in with a swipe (4 sounds total)
+        private RectTransform[] _extras; // Next slot + energy bar — pop in silently
         private Vector2 _headerHome, _footerHome;
 
         private void Start()
@@ -52,6 +58,8 @@ namespace RoyalSiege.UI
             if (_context == null || _camera == null) { Finish(); return; }
 
             _clock = _context.Clock;
+            _audio = gameObject.AddComponent<AudioSource>();
+            _audio.playOnAwake = false; _audio.spatialBlend = 0f;
             ResolveHud();
 
             // Pause the whole sim (waves/decay/economy all hold behind the cinematic).
@@ -65,6 +73,7 @@ namespace RoyalSiege.UI
             if (_header != null) { _headerHome = _header.anchoredPosition; _header.anchoredPosition = _headerHome + Vector2.up * (_header.rect.height + 40f); }
             if (_footer != null) { _footerHome = _footer.anchoredPosition; _footer.anchoredPosition = _footerHome + Vector2.down * (_footer.rect.height + 60f); }
             if (_cards != null) foreach (var c in _cards) if (c != null) c.localScale = Vector3.zero;
+            if (_extras != null) foreach (var c in _extras) if (c != null) c.localScale = Vector3.zero;
 
             StartCoroutine(Run());
         }
@@ -73,50 +82,41 @@ namespace RoyalSiege.UI
         {
             _header = FindRect("TopBar");
             _footer = FindRect("BottomBanner");
-            // Deal-in targets: the 4 hand slots + Next + energy bar (whatever exists).
-            var list = new System.Collections.Generic.List<RectTransform>();
+            // The 4 hand cards deal in with a swipe; Next slot + energy bar pop in silently.
+            var cards = new System.Collections.Generic.List<RectTransform>();
             var slotsRoot = FindTransform("Slots");
-            if (slotsRoot != null) foreach (Transform s in slotsRoot) list.Add((RectTransform)s);
+            if (slotsRoot != null) foreach (Transform s in slotsRoot) cards.Add((RectTransform)s);
+            _cards = cards.ToArray();
+
+            var list = new System.Collections.Generic.List<RectTransform>();
             AddIf(list, "NextSlot");
             AddIf(list, "EnergyBar");
-            _cards = list.ToArray();
+            _extras = list.ToArray();
         }
 
         private IEnumerator Run()
         {
-            // 1) hold close on the King so the eye lands on him first
+            // Strict beat order (user spec): hold on King → zoom out → footer up → header down
+            // → cards deal one by one → tutorial.
             yield return WaitUnscaled(_holdOnKingSeconds);
+            yield return ZoomOut();
+            yield return SlideIn(_footer, _footerHome, _footerSlideSeconds);
+            yield return SlideIn(_header, _headerHome, _headerSlideSeconds);
+            yield return DealCards();
+            Finish();
+        }
 
-            // 2) zoom OUT to the play framing (ease-out — fast then settle)
+        private IEnumerator ZoomOut()
+        {
             float t = 0f;
             while (t < 1f)
             {
                 t += Time.unscaledDeltaTime / Mathf.Max(0.01f, _zoomSeconds);
                 float e = 1f - Mathf.Pow(1f - Mathf.Clamp01(t), 3f); // ease-out cubic
                 _camera.orthographicSize = Mathf.Lerp(_closeOrthoSize, _authoredOrtho, e);
-
-                // Slide the HUD in over the back half of the zoom (overlap = juicier).
-                if (t > 0.45f)
-                {
-                    StartCoroutine(SlideIn(_header, _headerHome, _headerSlideSeconds));
-                    StartCoroutine(SlideIn(_footer, _footerHome, _footerSlideSeconds));
-                    if (t > 0.55f) { StartCoroutine(DealCards()); }
-                    break; // hand the tail of the zoom to a dedicated finisher so this loop can end
-                }
-                yield return null;
-            }
-            // finish the zoom smoothly if we broke early
-            while (Mathf.Abs(_camera.orthographicSize - _authoredOrtho) > 0.01f)
-            {
-                _camera.orthographicSize = Mathf.MoveTowards(_camera.orthographicSize, _authoredOrtho,
-                    (_authoredOrtho - _closeOrthoSize) * Time.unscaledDeltaTime / Mathf.Max(0.01f, _zoomSeconds));
                 yield return null;
             }
             _camera.orthographicSize = _authoredOrtho;
-
-            // wait for the card deal to finish, then resume gameplay
-            yield return WaitUnscaled(_cardDealStagger * (_cards?.Length ?? 0) + _cardPopSeconds + 0.1f);
-            Finish();
         }
 
         private IEnumerator SlideIn(RectTransform rt, Vector2 home, float seconds)
@@ -136,12 +136,20 @@ namespace RoyalSiege.UI
 
         private IEnumerator DealCards()
         {
+            // Next slot + energy bar appear silently first (no swipe).
+            if (_extras != null) foreach (var e in _extras) if (e != null) StartCoroutine(PopIn(e));
+
             if (_cards == null) yield break;
             for (int i = 0; i < _cards.Length; i++)
             {
-                if (_cards[i] != null) StartCoroutine(PopIn(_cards[i]));
+                if (_cards[i] != null)
+                {
+                    StartCoroutine(PopIn(_cards[i]));
+                    if (_cardDealSwipe != null && _audio != null) _audio.PlayOneShot(_cardDealSwipe, _swipeVolume); // one swipe per card = 4 total
+                }
                 yield return WaitUnscaled(_cardDealStagger);
             }
+            yield return WaitUnscaled(_cardPopSeconds); // let the last card settle before the tutorial
         }
 
         private IEnumerator PopIn(RectTransform rt)
@@ -164,6 +172,7 @@ namespace RoyalSiege.UI
             if (_header != null) _header.anchoredPosition = _headerHome;
             if (_footer != null) _footer.anchoredPosition = _footerHome;
             if (_cards != null) foreach (var c in _cards) if (c != null) c.localScale = Vector3.one;
+            if (_extras != null) foreach (var c in _extras) if (c != null) c.localScale = Vector3.one;
             if (_clock != null) _clock.IsPaused = false; // gameplay begins
             Completed?.Invoke();
         }

@@ -46,6 +46,8 @@ namespace RoyalSiege.UI
         /// <summary>Tutorial gate: only <paramref name="slot"/> can be picked up (others ignored). -1 clears.</summary>
         public void LockToSlot(int slot) => _lockedSlot = slot;
         public void Unlock() => _lockedSlot = -1;
+        /// <summary>Slot currently under the finger (-1 = none). The tutorial ends the moment its card is touched.</summary>
+        public int PressedSlot => _pressedSlot;
 
         private readonly CardDefinitionSO[] _lastHand = new CardDefinitionSO[DeckService.HandSize];
         private bool _firstRefresh = true;

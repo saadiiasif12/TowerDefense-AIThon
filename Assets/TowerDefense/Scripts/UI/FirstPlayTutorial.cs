@@ -9,23 +9,24 @@ using TMPro;
 namespace RoyalSiege.UI
 {
     /// <summary>
-    /// First-play forced tutorial: after the intro cinematic, the player MUST drag one taught
-    /// card onto the deployment ring before the game lets them do anything else. Input is
-    /// hard-gated to that one card (HandBarView.LockToSlot); a looping finger gesture traces
-    /// card → ring, the ring pulses, and a prompt explains it. Completing it (the card is
-    /// actually deployed) unlocks the hand and stamps a PlayerPrefs flag so it never repeats.
-    /// Self-builds its overlay UI — nothing to author in the scene. Skips instantly if the
-    /// flag is set or the refs can't be resolved.
+    /// First-play tutorial. After the intro deals the hand, everything is blocked (dim overlay)
+    /// EXCEPT the Cannon card, which is forced into the hand, lifted bright above the dim, and
+    /// pointed at by a big cartoon hand tracing card → ring. The moment the player TOUCHES the
+    /// Cannon the tutorial ends (overlay + block cleared) and they finish the drag themselves.
+    /// Cannon (a building) is used deliberately — no enemies are in the ring yet, so a spell
+    /// would be wasted. Shows only on a genuinely fresh run; stamps a PlayerPrefs flag after.
     /// </summary>
     public sealed class FirstPlayTutorial : MonoBehaviour
     {
         private const string DoneKey = "royalDefense.tutorialDone.v1";
 
         [SerializeField] private GameContext _context;
-        [SerializeField] private float _gestureSeconds = 1.5f;
+        [SerializeField] private float _gestureSeconds = 1.6f;
+        [Tooltip("Cartoon hand sprite (points at the card).")]
+        [SerializeField] private Sprite _handSprite;
         [Tooltip("The game's Praxis TMP font so the prompt matches the rest of the UI.")]
         [SerializeField] private TMP_FontAsset _font;
-        [Tooltip("Optional stroke/underlay material preset for the prompt (readable on the field).")]
+        [Tooltip("Praxis-Black navy-stroke material preset for the prompt.")]
         [SerializeField] private Material _fontMaterial;
 
         private HandBarView _hand;
@@ -35,10 +36,12 @@ namespace RoyalSiege.UI
 
         private int _targetSlot = -1;
         private bool _active;
-        private RectTransform _dot;
-        private TextMeshProUGUI _prompt;
+        private RectTransform _hand2d;         // the finger
         private RectTransform _targetSlotRect;
+        private Canvas _slotLift;              // temporary canvas that pops the Cannon above the dim
+        private GraphicRaycaster _slotRaycaster; // its own raycaster (a nested canvas needs one to stay clickable)
         private float _gestureT;
+        private GameObject _overlay;
 
         private void Start()
         {
@@ -50,9 +53,11 @@ namespace RoyalSiege.UI
             _camera = Camera.main;
             if (_context == null || _hand == null || _camera == null) { enabled = false; return; }
 
-            // Only teach on a genuinely fresh run (start of the journey), never on a resume.
-            var profile = CampaignProfile.Load();
-            if (profile.nextWave > 1) { PlayerPrefs.SetInt(DoneKey, 1); enabled = false; return; }
+            // Fresh journey only (never on a resume).
+            if (CampaignProfile.Load().nextWave > 1) { PlayerPrefs.SetInt(DoneKey, 1); enabled = false; return; }
+
+            // Force the Cannon into the opening hand NOW so the intro deals it in slot 0.
+            _targetSlot = _context.Deck.EnsureCardInHand("Cannon", 0);
 
             if (_intro != null && !_intro.IsComplete) _intro.Completed += Begin;
             else Begin();
@@ -62,126 +67,133 @@ namespace RoyalSiege.UI
         {
             if (_intro != null) _intro.Completed -= Begin;
 
-            _targetSlot = PickTeachSlot();
-            if (_targetSlot < 0) { enabled = false; return; } // nothing affordable yet — retry next launch, don't stamp done
-            _targetSlotRect = ResolveSlotRect(_targetSlot);
+            // Re-resolve in case the hand cycled during the intro.
+            if (_targetSlot < 0 || SlotCard(_targetSlot)?.id != "Cannon")
+                _targetSlot = _context.Deck.EnsureCardInHand("Cannon", 0);
+            if (_targetSlot < 0) { enabled = false; return; } // no Cannon in the deck — skip, retry next launch
 
+            _targetSlotRect = ResolveSlotRect(_targetSlot);
             _hand.LockToSlot(_targetSlot);
             _ring?.SetDragHighlight(true);
+            LiftCannonAboveDim();
             BuildOverlay();
-            _context.Events.CardPlayed += OnCardPlayed;
             _active = true;
         }
 
-        /// <summary>Prefer an affordable building/troop (they MUST land on the ring); else any affordable card.</summary>
-        private int PickTeachSlot()
-        {
-            int fallback = -1;
-            for (int i = 0; i < DeckService.HandSize; i++)
-            {
-                if (!_context.CardPlay.CanPlay(i)) continue;
-                var card = _context.CardPlay.CardAt(i);
-                if (card is BuildingCardSO or TroopCardSO) return i;
-                if (fallback < 0) fallback = i;
-            }
-            return fallback;
-        }
-
-        private void OnCardPlayed(CardDefinitionSO card)
-        {
-            if (_active) Finish(true); // the taught card was deployed on the ring
-        }
+        private CardDefinitionSO SlotCard(int slot) =>
+            slot >= 0 && slot < DeckService.HandSize ? _context.CardPlay.CardAt(slot) : null;
 
         private void Update()
         {
             if (!_active) return;
-            // A dropped-but-invalid attempt re-locks nothing; keep gating on the same slot in case
-            // the hand cycled the taught card away after an accidental play elsewhere is impossible
-            // (locked), so just keep the gesture alive.
+
+            // END THE MOMENT THE CANNON IS TOUCHED (then the player finishes the drag freely).
+            if (_hand.PressedSlot == _targetSlot) { Finish(); return; }
+
+            // finger traces card → ring (shows the intended drag), looping
             _gestureT += Time.unscaledDeltaTime / Mathf.Max(0.1f, _gestureSeconds);
             float phase = Mathf.Repeat(_gestureT, 1f);
-
-            Vector2 from = _targetSlotRect != null
-                ? (Vector2)_targetSlotRect.position          // overlay canvas → .position is screen pixels
-                : new Vector2(Screen.width * 0.5f, Screen.height * 0.22f);
-            Vector2 to = _camera.WorldToScreenPoint(_context.MapCenter);
-
-            // ease-in-out along the path + a little arc lift, fade near the ends
+            Vector2 from = _targetSlotRect != null ? (Vector2)_targetSlotRect.position
+                                                   : new Vector2(Screen.width * 0.5f, Screen.height * 0.18f);
+            // Point at EMPTY ground inside the ring (toward the player), NOT the King/tower at center.
+            Vector2 to = _camera.WorldToScreenPoint(_context.MapCenter + new Vector3(0f, 0f, -3.6f));
             float e = Mathf.SmoothStep(0f, 1f, phase);
             Vector2 pos = Vector2.Lerp(from, to, e);
-            pos.y += Mathf.Sin(phase * Mathf.PI) * 60f;
-            if (_dot != null)
+            pos.y += Mathf.Sin(phase * Mathf.PI) * 55f; // slight arc
+            if (_hand2d != null)
             {
-                _dot.position = pos;
-                float a = Mathf.Sin(phase * Mathf.PI);          // 0→1→0 across the drag
-                float s = 0.8f + 0.25f * Mathf.Sin(phase * Mathf.PI);
-                _dot.localScale = Vector3.one * s;
-                var img = _dot.GetComponent<Image>();
-                if (img != null) { var c = img.color; c.a = Mathf.Clamp01(a * 1.4f); img.color = c; }
+                _hand2d.position = pos;
+                float tap = 0.9f + 0.14f * Mathf.Cos(phase * Mathf.PI * 2f); // little press bob
+                _hand2d.localScale = Vector3.one * tap;
+                var img = _hand2d.GetComponent<Image>();
+                if (img != null) { var c = img.color; c.a = Mathf.Lerp(0.55f, 1f, Mathf.Sin(phase * Mathf.PI)); img.color = c; }
             }
         }
 
-        private void Finish(bool completed)
+        private void Finish()
         {
             _active = false;
-            if (_context != null && _context.Events != null) _context.Events.CardPlayed -= OnCardPlayed;
             _hand?.Unlock();
             _ring?.SetDragHighlight(false);
+            if (_slotRaycaster != null) Destroy(_slotRaycaster); // raycaster before its canvas
+            if (_slotLift != null) Destroy(_slotLift);
             if (_overlay != null) Destroy(_overlay);
             PlayerPrefs.SetInt(DoneKey, 1);
             PlayerPrefs.Save();
             enabled = false;
         }
 
-        // ---------------- overlay UI (self-built) ----------------
+        // ---------------- highlight + overlay ----------------
 
-        private GameObject _overlay;
+        /// <summary>Pop the Cannon slot onto its own high-sorting canvas so it renders BRIGHT above the dim.</summary>
+        private void LiftCannonAboveDim()
+        {
+            if (_targetSlotRect == null) return;
+            var go = _targetSlotRect.gameObject;
+            _slotLift = go.AddComponent<Canvas>();
+            _slotLift.overrideSorting = true;
+            _slotLift.sortingOrder = 6000; // renders BRIGHT above the dim overlay (5000)
+            // A nested canvas needs its OWN raycaster or its card stops receiving taps.
+            _slotRaycaster = go.AddComponent<GraphicRaycaster>();
+        }
 
         private void BuildOverlay()
         {
             _overlay = new GameObject("TutorialOverlay", typeof(Canvas), typeof(GraphicRaycaster));
             var canvas = _overlay.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 5000;            // above the HUD, below nothing
-            _overlay.GetComponent<GraphicRaycaster>().enabled = false; // never eats touches — the card must
+            canvas.sortingOrder = 5000;
 
-            // prompt: a dark rounded strip behind bold white text (a runtime outline would
-            // mutate the SHARED TMP material and tint every HUD label — so use a plate instead).
+            // dim + block everything (the lifted Cannon at 6000 stays clickable/bright)
+            var dimGo = new GameObject("Dim", typeof(RectTransform), typeof(Image));
+            var drt = (RectTransform)dimGo.transform;
+            drt.SetParent(_overlay.transform, false);
+            drt.anchorMin = Vector2.zero; drt.anchorMax = Vector2.one; drt.offsetMin = Vector2.zero; drt.offsetMax = Vector2.zero;
+            var dim = dimGo.GetComponent<Image>();
+            dim.color = new Color(0f, 0f, 0f, 0.78f); // darker so the Cannon really pops
+            // Visual-only: a raycast-blocking overlay would ALSO eat the Cannon's tap (nested-canvas
+            // overrideSorting changes render order, not raycast priority). Input is gated instead by
+            // HandBarView.LockToSlot (only the Cannon responds), so this just darkens.
+            dim.raycastTarget = false;
+            _overlay.GetComponent<GraphicRaycaster>().enabled = false;
+
+            // prompt: short, Praxis navy-stroke on a subtle plate
             var plateGo = new GameObject("PromptPlate", typeof(RectTransform), typeof(Image));
             var plate = (RectTransform)plateGo.transform;
             plate.SetParent(_overlay.transform, false);
             plate.anchorMin = new Vector2(0.5f, 1f); plate.anchorMax = new Vector2(0.5f, 1f); plate.pivot = new Vector2(0.5f, 1f);
-            plate.anchoredPosition = new Vector2(0f, -Screen.height * 0.24f);
-            plate.sizeDelta = new Vector2(Screen.width * 0.86f, 130f);
+            plate.anchoredPosition = new Vector2(0f, -Screen.height * 0.2f);
+            plate.sizeDelta = new Vector2(Screen.width * 0.8f, 120f);
             var pimg = plateGo.GetComponent<Image>();
-            pimg.sprite = SoftCircleSprite();     // soft rounded fill
-            pimg.type = Image.Type.Sliced;
-            pimg.color = new Color(0f, 0f, 0f, 0.62f);
-            pimg.raycastTarget = false;
+            pimg.sprite = SoftCircleSprite(); pimg.type = Image.Type.Sliced;
+            pimg.color = new Color(0f, 0f, 0f, 0.35f); pimg.raycastTarget = false;
 
             var textGo = new GameObject("Prompt", typeof(RectTransform), typeof(TextMeshProUGUI));
             var trt = (RectTransform)textGo.transform;
             trt.SetParent(plate, false);
-            trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one; trt.pivot = new Vector2(0.5f, 0.5f);
-            trt.offsetMin = new Vector2(24f, 10f); trt.offsetMax = new Vector2(-24f, -10f);
-            _prompt = textGo.GetComponent<TextMeshProUGUI>();
-            if (_font != null) _prompt.font = _font;                       // match the game's Praxis UI
-            if (_fontMaterial != null) _prompt.fontSharedMaterial = _fontMaterial;
-            _prompt.text = "Drag the glowing card onto the ring to deploy!";
-            _prompt.enableAutoSizing = true; _prompt.fontSizeMin = 26; _prompt.fontSizeMax = 42;
-            _prompt.alignment = TextAlignmentOptions.Center;
-            _prompt.color = Color.white;
-            _prompt.raycastTarget = false;
+            trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one; trt.offsetMin = new Vector2(20f, 8f); trt.offsetMax = new Vector2(-20f, -8f);
+            var prompt = textGo.GetComponent<TextMeshProUGUI>();
+            if (_font != null) prompt.font = _font;
+            if (_fontMaterial != null) prompt.fontSharedMaterial = _fontMaterial;
+            prompt.text = "Drag and drop the card into the ring";
+            prompt.enableAutoSizing = true; prompt.fontSizeMin = 24; prompt.fontSizeMax = 40;
+            prompt.alignment = TextAlignmentOptions.Center;
+            prompt.raycastTarget = false;
 
-            // touch dot (finger gesture)
-            var dotGo = new GameObject("TouchDot", typeof(RectTransform), typeof(Image));
-            _dot = (RectTransform)dotGo.transform;
-            _dot.SetParent(_overlay.transform, false);
-            _dot.sizeDelta = new Vector2(90f, 90f);
-            var dimg = dotGo.GetComponent<Image>();
-            dimg.sprite = SoftCircleSprite();
-            dimg.color = new Color(1f, 1f, 1f, 0.9f);
-            dimg.raycastTarget = false;
+            // cartoon hand finger
+            var handGo = new GameObject("Hand", typeof(RectTransform), typeof(Image));
+            _hand2d = (RectTransform)handGo.transform;
+            _hand2d.SetParent(_overlay.transform, false);
+            _hand2d.sizeDelta = new Vector2(150f, 156f);
+            _hand2d.pivot = new Vector2(0.25f, 0.9f); // fingertip near the top-left of the sprite
+            var himg = handGo.GetComponent<Image>();
+            himg.sprite = _handSprite != null ? _handSprite : SoftCircleSprite();
+            himg.raycastTarget = false;
+            himg.preserveAspect = true;
+            // Hand renders ON TOP of everything (above the lifted Cannon at 6000 and the dim).
+            var handCanvas = handGo.AddComponent<Canvas>();
+            handCanvas.overrideSorting = true;
+            handCanvas.sortingOrder = 7000;
         }
 
         private static Sprite _circle;
@@ -194,8 +206,7 @@ namespace RoyalSiege.UI
                 for (int x = 0; x < S; x++)
                 {
                     float d = Mathf.Sqrt((x - c) * (x - c) + (y - c) * (y - c)) / c;
-                    float a = Mathf.Clamp01(1f - d);           // soft radial falloff
-                    a = a * a;
+                    float a = Mathf.Clamp01(1f - d); a = a * a;
                     tex.SetPixel(x, y, new Color(1f, 1f, 1f, a));
                 }
             tex.Apply();
