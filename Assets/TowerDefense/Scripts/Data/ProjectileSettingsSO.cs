@@ -35,5 +35,8 @@ namespace RoyalSiege.Data
         public float spinDegreesPerSecond;
         [Tooltip("Camera trauma added when this projectile lands (0.1 tick / 0.35 thud / 0.6 blast). 0 = none.")]
         [Range(0f, 1f)] public float impactShake;
+        [Tooltip("If true, hitting an enemy plays NO enemy hurt sound (e.g. the rapid-fire X-Bow — its " +
+                 "stream of hits would spam the hurt voice). Damage, flash, numbers and impact VFX are unaffected.")]
+        public bool silentHit;
     }
 }

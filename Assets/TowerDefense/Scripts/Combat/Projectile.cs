@@ -130,7 +130,10 @@ namespace RoyalSiege.Combat
                 // the hit still lands (deterministic guarantee) but nothing ever renders
                 // beyond the shooter's drawn radius.
                 Vector3 impactPoint = ClampToRange(_target.Position);
-                _target.TakeDamage(_damage);
+                // X-Bow (silentHit) deals damage without the enemy hurt sound — its rapid stream
+                // of bolts would otherwise spam the hurt voice. Other shooters hit normally.
+                if (_settings.silentHit && _target is IEnemyTarget enemy) enemy.TakeDamage(_damage, true);
+                else _target.TakeDamage(_damage);
                 // Structures (tower/buildings) are WIDE: an impact burst at the target's
                 // CENTER plays inside the mesh, where the camera-facing walls z-occlude its
                 // bright core (18-Jul Hellspawn hit-VFX finding). Pull the VFX back along the

@@ -1345,7 +1345,7 @@ MonoBehaviour:
   _footerSlideSeconds: 0.55
   _cardDealStagger: 0.11
   _cardPopSeconds: 0.28
-  _cardDealSwipe: {fileID: 8300000, guid: 37edb55cd425d0443a022a583a01edf7, type: 3}
+  _cardDealSwipe: {fileID: 8300000, guid: cbf8b6dd4ed75884aae3b03df5368ce0, type: 3}
   _swipeVolume: 0.5
 --- !u!1 &1247945086
 GameObject:
@@ -2184,7 +2184,7 @@ PrefabInstance:
     - target: {fileID: 3227671822173771447, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
       propertyPath: _cardPlayed
       value: 
-      objectReference: {fileID: 8300000, guid: 37edb55cd425d0443a022a583a01edf7, type: 3}
+      objectReference: {fileID: 8300000, guid: cbf8b6dd4ed75884aae3b03df5368ce0, type: 3}
     - target: {fileID: 3227671822173771447, guid: f656e1ebe13f803478a4832bc3a57779, type: 3}
       propertyPath: _earthquake
       value: 
@@ -2269,6 +2269,22 @@ PrefabInstance:
     - target: {fileID: 6666057219923974453, guid: b6a4c9cf6b7c4cd468ef0c75606f9e33, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8422061959259786992, guid: b6a4c9cf6b7c4cd468ef0c75606f9e33, type: 3}
+      propertyPath: InitialModule.startSizeY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8422061959259786992, guid: b6a4c9cf6b7c4cd468ef0c75606f9e33, type: 3}
+      propertyPath: InitialModule.startSizeZ.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8422061959259786992, guid: b6a4c9cf6b7c4cd468ef0c75606f9e33, type: 3}
+      propertyPath: InitialModule.startRotationX.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8422061959259786992, guid: b6a4c9cf6b7c4cd468ef0c75606f9e33, type: 3}
+      propertyPath: InitialModule.startRotationY.minMaxState
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8680932177285050404, guid: b6a4c9cf6b7c4cd468ef0c75606f9e33, type: 3}
       propertyPath: _tower
