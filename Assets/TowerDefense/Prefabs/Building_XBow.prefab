@@ -219,7 +219,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.WorldHealthBar
   _barPrefab: {fileID: 7930768037151060236, guid: 21b61ce8461a7f14593f25865bfff75e, type: 3}
-  _yOffset: 1.6
+  _yOffset: 3.27
   _lowColor: {r: 0.95, g: 0.25, b: 0.15, a: 1}
   _hideWhenFull: 1
   _width: 1.2
@@ -593,15 +593,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5729029457354916857, guid: 056b224d62d08ba41bac1c74d4f9dc01, type: 3}
       propertyPath: m_LocalScale.x
-      value: 47.8
+      value: 17.7
       objectReference: {fileID: 0}
     - target: {fileID: 5729029457354916857, guid: 056b224d62d08ba41bac1c74d4f9dc01, type: 3}
       propertyPath: m_LocalScale.y
-      value: 47.8
+      value: 17.7
       objectReference: {fileID: 0}
     - target: {fileID: 5729029457354916857, guid: 056b224d62d08ba41bac1c74d4f9dc01, type: 3}
       propertyPath: m_LocalScale.z
-      value: 47.8
+      value: 17.7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

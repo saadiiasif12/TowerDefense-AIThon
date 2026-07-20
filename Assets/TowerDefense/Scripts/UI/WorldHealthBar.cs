@@ -24,6 +24,9 @@ namespace RoyalSiege.UI
         [Tooltip("Color the fill lerps toward as HP approaches zero.")]
         [SerializeField] private Color _lowColor = new(0.95f, 0.25f, 0.15f);
         [SerializeField] private bool _hideWhenFull = true;
+        [Tooltip("Render the bar at a consistent world size regardless of this unit's transform scale " +
+                 "(e.g. the 2.5× Knight gets the same small bar as a 1× enemy). Leave off for enemies/tower.")]
+        [SerializeField] private bool _counterParentScale;
 
         [Header("Legacy fallback (used only when no prefab is assigned)")]
         [SerializeField] private float _width = 1.2f;
@@ -65,7 +68,18 @@ namespace RoyalSiege.UI
             _fill = _root.Find("Fill");
             _fillSprite = _fill != null ? _fill.GetComponent<SpriteRenderer>() : null;
             _fullColor = _fillSprite != null ? _fillSprite.color : _fillColor; // authored full-HP color
-            _barWidth = bg != null ? bg.localScale.x : _width;                  // authored width
+            // Full-fill width = the artist-authored Fill width (a 1×1 Square scaled to fit the
+            // frame), NOT bg.localScale.x — that was 1.0 while the BG SPRITE is 1.2 wide, so the
+            // green never reached the frame edges. The authored Fill (1.13) fills it properly.
+            _barWidth = _fill != null ? Mathf.Abs(_fill.localScale.x)
+                      : bg != null ? bg.localScale.x : _width;
+
+            // Consistent world size across unit scales (Knight root is 2.5× → same bar as enemies).
+            if (_counterParentScale)
+            {
+                float s = transform.lossyScale.x;
+                if (s > 0.0001f) _root.localScale /= s;
+            }
         }
 
         private void BuildLegacyQuads()

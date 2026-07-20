@@ -73,9 +73,27 @@ namespace RoyalSiege.Placement
             _laneMode = false;
             if (_lane != null) _lane.gameObject.SetActive(false);
             _rangeRing?.SetVisible(true);
+            _rangeRing?.SetAlpha01(0f); // ring rides the preview fade — never renders alone
             _rangeRing?.SetRadius(rangeRadius);
             BeginShow(cardName);
         }
+
+        /// <summary>
+        /// Size the ghost disc to the card's true occupied space (footprint diameter, XZ only;
+        /// authored height kept). Buildings call this per drag so the preview reads as the
+        /// actual tile the building will take — not the prefab's fixed 1-unit speck.
+        /// 0 restores the authored scale (spells/troops keep their drop-point marker).
+        /// </summary>
+        public void SetFootprint(float diameter)
+        {
+            CacheBaseScale();
+            if (_authoredScale == Vector3.zero) _authoredScale = _baseScale;
+            _baseScale = diameter > 0f
+                ? new Vector3(diameter, _authoredScale.y, diameter)
+                : _authoredScale;
+        }
+
+        private Vector3 _authoredScale;
 
         /// <summary>
         /// 18-Jul Log preview: no circle — a straight lane extending `length` along the FIXED
@@ -248,8 +266,9 @@ namespace RoyalSiege.Placement
         /// <summary>Tint + alpha in one MPB pass; label billboards to the camera.</summary>
         private void ApplyVisuals()
         {
+            float alphaEnvelope = _fade * (_showT < 1f ? Mathf.Clamp01(_showT * 2f) : 1f);
             var color = _isValid ? _validColor : _invalidColor;
-            color.a *= _fade * (_showT < 1f ? Mathf.Clamp01(_showT * 2f) : 1f);
+            color.a *= alphaEnvelope;
             for (int i = 0; i < _tintTargets.Length; i++)
             {
                 _tintTargets[i].GetPropertyBlock(_block);
@@ -257,6 +276,10 @@ namespace RoyalSiege.Placement
                 _block.SetColor(BaseColorId, color);
                 _tintTargets[i].SetPropertyBlock(_block);
             }
+
+            // The range ring shares the exact same fade: over the HUD (and while fading in/out)
+            // it is invisible with the rest of the preview — a bare circle can never appear.
+            _rangeRing?.SetAlpha01(alphaEnvelope);
 
             // Lane mode: the roll path tints exactly like the disc (slightly softer alpha).
             if (_laneMode && _laneRenderer != null)

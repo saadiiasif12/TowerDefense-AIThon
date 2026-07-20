@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -26,10 +27,10 @@ namespace RoyalSiege.Core
         [Header("Loading bar")]
         [Tooltip("Filled-type Image; fillAmount is driven 0→1 across the splash.")]
         [SerializeField] private Image _barFill;
-        [SerializeField] private Text _percentLabel;
+        [SerializeField] private TextMeshProUGUI _percentLabel;
 
         [Header("Rotating status lines (dummy, PUBG-style)")]
-        [SerializeField] private Text _statusLabel;
+        [SerializeField] private TextMeshProUGUI _statusLabel;
         [SerializeField] private float _statusSwapSeconds = 0.7f;
         [SerializeField] private string[] _statusLines =
         {

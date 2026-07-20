@@ -22,3 +22,4 @@ MonoBehaviour:
   impactTint: {r: 1, g: 1, b: 1, a: 1}
   spinDegreesPerSecond: 0
   impactShake: 0
+  silentHit: 1

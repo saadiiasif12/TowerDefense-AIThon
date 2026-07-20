@@ -41,6 +41,13 @@ namespace RoyalSiege.UI
         private bool _overField;
         private float _handTopScreenY;
         private int _cachedScreenWidth, _cachedScreenHeight;
+        private int _lockedSlot = -1;   // tutorial input gate: -1 = free, else only this slot responds
+
+        /// <summary>Tutorial gate: only <paramref name="slot"/> can be picked up (others ignored). -1 clears.</summary>
+        public void LockToSlot(int slot) => _lockedSlot = slot;
+        public void Unlock() => _lockedSlot = -1;
+        /// <summary>Slot currently under the finger (-1 = none). The tutorial ends the moment its card is touched.</summary>
+        public int PressedSlot => _pressedSlot;
 
         private readonly CardDefinitionSO[] _lastHand = new CardDefinitionSO[DeckService.HandSize];
         private bool _firstRefresh = true;
@@ -69,6 +76,7 @@ namespace RoyalSiege.UI
             _context.Events.HandChanged += Refresh;
             _context.Events.CardPlayed += OnCardPlayed;
             _context.Events.MatchEnded += OnMatchEnded;
+            _context.Events.CheckpointReached += OnCheckpointReached;
             Refresh();
         }
 
@@ -78,7 +86,14 @@ namespace RoyalSiege.UI
             _context.Events.HandChanged -= Refresh;
             _context.Events.CardPlayed -= OnCardPlayed;
             _context.Events.MatchEnded -= OnMatchEnded;
+            _context.Events.CheckpointReached -= OnCheckpointReached;
         }
+
+        /// <summary>
+        /// A checkpoint popup (level-up / stage-complete) is opening — deselect/cancel any card
+        /// held or selected so it can't hang around or commit under the modal (user 19-Jul).
+        /// </summary>
+        private void OnCheckpointReached(CheckpointReachedArgs args) => CancelActiveDrag();
 
         /// <summary>Drag interrupted from outside (focus loss, match end): clean cancel.</summary>
         private void CancelActiveDrag()
@@ -177,6 +192,7 @@ namespace RoyalSiege.UI
         public void OnSlotPointerDown(int slot, Vector2 position, int pointerId)
         {
             if (_matchOver) return;
+            if (_lockedSlot >= 0 && slot != _lockedSlot) return; // tutorial: only the taught card responds
             if (_pressedSlot >= 0) return; // another finger already owns a card
             _pressedSlot = slot;
             _pressedPointerId = pointerId;

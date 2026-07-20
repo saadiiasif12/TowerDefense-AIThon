@@ -17,8 +17,9 @@ namespace RoyalSiege.Juice
         [SerializeField] private GameContext _context;
 
         [Header("Combat")]
-        [SerializeField] private AudioClip _enemyHit;        // small thock per landed hit (throttled)
-        [SerializeField] private AudioClip[] _enemyDeaths;   // grunt variations (hashed pick)
+        // 19-Jul user ruling: an enemy taking a hit plays ONLY its own per-enemy voice
+        // (EnemyDefinitionSO.hurtSfx, the Sounds/new pack) — no generic thock, no shared
+        // death grunts. An enemy without a clip is simply silent on hits.
         [SerializeField] private AudioClip _towerHit;        // tower taking damage (throttled)
 
         [Header("Cards & buildings")]
@@ -33,6 +34,10 @@ namespace RoyalSiege.Juice
         [SerializeField] private AudioClip _freeze;          // Frost-ball — nova at landing
         [SerializeField] private AudioClip _earthquake;      // Earthquake — zone opens
         [SerializeField] private AudioClip _logRoll;         // Log — landing + roll
+        [SerializeField] private AudioClip _lightning;       // Lightning spell — sky storm
+
+        [Header("Tesla (instant mini-lightning)")]
+        [SerializeField] private AudioClip _teslaZap;        // Tesla shot = fire+impact in one crack
 
         [Header("Flow")]
         [SerializeField] private AudioClip _levelUp;         // checkpoint fanfare note
@@ -52,6 +57,7 @@ namespace RoyalSiege.Juice
         private float _lastHitHaptic;
         private float _lastWeaponSound;
         private float _lastKnightSound;
+        private float _lastTeslaSound;
 
         private void Start()
         {
@@ -69,7 +75,7 @@ namespace RoyalSiege.Juice
                 _pool[i].spatialBlend = 0f; // 2D — the whole arena is on screen anyway
             }
 
-            _events.EnemyDamaged += OnEnemyDamaged;
+            _events.EnemyHurt += OnEnemyHurt;
             _events.EnemyKilled += OnEnemyKilled;
             _events.TowerDamaged += OnTowerDamaged;
             _events.CardPlayed += OnCardPlayed;
@@ -79,6 +85,7 @@ namespace RoyalSiege.Juice
             _events.EnemyAttackImpact += OnEnemyAttackImpact;
             _events.SpellCast += OnSpellCast;
             _events.SpellResolved += OnSpellResolved;
+            _events.InstantShotFired += OnInstantShot;   // Tesla mini-lightning
             _events.CheckpointReached += OnCheckpoint;
             _events.MatchEnded += OnMatchEnded;
         }
@@ -86,7 +93,7 @@ namespace RoyalSiege.Juice
         private void OnDestroy()
         {
             if (_events == null) return;
-            _events.EnemyDamaged -= OnEnemyDamaged;
+            _events.EnemyHurt -= OnEnemyHurt;
             _events.EnemyKilled -= OnEnemyKilled;
             _events.TowerDamaged -= OnTowerDamaged;
             _events.CardPlayed -= OnCardPlayed;
@@ -96,24 +103,31 @@ namespace RoyalSiege.Juice
             _events.EnemyAttackImpact -= OnEnemyAttackImpact;
             _events.SpellCast -= OnSpellCast;
             _events.SpellResolved -= OnSpellResolved;
+            _events.InstantShotFired -= OnInstantShot;
             _events.CheckpointReached -= OnCheckpoint;
             _events.MatchEnded -= OnMatchEnded;
         }
 
         // ---------------- handlers ----------------
 
-        private void OnEnemyDamaged(Vector3 position, float amount, bool killingBlow)
+        private void OnEnemyHurt(EnemyDefinitionSO def, Vector3 position)
         {
-            if (killingBlow) return; // the death grunt covers it
-            if (Time.realtimeSinceStartup - _lastHitSound < 0.09f) return; // anti-stack
+            // Only non-fatal hits raise this; the killing blow plays the same voice via
+            // OnEnemyKilled. No fallback — the per-enemy voice is THE hit sound (19-Jul).
+            // Per-enemy volume (hurtSfxVolume): 19-Jul user ruling — the non-skeleton voices
+            // are too loud, so they ship at 0.5. Pitch band kept subtle (±3%).
+            if (def == null || def.hurtSfx == null) return;
+            if (Time.realtimeSinceStartup - _lastHitSound < 0.1f) return; // anti-stack across a crowd
             _lastHitSound = Time.realtimeSinceStartup;
-            Play(_enemyHit, 0.35f, 0.92f, 1.1f);
+            Play(def.hurtSfx, 0.5f * def.hurtSfxVolume, 0.97f, 1.03f);
         }
 
         private void OnEnemyKilled(EnemyKilledArgs args)
         {
-            if (_enemyDeaths != null && _enemyDeaths.Length > 0)
-                Play(_enemyDeaths[Mathf.Abs(Hash(_hashCounter)) % _enemyDeaths.Length], 0.5f, 0.9f, 1.12f);
+            // Killing blow = the same per-enemy voice, pitched down so it reads as the
+            // death groan (still the ONLY enemy-hit sound — Feel demo grunts retired).
+            if (args.Definition != null && args.Definition.hurtSfx != null)
+                Play(args.Definition.hurtSfx, 0.55f * args.Definition.hurtSfxVolume, 0.85f, 0.9f);
             if (Time.realtimeSinceStartup - _lastHitHaptic > 0.15f)
             {
                 _lastHitHaptic = Time.realtimeSinceStartup;
@@ -176,7 +190,16 @@ namespace RoyalSiege.Juice
                 case "Freeze": Play(_freeze, 0.8f, 0.98f, 1.04f); break;
                 case "Earthquake": Play(_earthquake, 0.85f, 1f, 1f); break;
                 case "Log": Play(_logRoll, 0.8f, 0.98f, 1.04f); break;
+                case "Lightning": Play(_lightning, 1f, 0.95f, 1.02f); break; // big sky storm
             }
+        }
+
+        /// <summary>Tesla fires an instant bolt — one mini-lightning crack (fire + impact together).</summary>
+        private void OnInstantShot(Vector3 from, Combat.IEnemyTarget target)
+        {
+            if (Time.realtimeSinceStartup - _lastTeslaSound < 0.06f) return; // fast fire rate
+            _lastTeslaSound = Time.realtimeSinceStartup;
+            Play(_teslaZap, 0.55f, 0.96f, 1.06f);
         }
 
         private void OnCheckpoint(CheckpointReachedArgs args)

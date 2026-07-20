@@ -21,6 +21,8 @@ namespace RoyalSiege.Buildings
         private float _radius;
         private Vector3 _mapCenter;
         private float _mapRadius; // 0 = no clipping
+        private Color _authoredStart, _authoredEnd;
+        private bool _authoredCached;
 
         private void Awake()
         {
@@ -28,6 +30,15 @@ namespace RoyalSiege.Buildings
             _line.loop = true;
             _line.useWorldSpace = false;
             _line.positionCount = Segments;
+            CacheAuthoredColors();
+        }
+
+        private void CacheAuthoredColors()
+        {
+            if (_authoredCached) return;
+            _authoredStart = _line.startColor;
+            _authoredEnd = _line.endColor;
+            _authoredCached = true;
         }
 
         public void SetRadius(float radius)
@@ -68,5 +79,21 @@ namespace RoyalSiege.Buildings
         }
 
         public void SetVisible(bool visible) => _line.enabled = visible;
+
+        /// <summary>
+        /// Fade the ring by scaling its AUTHORED alpha (the ghost drives this with its own
+        /// fade so the ring can never render alone while the preview is invisible — the
+        /// "naked big circle" drag bug). The line's vertex colors carry the alpha; the
+        /// legacy particle material has no tintable _Color property.
+        /// </summary>
+        public void SetAlpha01(float alpha01)
+        {
+            if (_line == null) Awake();
+            CacheAuthoredColors();
+            var s = _authoredStart; s.a = _authoredStart.a * Mathf.Clamp01(alpha01);
+            var e = _authoredEnd; e.a = _authoredEnd.a * Mathf.Clamp01(alpha01);
+            _line.startColor = s;
+            _line.endColor = e;
+        }
     }
 }

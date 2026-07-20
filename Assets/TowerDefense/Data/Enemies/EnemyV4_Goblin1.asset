@@ -23,12 +23,16 @@ MonoBehaviour:
   impactFraction: 0.4
   splashRadius: 0
   projectile: {fileID: 0}
+  attackImpactOnAnimEvent: 0
   engageRadiusFromCenter: 12
   deathVfx: {fileID: 0}
   attackHitSfx: {fileID: 8300000, guid: 018df704e6039824b8499e54cfa83ca7, type: 3}
+  hurtSfx: {fileID: 8300000, guid: f85b7d876d46bff469bc4b57b93073c6, type: 3}
+  hurtSfxVolume: 0.5
   hurtStaggerSeconds: 0.35
   hurtCooldownSeconds: 0
   walkAnimSpeedMultiplier: 3
+  attackAnimSpeedMultiplier: 1
   unitRadius: 0.4
   targetPriority: 0
   bounty: 1

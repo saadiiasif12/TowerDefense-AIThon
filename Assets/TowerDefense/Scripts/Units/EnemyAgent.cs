@@ -67,7 +67,11 @@ namespace RoyalSiege.Units
         public float HpPct => _dead ? 0f : _health?.Pct ?? 0f;
         public bool IsBoss => _def != null && _def.isBoss;
         public float BodyRadius => _def != null ? _def.unitRadius : 0.45f;
-        public void TakeDamage(float amount)
+        public void TakeDamage(float amount) => TakeDamage(amount, false);
+
+        /// <param name="suppressHurtSound">True for silent-hit weapons (X-Bow) — everything else
+        /// (damage, flash, numbers, stagger) is identical; only the got-hit VOICE is skipped.</param>
+        public void TakeDamage(float amount, bool suppressHurtSound)
         {
             bool wasAlive = !_dead;
             _health?.TakeDamage(amount);
@@ -78,6 +82,8 @@ namespace RoyalSiege.Units
             _dotAccumulated = 0f;
             if (_dead) return; // fatal hits skip the flash — death anim takes over
             _hitReaction?.Play();
+            if (!suppressHurtSound && _def != null && _deps != null)
+                _deps.Events.RaiseEnemyHurt(_def, _logicPosition); // per-enemy got-hit voice
             TryHurtStagger();
         }
 
