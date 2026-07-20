@@ -19,6 +19,13 @@ namespace RoyalSiege.Juice
         private Vector3 _appliedOffset;
         private float _appliedRoll;
 
+        /// <summary>
+        /// 18-Jul: scales the LEFT-RIGHT component (X offset + roll) of the shake, 0..1.
+        /// The tower level-up/fail cinematics set this low (~0.25) so the quake reads as a
+        /// vertical ground rumble with only a little sideways randomness, then restore to 1.
+        /// </summary>
+        public float HorizontalDamp { get; set; } = 1f;
+
         private static CameraShaker _main;
         /// <summary>The main camera's shaker (lazy, survives scene reloads). Null-safe to call.</summary>
         public static CameraShaker Main
@@ -48,11 +55,12 @@ namespace RoyalSiege.Juice
 
             float strength = _trauma * _trauma;
             float t = Time.time * _frequency;
+            float hDamp = Mathf.Clamp01(HorizontalDamp);
             var offset = new Vector3(
-                Mathf.PerlinNoise(t, 0.3f) * 2f - 1f,
+                (Mathf.PerlinNoise(t, 0.3f) * 2f - 1f) * hDamp,
                 Mathf.PerlinNoise(0.7f, t) * 2f - 1f,
                 0f) * (_maxOffset * strength);
-            float roll = (Mathf.PerlinNoise(t, 9.1f) * 2f - 1f) * (_maxRollDegrees * strength);
+            float roll = (Mathf.PerlinNoise(t, 9.1f) * 2f - 1f) * (_maxRollDegrees * strength * hDamp);
 
             transform.localPosition += offset;
             transform.localRotation *= Quaternion.Euler(0f, 0f, roll);

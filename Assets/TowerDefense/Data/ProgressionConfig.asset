@@ -26,28 +26,32 @@ MonoBehaviour:
   checkpoints:
   - afterWave: 4
     towerLevel: 2
-    unlockCard: {fileID: 11400000, guid: 0c6848a4ff2885e4b93e5d905ddc9504, type: 2}
-    isStageComplete: 0
-  - afterWave: 12
-    towerLevel: 3
     unlockCard: {fileID: 11400000, guid: 77c794c7ee1b54f49aaa538030c08d60, type: 2}
+    isStageComplete: 0
+  - afterWave: 10
+    towerLevel: 3
+    unlockCard: {fileID: 11400000, guid: 9d3e7a4211158a041994fc12e94c2e7a, type: 2}
     isStageComplete: 0
   - afterWave: 20
     towerLevel: 0
     unlockCard: {fileID: 0}
     isStageComplete: 1
-  - afterWave: 24
+  - afterWave: 18
     towerLevel: 4
-    unlockCard: {fileID: 11400000, guid: 9d3e7a4211158a041994fc12e94c2e7a, type: 2}
-    isStageComplete: 0
-  - afterWave: 40
-    towerLevel: 5
     unlockCard: {fileID: 11400000, guid: 393b92cc110b7a349853ed11a41955e0, type: 2}
     isStageComplete: 0
+  - afterWave: 28
+    towerLevel: 5
+    unlockCard: {fileID: 11400000, guid: 2165001d8c26b564a9a09c80fcf99b7e, type: 2}
+    isStageComplete: 0
+  - afterWave: 44
+    towerLevel: 0
+    unlockCard: {fileID: 0}
+    isStageComplete: 1
   startingCards:
   - {fileID: 11400000, guid: a804d7429b9a40c458419a28b3f29cf1, type: 2}
   - {fileID: 11400000, guid: 501c647c1abf6ae4ea051eaaae4ace7c, type: 2}
   - {fileID: 11400000, guid: 59b01ec75de02b1408c44a2e12538b01, type: 2}
-  - {fileID: 11400000, guid: 2165001d8c26b564a9a09c80fcf99b7e, type: 2}
+  - {fileID: 11400000, guid: 0c6848a4ff2885e4b93e5d905ddc9504, type: 2}
   - {fileID: 11400000, guid: a8c16b6c2e4add74a980979d30ef726a, type: 2}
   - {fileID: 11400000, guid: 45f0969e06da9a14b8882bbc45bad979, type: 2}

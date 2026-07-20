@@ -22,14 +22,14 @@ namespace RoyalSiege.Units
         {
             public readonly float TimeIntoWave;
             public readonly EnemyDefinitionSO Enemy;
-            public readonly int SpawnPointIndex;
+            public readonly int GroupSeed;
             public readonly int UnitIndexInGroup;
 
-            public SpawnEvent(float time, EnemyDefinitionSO enemy, int spawnPoint, int unitIndex)
+            public SpawnEvent(float time, EnemyDefinitionSO enemy, int groupSeed, int unitIndex)
             {
                 TimeIntoWave = time;
                 Enemy = enemy;
-                SpawnPointIndex = spawnPoint;
+                GroupSeed = groupSeed;
                 UnitIndexInGroup = unitIndex;
             }
         }
@@ -53,6 +53,18 @@ namespace RoyalSiege.Units
         public int WaveCount => _campaign.TotalWaves;
         /// <summary>1-based number of the wave currently fighting (or last started).</summary>
         public int CurrentWaveNumber { get; private set; }
+
+        /// <summary>Stage index (0-based) the given global wave belongs to; wraps past the last wave so a looping campaign maps wave 45 back onto stage 0.</summary>
+        public int StageIndexOf(int globalWave)
+        {
+            int total = WaveCount;
+            if (total <= 0) return -1;
+            int wrapped = ((globalWave - 1) % total + total) % total + 1;
+            return _campaign.Locate(wrapped, out int stage, out _) ? stage : -1;
+        }
+
+        /// <summary>Stage of the next wave to start — what the environment should show during a gap (valid at load and behind checkpoint screens; mid-fight it may already point at the upcoming stage).</summary>
+        public int PendingStageIndex => StageIndexOf(_nextGlobalWave);
         public bool CampaignComplete => _phase == Phase.Complete;
         /// <summary>Gap countdown for UI; -1 while a wave is being fought.</summary>
         public float TimeToNextWave => _phase == Phase.Gap ? Mathf.Max(0f, _gapRemaining) : -1f;
@@ -92,8 +104,8 @@ namespace RoyalSiege.Units
                     {
                         var evt = _pending[_nextSpawnIndex];
                         _nextSpawnIndex++;
-                        Vector3 position = _spawnPoints.GetWithFormationOffset(
-                            evt.SpawnPointIndex, evt.UnitIndexInGroup, evt.Enemy.unitRadius);
+                        Vector3 position = _spawnPoints.GetRingScatter(
+                            evt.GroupSeed, evt.UnitIndexInGroup, evt.Enemy.unitRadius);
                         _factory.Spawn(evt.Enemy, position, CurrentWaveNumber - 1);
                         _spawnedThisWave++;
                     }
@@ -105,7 +117,14 @@ namespace RoyalSiege.Units
                         _events.RaiseWaveCleared(CurrentWaveNumber);
                         if (_nextGlobalWave > WaveCount)
                         {
-                            _phase = Phase.Complete;
+                            if (_campaign.loopStages)
+                            {
+                                // Endless journey: last stage cleared → back to stage 1 wave 1.
+                                _nextGlobalWave = 1;
+                                _phase = Phase.Gap;
+                                _gapRemaining = _campaign.clearGapSeconds;
+                            }
+                            else _phase = Phase.Complete;
                         }
                         else
                         {
@@ -133,17 +152,31 @@ namespace RoyalSiege.Units
             _spawnedThisWave = 0;
             _killedThisWave = 0;
 
-            foreach (var group in wave.groups)
+            for (int g = 0; g < wave.groups.Count; g++)
             {
+                var group = wave.groups[g];
+                // Seed must be unique PER GROUP, not per data spawnPointIndex — several groups
+                // in one wave share an index in the campaign (w6 has three at sp=2), which
+                // previously gave them IDENTICAL bearings and gap sequences (mirrored spawns).
+                int groupSeed = (_nextGlobalWave * 8191) ^ (g * 197 + group.spawnPointIndex * 13 + 5);
+
+                // Groups sharing the same authored delay (w4: two groups at 0) must not pop
+                // their first units on the same frame — hashed per-group start offset 0–1.2 s.
+                float t = group.delayAfterWaveStart
+                          + Hash01(groupSeed * 30011 + 7129) * 1.2f;
+
                 for (int u = 0; u < group.count; u++)
                 {
-                    // Deterministic per-unit timing jitter (zero-RNG) so a group trickles in a
-                    // little irregularly instead of a metronome burst (18-Jul: felt too uniform).
-                    float jitter = Hash01((_nextGlobalWave * 6151) ^ ((u + group.spawnPointIndex * 31) * 3079))
-                                   * _campaign.unitSpawnInterval * 1.4f;
-                    float t = group.delayAfterWaveStart + u * _campaign.unitSpawnInterval + jitter;
-                    _pending.Add(new SpawnEvent(t, group.enemy, group.spawnPointIndex, u));
+                    _pending.Add(new SpawnEvent(t, group.enemy, groupSeed, u));
                     _totalThisWave++;
+                    // Randomized inter-spawn gap (deterministic hash, zero-RNG), heavy-tailed:
+                    // squared hash → most units follow quickly (~0.2–0.8 s) but some pause up
+                    // to ~2.4 s. The walk from the map edge takes ~10 s, so this multi-second
+                    // spread is what actually reads as enemies arriving one by one — the old
+                    // sub-second window still LOOKED like everyone coming at the same time.
+                    float h = Hash01((groupSeed * 6151) ^ ((u + 3) * 3079));
+                    float gapFactor = 2f + 20f * h * h;   // ×interval: 0.22–2.4 s at 0.11
+                    t += _campaign.unitSpawnInterval * gapFactor;
                 }
             }
             _pending.Sort((a, b) => a.TimeIntoWave.CompareTo(b.TimeIntoWave));

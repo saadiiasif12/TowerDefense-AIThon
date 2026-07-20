@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Projectile_MageBolt
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.ProjectileSettingsSO
   prefab: {fileID: 8026250712916438719, guid: 582bd6b32cf5bdc449c4d1376dc47479, type: 3}
-  speed: 8
+  speed: 16
   arcHeight: 1.8
   spawnHeightOffset: 1.4
   impactHeightOffset: 0.6
   muzzleVfx: {fileID: 0}
-  impactVfx: {fileID: 3663090471507589420, guid: 5bee579a8c487734ba20c1dab722c39b, type: 3}
-  impactTint: {r: 0.8, g: 0.45, b: 1, a: 1}
+  impactVfx: {fileID: 2903903874165968388, guid: eae6aa925f652d54c96b7f4f6d3dcd9b, type: 3}
+  impactTint: {r: 1, g: 1, b: 1, a: 1}
   spinDegreesPerSecond: 0
+  impactShake: 0.06

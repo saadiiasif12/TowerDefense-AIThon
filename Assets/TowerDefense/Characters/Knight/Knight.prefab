@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff8223567bbf4954e81b6740d515d841, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Units.KnightUnit
+  _walkAnimSpeedMultiplier: 0.4
 --- !u!114 &6666245707430346128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,9 +75,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.UI.WorldHealthBar
   _barPrefab: {fileID: 3900086697491460596, guid: bb0c752c21b50f24f863f86a5a9dedce, type: 3}
-  _yOffset: 1.4
+  _yOffset: 2.85
   _lowColor: {r: 0.95, g: 0.25, b: 0.15, a: 1}
   _hideWhenFull: 1
+  _counterParentScale: 1
   _width: 1
   _thickness: 0.13
   _fillColor: {r: 0.35, g: 0.7, b: 1, a: 1}
@@ -132,6 +134,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: KnightModel
       objectReference: {fileID: 0}
+    - target: {fileID: 5511234900273268333, guid: 6f304fa1f16c4e449adee24f1f454f79, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: eae8eb8098cee60419131f3c87a5978d, type: 2}
     - target: {fileID: 5866666021909216657, guid: 6f304fa1f16c4e449adee24f1f454f79, type: 3}
       propertyPath: m_Controller
       value: 

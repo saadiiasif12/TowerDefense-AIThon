@@ -50,6 +50,33 @@ namespace RoyalSiege.Cards
             _events.RaiseHandChanged(); // NEXT preview may now show the unlock
         }
 
+        /// <summary>
+        /// Tutorial helper: guarantee <paramref name="cardId"/> is in the hand and return its slot.
+        /// If it's already in the hand, returns that slot untouched; otherwise swaps it up from the
+        /// queue into <paramref name="preferredSlot"/> (the displaced card goes back to the queue).
+        /// Returns -1 if the card isn't in the deck at all.
+        /// </summary>
+        public int EnsureCardInHand(string cardId, int preferredSlot)
+        {
+            for (int i = 0; i < HandSize; i++)
+                if (_hand[i] != null && _hand[i].id == cardId) return i;
+
+            var items = new List<CardDefinitionSO>(_queue);
+            int qi = items.FindIndex(c => c != null && c.id == cardId);
+            if (qi < 0) return -1;
+
+            if (preferredSlot < 0) preferredSlot = 0;
+            else if (preferredSlot >= HandSize) preferredSlot = HandSize - 1;
+            var card = items[qi];
+            items[qi] = _hand[preferredSlot]; // displaced hand card takes the queue spot
+            _hand[preferredSlot] = card;
+
+            _queue.Clear();
+            foreach (var c in items) _queue.Enqueue(c);
+            _events.RaiseHandChanged();
+            return preferredSlot;
+        }
+
         /// <summary>Cycle the played card out of the given slot. Validation happens BEFORE this.</summary>
         public void CyclePlayed(int slot)
         {

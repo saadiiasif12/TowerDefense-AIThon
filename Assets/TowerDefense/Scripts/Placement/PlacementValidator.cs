@@ -8,9 +8,8 @@ namespace RoyalSiege.Placement
 {
     /// <summary>
     /// Spatial placement rules (GDD §3): buildings inside the deployment circle, snapped to
-    /// the grid, no overlap, max 4 on field. Spells anywhere inside the map circle AND with
-    /// at least one enemy inside the spell radius (17-Jul rule — no wasting spells on empty
-    /// ground; an invalid release returns the card with nothing spent).
+    /// the grid, no overlap. Spells anywhere inside the map circle — where they land is the
+    /// player's call (18-Jul ruling, supersedes the 17-Jul "must connect with an enemy" gate).
     /// Affordability/cooldown belong to CardPlayService, not here (SRP).
     /// </summary>
     public sealed class PlacementValidator
@@ -46,11 +45,9 @@ namespace RoyalSiege.Placement
 
         public bool IsValidSpellSpot(SpellCardSO card, Vector3 point)
         {
-            if (!RangeMath.IsInside(_center, point, _config.mapRadius)) return false;
-            // A spell needs at least one live enemy in the area it actually connects with.
-            // The effect decides that shape: point-AoE checks the drawn radius, while the
-            // Log checks its outward roll lane (its drop radius is far too small to gate on).
-            return card.effect != null && card.effect.HasTargets(card, point, _query, _center);
+            // 18-Jul user ruling: spells fire wherever the player drops them — hitting
+            // empty ground is a legitimate (wasteful) choice, not an invalid placement.
+            return card.effect != null && RangeMath.IsInside(_center, point, _config.mapRadius);
         }
 
         /// <summary>v4 Knights: anywhere inside the deployment circle (units — no overlap rule).</summary>

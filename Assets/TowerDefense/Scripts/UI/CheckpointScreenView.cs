@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using RoyalSiege.Core;
+using TMPro;
 
 namespace RoyalSiege.UI
 {
@@ -19,36 +20,84 @@ namespace RoyalSiege.UI
         [Header("Parts (preset on the prefab — restyle freely)")]
         [Tooltip("Root panel shown on checkpoint, hidden on Continue.")]
         [SerializeField] private GameObject _panel;
-        [SerializeField] private Text _title;          // "Level Up!" / "Stage Complete!"
-        [SerializeField] private Text _subtitle;       // "You saved the tower!"
-        [SerializeField] private Text _detail;         // checkpoint count / stars
+        [SerializeField] private TextMeshProUGUI _title;          // "Level Up!" / "Stage Complete!"
+        [SerializeField] private TextMeshProUGUI _subtitle;       // "You saved the tower!"
+        [SerializeField] private TextMeshProUGUI _detail;         // checkpoint count / stars
         [Tooltip("Whole 'Cards Unlocked' group — hidden when the checkpoint has no unlock.")]
         [SerializeField] private GameObject _unlockGroup;
         [SerializeField] private Image _unlockIcon;
-        [SerializeField] private Text _unlockLabel;
+        [SerializeField] private TextMeshProUGUI _unlockLabel;
         [Tooltip("The unlocked card's energy cost (number next to the mana gem).")]
-        [SerializeField] private Text _unlockCost;
+        [SerializeField] private TextMeshProUGUI _unlockCost;
         [Tooltip("The unlocked card's description text.")]
-        [SerializeField] private Text _unlockDescription;
+        [SerializeField] private TextMeshProUGUI _unlockDescription;
         [SerializeField] private Button _continueButton;
 
         private System.Action _dismiss;
         private int _checkpointsSeen;
+        // The visible "unlocked card" slot (art/frame/cost). Driven from the unlock card so
+        // the thumbnail can never be left on its authored placeholder (was showing the Cannon
+        // art regardless of which card actually unlocked).
+        private CardSlotView _unlockCardSlot;
+        // 18-Jul tower cinematic gate: the tower's sink/rise sequence starts BEFORE
+        // CheckpointReached is raised (same call stack), so when a transition is running the
+        // screen buffers and shows on TowerTransitionCompleted. Timeout = never soft-lock.
+        private bool _transitionRunning;
+        private bool _showPending;
+        private float _pendingTimeout;
+        private const float ShowTimeoutSeconds = 6f;
 
         private void Start()
         {
             if (_context == null) _context = FindFirstObjectByType<GameContext>();
             if (_panel != null) _panel.SetActive(false);
             if (_continueButton != null) _continueButton.onClick.AddListener(OnContinue);
+            // Cache the card slot inside the unlock group (may be null on the older simple layout).
+            _unlockCardSlot = _unlockGroup != null
+                ? _unlockGroup.GetComponentInChildren<CardSlotView>(true)
+                : GetComponentInChildren<CardSlotView>(true);
             if (_context != null && _context.Events != null)
+            {
                 _context.Events.CheckpointReached += OnCheckpoint;
+                _context.Events.TowerTransitionStarted += OnTransitionStarted;
+                _context.Events.TowerTransitionCompleted += OnTransitionCompleted;
+            }
         }
 
         private void OnDestroy()
         {
             if (_continueButton != null) _continueButton.onClick.RemoveListener(OnContinue);
             if (_context != null && _context.Events != null)
+            {
                 _context.Events.CheckpointReached -= OnCheckpoint;
+                _context.Events.TowerTransitionStarted -= OnTransitionStarted;
+                _context.Events.TowerTransitionCompleted -= OnTransitionCompleted;
+            }
+        }
+
+        private void OnTransitionStarted() => _transitionRunning = true;
+
+        private void OnTransitionCompleted()
+        {
+            _transitionRunning = false;
+            if (_showPending) ShowPanel();
+        }
+
+        private void Update()
+        {
+            if (!_showPending) return;
+            _pendingTimeout -= Time.unscaledDeltaTime;
+            if (_pendingTimeout <= 0f) ShowPanel(); // failsafe: sequence never signalled
+        }
+
+        private void ShowPanel()
+        {
+            _showPending = false;
+            if (_panel != null)
+            {
+                _panel.transform.SetAsLastSibling(); // always above the rest of the HUD
+                _panel.SetActive(true);
+            }
         }
 
         private void OnCheckpoint(CheckpointReachedArgs args)
@@ -74,6 +123,9 @@ namespace RoyalSiege.UI
             if (_unlockGroup != null) _unlockGroup.SetActive(hasUnlock);
             if (hasUnlock)
             {
+                // Drive the whole card slot from the actual unlock — art/frame/cost all follow
+                // the card, so the thumbnail always matches (no more stale placeholder art).
+                if (_unlockCardSlot != null) _unlockCardSlot.SetCard(args.Unlock);
                 if (_unlockLabel != null) _unlockLabel.text = args.Unlock.displayName;
                 if (_unlockIcon != null)
                 {
@@ -85,11 +137,14 @@ namespace RoyalSiege.UI
                 if (_unlockDescription != null) _unlockDescription.text = args.Unlock.description;
             }
 
-            if (_panel != null)
+            // Tower cinematic first, screen second (18-Jul sequence spec). If no tower
+            // transition is running (e.g. stage-complete without a level change), show now.
+            if (_transitionRunning)
             {
-                _panel.transform.SetAsLastSibling(); // always above the rest of the HUD
-                _panel.SetActive(true);
+                _showPending = true;
+                _pendingTimeout = ShowTimeoutSeconds;
             }
+            else ShowPanel();
         }
 
         /// <summary>Wired to the Continue button (also callable from custom UI).</summary>

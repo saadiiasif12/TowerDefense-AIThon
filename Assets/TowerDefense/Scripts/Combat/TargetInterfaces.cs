@@ -31,6 +31,12 @@ namespace RoyalSiege.Combat
         /// <summary>v4: displace by this planar vector, scaled by the unit's knockback factor (Ogre 0).</summary>
         void ApplyKnockback(Vector3 displacement);
         /// <summary>
+        /// Take damage but optionally SUPPRESS the per-hit hurt sound (rapid weapons like the
+        /// X-Bow would otherwise spam the hurt voice). Damage/flash/numbers are unchanged.
+        /// Default falls back to the normal hit for implementers that don't care.
+        /// </summary>
+        void TakeDamage(float amount, bool suppressHurtSound) => TakeDamage(amount);
+        /// <summary>
         /// 18-Jul: damage-over-time tick (Earthquake). Same health loss as TakeDamage but the
         /// per-hit FEEDBACK (flinch, hit flash, damage number) is aggregated by the receiver —
         /// a 10 Hz DoT must not vibrate the victim or spam numbers every tick.

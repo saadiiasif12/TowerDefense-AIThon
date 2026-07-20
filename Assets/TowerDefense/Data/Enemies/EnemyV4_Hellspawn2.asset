@@ -20,15 +20,19 @@ MonoBehaviour:
   damage: 90
   attackRate: 1.6
   attackRange: 5
-  impactFraction: 0.4
+  impactFraction: 0.25
   splashRadius: 1
   projectile: {fileID: 11400000, guid: 732099c54dadfa14e861daac744e432a, type: 2}
   attackImpactOnAnimEvent: 1
   engageRadiusFromCenter: 12
   deathVfx: {fileID: 0}
+  attackHitSfx: {fileID: 0}
+  hurtSfx: {fileID: 8300000, guid: 88993b906d4443c45b68c8d3e4e0346e, type: 3}
+  hurtSfxVolume: 0.5
   hurtStaggerSeconds: 0.35
   hurtCooldownSeconds: 0
   walkAnimSpeedMultiplier: 1
+  attackAnimSpeedMultiplier: 1
   unitRadius: 0.65
   targetPriority: 0
   bounty: 1

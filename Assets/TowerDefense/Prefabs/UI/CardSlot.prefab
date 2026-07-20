@@ -587,7 +587,7 @@ MonoBehaviour:
   _cooldownOverlay: {fileID: 3454003027652746913}
   _costBadge: {fileID: 8664399484687961204}
   _gem: {fileID: 6773212243490656148}
-  _costLabel: {fileID: 0}
+  _costLabel: {fileID: 1456832710289620379}
 --- !u!1 &8664399484687961204
 GameObject:
   m_ObjectHideFlags: 0

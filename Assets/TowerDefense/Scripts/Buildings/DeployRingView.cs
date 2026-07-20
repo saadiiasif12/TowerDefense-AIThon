@@ -58,6 +58,18 @@ namespace RoyalSiege.Buildings
                 var tower = FindFirstObjectByType<RoyalTower>();
                 if (tower != null) _tower = tower.transform;
             }
+            // Arena swap can enable this ring mid-session: never resume a stale drag
+            // highlight — rest state until PlacementController asks again.
+            _highlight = 0f;
+            _highlightTarget = 0f;
+            if (Application.isPlaying)
+            {
+                _mpb ??= new MaterialPropertyBlock();
+                var mr = GetComponent<MeshRenderer>();
+                mr.GetPropertyBlock(_mpb);
+                _mpb.SetColor(BaseColorId, RestColor);
+                mr.SetPropertyBlock(_mpb);
+            }
             Rebuild();
         }
 

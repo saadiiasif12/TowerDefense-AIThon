@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using RoyalSiege.Core;
+using RoyalSiege.Data;
 
 namespace RoyalSiege.Juice
 {
@@ -10,13 +11,18 @@ namespace RoyalSiege.Juice
     /// hashed from the cast point — zero RNG), staggered, stick in the ground briefly, then
     /// shrink away. count=15 → arrow volley; count=1 + a trail child → fireball meteor.
     /// Purely visual — the matching damage timing is the card's fallDelaySeconds.
+    /// With a config assigned, every item launches from the shared GameConfig.skyPoint
+    /// (18-Jul ruling: one fixed sky origin for all skyfall spells); otherwise it falls
+    /// back to the per-landing dropHeight + lateralOffset.
     /// </summary>
     public sealed class SkyfallEffect : MonoBehaviour
     {
         [SerializeField] private Transform _template;
+        [Tooltip("Optional: when set, items start at the shared config.skyPoint instead of dropHeight/lateralOffset.")]
+        [SerializeField] private GameConfigSO _config;
         [SerializeField] private int _count = 15;
         [SerializeField] private float _dropHeight = 9f;
-        [Tooltip("Horizontal spawn offset so the fall reads angled instead of dead vertical.")]
+        [Tooltip("Fallback horizontal spawn offset (only used when no config is assigned).")]
         [SerializeField] private Vector2 _lateralOffset = new(-2.2f, -0.9f);
         [SerializeField] private float _fallSeconds = 0.38f;
         [Tooltip("Start times are spread across this window (deterministic order shuffle).")]
@@ -60,7 +66,9 @@ namespace RoyalSiege.Juice
                 float ang = (baseAngle + i * 137.508f) * Mathf.Deg2Rad;
                 Vector3 land = point + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * r;
                 _to[i] = land;
-                _from[i] = land + new Vector3(_lateralOffset.x, _dropHeight, _lateralOffset.y);
+                _from[i] = _config != null
+                    ? _config.skyPoint
+                    : land + new Vector3(_lateralOffset.x, _dropHeight, _lateralOffset.y);
                 _delays[i] = _count <= 1 ? 0f : _staggerSeconds * ((i * 7) % _count) / _count;
                 _landed[i] = false;
                 _items[i].gameObject.SetActive(false);

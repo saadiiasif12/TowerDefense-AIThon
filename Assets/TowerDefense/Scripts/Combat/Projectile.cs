@@ -71,6 +71,15 @@ namespace RoyalSiege.Combat
             _lastPosition = _start;
             _active = true;
 
+            // Face the flight direction from frame one — a pooled projectile otherwise wears
+            // the PREVIOUS flight's final rotation for its first visible frame. For spinners
+            // this is also the tumble's reference plane: LookRotation puts local +Z on the
+            // flight line, so the constant Rotate about local X below reads as a clean,
+            // smooth end-over-end flip along the throw.
+            Vector3 aim = target.Position + Vector3.up * settings.impactHeightOffset - _start;
+            if (aim.sqrMagnitude > 0.0001f)
+                transform.rotation = Quaternion.LookRotation(aim.normalized);
+
             // Hard-reset every pooled FX at the new spawn point: no stale trail segments,
             // no leftover particles from the previous flight flashing on reuse.
             foreach (var trail in _trails) trail.Clear();
@@ -121,8 +130,23 @@ namespace RoyalSiege.Combat
                 // the hit still lands (deterministic guarantee) but nothing ever renders
                 // beyond the shooter's drawn radius.
                 Vector3 impactPoint = ClampToRange(_target.Position);
-                _target.TakeDamage(_damage);
-                _vfx?.Spawn(_settings.impactVfx, impactPoint + Vector3.up * _settings.impactHeightOffset,
+                // X-Bow (silentHit) deals damage without the enemy hurt sound — its rapid stream
+                // of bolts would otherwise spam the hurt voice. Other shooters hit normally.
+                if (_settings.silentHit && _target is IEnemyTarget enemy) enemy.TakeDamage(_damage, true);
+                else _target.TakeDamage(_damage);
+                // Structures (tower/buildings) are WIDE: an impact burst at the target's
+                // CENTER plays inside the mesh, where the camera-facing walls z-occlude its
+                // bright core (18-Jul Hellspawn hit-VFX finding). Pull the VFX back along the
+                // flight line onto the struck SURFACE instead. Enemies keep the center burst
+                // (small bodies, blast bigger than the model).
+                Vector3 vfxPoint = impactPoint;
+                if (_target is IStructureTarget structure)
+                {
+                    Vector3 approach = RangeMath.Flatten(impactPoint - _start);
+                    if (approach.sqrMagnitude > 0.01f)
+                        vfxPoint -= approach.normalized * structure.FootprintRadius;
+                }
+                _vfx?.Spawn(_settings.impactVfx, vfxPoint + Vector3.up * _settings.impactHeightOffset,
                     Quaternion.identity, 1f, _settings.impactTint);
                 if (_settings.impactShake > 0f) CameraShaker.Main?.AddTrauma(_settings.impactShake);
                 _onImpact?.Invoke(impactPoint, _target);

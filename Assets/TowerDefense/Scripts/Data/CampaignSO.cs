@@ -31,6 +31,8 @@ namespace RoyalSiege.Data
         public float unitSpawnInterval = 0.11f;
         [Tooltip("Gap between wave clear (last enemy + last orb) and the next wave.")]
         public float clearGapSeconds = 2f;
+        [Tooltip("After the LAST wave of the LAST stage clears, wrap back to stage 1 wave 1 and repeat forever — no campaign-complete/victory. Tower level and card unlocks persist; repeat checkpoints save + full-heal silently.")]
+        public bool loopStages = false;
         public List<CampaignStage> stages = new();
 
         public int TotalWaves

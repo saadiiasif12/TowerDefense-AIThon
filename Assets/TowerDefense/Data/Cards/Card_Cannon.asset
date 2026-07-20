@@ -21,7 +21,7 @@ MonoBehaviour:
   buildingPrefab: {fileID: 2147769655540901295, guid: 407dcf8e610d3814bb7b6be13f4569c1, type: 3}
   hp: 700
   footprintRadius: 0.75
-  lifetimeSeconds: 35
+  lifetimeSeconds: 60
   damage: 90
   attackRate: 1
   range: 5.5

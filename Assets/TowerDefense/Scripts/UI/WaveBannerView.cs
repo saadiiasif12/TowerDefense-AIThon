@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using RoyalSiege.Core;
+using TMPro;
 
 namespace RoyalSiege.UI
 {
@@ -11,7 +12,7 @@ namespace RoyalSiege.UI
     public sealed class WaveBannerView : MonoBehaviour
     {
         [SerializeField] private GameContext _context;
-        [SerializeField] private Text _waveLabel;
+        [SerializeField] private TextMeshProUGUI _waveLabel;
         [SerializeField] private Text _bonusLabel;
         [Tooltip("Stage progress as a Unity Slider (9-sliced base + fill).")]
         [SerializeField] private Slider _stageSlider;
@@ -28,6 +29,9 @@ namespace RoyalSiege.UI
             _bonusLabel.text = "";
             _context.Events.WaveCleared += OnWaveCleared;
             _context.Events.WaveProgressChanged += OnWaveProgress;
+            // Show the stage title from frame one (resume boots straight into stage 2's title),
+            // then WaveProgressChanged keeps it current on every wave/stage change.
+            if (_context.Waves != null) SetStageTitle(_context.Waves.PendingStageIndex);
         }
 
         private void OnDestroy()
@@ -48,8 +52,16 @@ namespace RoyalSiege.UI
             _stageIndex = stage;
             _waveInStage = waveInStage;
             _wavesInStage = wavesInStage;
+            SetStageTitle(stage); // header title tracks the stage (Stage 1 / Stage 2 …)
             if (_stageSlider != null)
                 _stageSlider.value = wavesInStage > 0 ? (float)waveInStage / wavesInStage : 0f;
+        }
+
+        /// <summary>Header title = "Stage N" (1-based) for the given 0-based stage index.</summary>
+        private void SetStageTitle(int stageIndex)
+        {
+            if (_waveLabel != null && stageIndex >= 0)
+                _waveLabel.text = "Stage " + (stageIndex + 1);
         }
 
         private void Update()
@@ -57,8 +69,8 @@ namespace RoyalSiege.UI
             if (_context == null || _context.Waves == null) return;
 
             // Header per mock_1 + 18-Jul ruling: clean "Stage N" title above the green stage
-            // progress bar — NO wave information (no countdown, no wave numbers).
-            _waveLabel.text = "Stage " + (_stageIndex + 1);
+            // progress bar — NO wave information (no countdown, no wave numbers). The title is
+            // updated event-driven in SetStageTitle (WaveProgressChanged), not per-frame.
             if (_context.Waves.CampaignComplete) _bonusLabel.text = "CAMPAIGN CLEARED";
             else if (_bonusLabel.text.Length > 0) _bonusLabel.text = "";
         }

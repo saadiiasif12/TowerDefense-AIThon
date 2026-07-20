@@ -22,7 +22,19 @@ namespace RoyalSiege.Juice
         [SerializeField] private GameContext _context;
         [Tooltip("Alpha-blended particle material (Mat_SmokeSoft) — cloned for dust/cracks.")]
         [SerializeField] private Material _softMaterial;
-        [SerializeField] private float _quakeShakePulse = 0.12f;
+        [Tooltip("Continuous camera rumble fed per second while an Earthquake zone is active — same " +
+                 "treatment as the tower level-up cinematic. Matches CameraShaker's decay (1.4/s) so " +
+                 "the initial cast punch HOLDS steady instead of climbing to max or dying out. " +
+                 "(Replaces the old 0.45s pulse ticks.)")]
+        [SerializeField] private float _quakeRumblePerSecond = 1.45f;
+        [Tooltip("Left-right shake damp while the quake rumbles (0..1): low = vertical ground rumble.")]
+        [Range(0f, 1f)] [SerializeField] private float _quakeShakeHorizontalDamp = 0.25f;
+        [Tooltip("Cast punch = the trauma level the rumble holds while it runs. " +
+                 "Shaker squares trauma: 0.6 ≈ the level-up cinematic's clearly-visible band.")]
+        [Range(0f, 1f)] [SerializeField] private float _quakeShakeStrength = 0.6f;
+        [Tooltip("How long the quake CAMERA SHAKE runs (game-seconds from cast). The zone's dust, " +
+                 "cracks and damage continue for the full spell duration — only the shake stops.")]
+        [SerializeField] private float _quakeShakeSeconds = 1.2f;
         [Tooltip("Rolling log model for the Log spell. Falls back to a brown primitive cylinder if empty.")]
         [SerializeField] private GameObject _logPrefab;
 
@@ -43,6 +55,7 @@ namespace RoyalSiege.Juice
         private readonly List<CrackDecal> _cracks = new();
         private readonly List<LogRollView> _logs = new();
         private static Texture2D _softDot;
+        private bool _quakeShakeActive; // continuous-rumble + damp state (restored when the last quake ends)
 
         private sealed class CrackDecal
         {
@@ -54,6 +67,7 @@ namespace RoyalSiege.Juice
             public float Elapsed;
             public float NextRumble;
             public float NextDust;
+            public bool Quiet; // stamp-only (no rumble pulses / dust / pebbles) — e.g. lightning strikes
         }
 
         private sealed class LogRollView
@@ -122,7 +136,10 @@ namespace RoyalSiege.Juice
                 case "Earthquake":
                     float duration = card.effect is EarthquakeEffectSO quake ? quake.duration : 4f;
                     StartCrack(point, card.radius, duration);
-                    _shaker?.AddTrauma(0.3f);
+                    // The cast punch sets the level the continuous feed then HOLDS for the whole
+                    // zone. Trauma is squared by the shaker: the old 0.3 (strength 0.09) read as
+                    // no shake at all — 0.6 (strength 0.36) is the level-up cinematic's band.
+                    _shaker?.AddTrauma(_quakeShakeStrength);
                     break;
 
                 case "Log":
@@ -161,7 +178,15 @@ namespace RoyalSiege.Juice
 
         // ---------------- earthquake crack ----------------
 
-        private void StartCrack(Vector3 point, float radius, float duration)
+        /// <summary>
+        /// Ground-crack stamp for OTHER views (18-Jul: lightning strikes reuse the quake
+        /// texture, smaller) — same decal, open and seal animation, but none of the quake's
+        /// rumble pulses, dust or pebbles (the caller brings its own impact feedback).
+        /// </summary>
+        public void StampCrack(Vector3 point, float radius, float duration) =>
+            StartCrack(point, radius, duration, quiet: true);
+
+        private void StartCrack(Vector3 point, float radius, float duration, bool quiet = false)
         {
             CrackDecal crack = null;
             for (int i = 0; i < _cracks.Count; i++)
@@ -174,6 +199,7 @@ namespace RoyalSiege.Juice
             crack.Elapsed = 0f;
             crack.NextRumble = 0f;
             crack.NextDust = 0f;
+            crack.Quiet = quiet;
             crack.Root.transform.SetPositionAndRotation(
                 point + Vector3.up * 0.04f,
                 // Deterministic per-cast spin so repeat casts don't look copy-pasted.
@@ -340,6 +366,7 @@ namespace RoyalSiege.Juice
         {
             if (_clock == null) return;
             float dt = _clock.ScaledDeltaTime;
+            bool quakeRumbling = false; // any live (non-quiet) quake this frame?
 
             for (int i = 0; i < _cracks.Count; i++)
             {
@@ -351,9 +378,10 @@ namespace RoyalSiege.Juice
                 crack.Root.transform.localScale = Vector3.one * (crack.Radius * 2f * Mathf.Lerp(0.35f, 1f, EaseOutBack(openT)));
                 crack.Mat.color = new Color(1f, 1f, 1f, Mathf.Lerp(openT, 0f, sealT));
 
-                if (crack.Elapsed < crack.Duration)
+                if (crack.Elapsed < crack.Duration && !crack.Quiet)
                 {
-                    if ((crack.NextRumble -= dt) <= 0f) { crack.NextRumble = 0.45f; _shaker?.AddTrauma(_quakeShakePulse); }
+                    // Shake only for the first _quakeShakeSeconds; dust/pebbles run the full zone.
+                    if (crack.Elapsed < _quakeShakeSeconds) quakeRumbling = true;
                     if ((crack.NextDust -= dt) <= 0f)
                     {
                         crack.NextDust = 0.18f;
@@ -387,6 +415,20 @@ namespace RoyalSiege.Juice
                     crack.Root.SetActive(false);
                 }
             }
+
+            // 18-Jul (same treatment as the tower level-up cinematic): while ANY quake zone is
+            // live the camera gets a CONTINUOUS mostly-vertical rumble — a per-frame trauma
+            // feed (≥ CameraShaker decay, so the shake never dies out between the pulses)
+            // plus damped left-right randomness. Both restored the moment the last zone ends.
+            // Runs on the game clock, so pausing stops the feed and the shake decays away.
+            if (quakeRumbling != _quakeShakeActive)
+            {
+                _quakeShakeActive = quakeRumbling;
+                if (_shaker != null) _shaker.HorizontalDamp = quakeRumbling ? _quakeShakeHorizontalDamp : 1f;
+            }
+            // Feed in REAL time (the shaker also decays in real time) so the held level is the
+            // same at 1× and 4× game speed; dt>0 gates it off while the game clock is paused.
+            if (quakeRumbling && dt > 0f) _shaker?.AddTrauma(_quakeRumblePerSecond * Time.deltaTime);
 
             for (int i = 0; i < _logs.Count; i++)
             {

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using RoyalSiege.Data;
+using TMPro;
 
 namespace RoyalSiege.UI
 {
@@ -28,7 +29,7 @@ namespace RoyalSiege.UI
         [SerializeField] private Image _cooldownOverlay;  // radial dark sweep (optional)
         [SerializeField] private GameObject _costBadge;   // gem + number group (normal only)
         [SerializeField] private Image _gem;              // lightning cost gem
-        [SerializeField] private Text _costLabel;         // cost number
+        [SerializeField] private TextMeshProUGUI _costLabel;         // cost number
 
         private const float SelectScale = 1.10f;
         private const float SelectLiftPx = 16f;
@@ -61,6 +62,10 @@ namespace RoyalSiege.UI
         public CardDefinitionSO Card => _card;
         public bool IsNext => _isNext;
         public RectTransform Rect => (RectTransform)transform;
+        /// <summary>The card-visual container the drag proxy clones for a pixel-exact floating card.</summary>
+        public RectTransform LiftRect => _lift;
+        /// <summary>Slot size, so the floating clone matches the tray card dimensions exactly.</summary>
+        public Vector2 CardSize => ((RectTransform)transform).rect.size;
 
         public void Init(int slot, HandBarView owner, Data.CardInteractionAnimationConfig config = null)
         {

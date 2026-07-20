@@ -67,7 +67,11 @@ namespace RoyalSiege.Units
         public float HpPct => _dead ? 0f : _health?.Pct ?? 0f;
         public bool IsBoss => _def != null && _def.isBoss;
         public float BodyRadius => _def != null ? _def.unitRadius : 0.45f;
-        public void TakeDamage(float amount)
+        public void TakeDamage(float amount) => TakeDamage(amount, false);
+
+        /// <param name="suppressHurtSound">True for silent-hit weapons (X-Bow) — everything else
+        /// (damage, flash, numbers, stagger) is identical; only the got-hit VOICE is skipped.</param>
+        public void TakeDamage(float amount, bool suppressHurtSound)
         {
             bool wasAlive = !_dead;
             _health?.TakeDamage(amount);
@@ -78,6 +82,8 @@ namespace RoyalSiege.Units
             _dotAccumulated = 0f;
             if (_dead) return; // fatal hits skip the flash — death anim takes over
             _hitReaction?.Play();
+            if (!suppressHurtSound && _def != null && _deps != null)
+                _deps.Events.RaiseEnemyHurt(_def, _logicPosition); // per-enemy got-hit voice
             TryHurtStagger();
         }
 
@@ -419,6 +425,10 @@ namespace RoyalSiege.Units
             // hit anyway if the event never arrives (animator culled/disabled) — never drop DPS.
             if (_def.attackImpactOnAnimEvent && _throwEventRelay != null)
             {
+                // A previous swing's armed throw that never got its release frame (event/arm
+                // race, state crossfade swallowing the event) is fired NOW rather than being
+                // silently overwritten — an armed attack must never be dropped (DPS guarantee).
+                if (_impactPending) ExecuteAttackImpact();
                 _impactPending = true;
                 _impactPendingTimeout = _def.attackRate * 2f;
                 return;
@@ -454,12 +464,16 @@ namespace RoyalSiege.Units
                 _deps.Launcher.Fire(from, _target, damage, _def.projectile, OnProjectileImpact);
             }
             else
+            {
                 _target.TakeDamage(damage);
+                _deps.Events.RaiseEnemyAttackImpact(_def, _logicPosition); // weapon-hit SFX
+            }
         }
 
         /// <summary>Mage-style splash: full damage to OTHER structures near the impact.</summary>
         private void OnProjectileImpact(Vector3 point, IDamageable primary)
         {
+            _deps.Events.RaiseEnemyAttackImpact(_def, point); // weapon-hit SFX at the landing
             if (_def.splashRadius <= 0f) return;
             float damage = _def.damage * _deps.DamageMultiplier;
             _deps.Registry.StructuresInRadius(point, _def.splashRadius, SplashBuffer);
