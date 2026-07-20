@@ -76,6 +76,7 @@ namespace RoyalSiege.UI
             _context.Events.HandChanged += Refresh;
             _context.Events.CardPlayed += OnCardPlayed;
             _context.Events.MatchEnded += OnMatchEnded;
+            _context.Events.CheckpointReached += OnCheckpointReached;
             Refresh();
         }
 
@@ -85,7 +86,14 @@ namespace RoyalSiege.UI
             _context.Events.HandChanged -= Refresh;
             _context.Events.CardPlayed -= OnCardPlayed;
             _context.Events.MatchEnded -= OnMatchEnded;
+            _context.Events.CheckpointReached -= OnCheckpointReached;
         }
+
+        /// <summary>
+        /// A checkpoint popup (level-up / stage-complete) is opening — deselect/cancel any card
+        /// held or selected so it can't hang around or commit under the modal (user 19-Jul).
+        /// </summary>
+        private void OnCheckpointReached(CheckpointReachedArgs args) => CancelActiveDrag();
 
         /// <summary>Drag interrupted from outside (focus loss, match end): clean cancel.</summary>
         private void CancelActiveDrag()

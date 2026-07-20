@@ -23,7 +23,6 @@ namespace RoyalSiege.Economy
     {
         private readonly GameEvents _events;
         private readonly float _regenSeconds;
-        private float _regenTimer;
 
         public float Current { get; private set; }
         public float Max { get; }
@@ -38,13 +37,17 @@ namespace RoyalSiege.Economy
 
         public void Tick(float dt)
         {
-            if (_regenSeconds <= 0f || Current >= Max) { _regenTimer = 0f; return; }
-            _regenTimer += dt;
-            if (_regenTimer >= _regenSeconds)
-            {
-                _regenTimer -= _regenSeconds;
-                Credit(1f);
-            }
+            if (_regenSeconds <= 0f || Current >= Max) return;
+            // Accrue CONTINUOUSLY (fractional) rather than in whole-point jumps, so the bar can
+            // show elixir filling smoothly over time (Clash-Royale style). Current stays the
+            // authoritative live value; the bar polls it each frame for the sub-point fill.
+            float before = Current;
+            Current = Mathf.Min(Max, Current + dt / _regenSeconds);
+            // Fire the discrete event only when the WHOLE-point count changes (or we top out) —
+            // that's all the label / card-affordability need; the smooth motion is pure polling,
+            // so we don't spam listeners at the 10 Hz sim rate.
+            if (Mathf.FloorToInt(Current) != Mathf.FloorToInt(before) || Current >= Max)
+                _events.RaiseEnergyChanged(Current, Max);
         }
 
         public bool CanAfford(float cost) => Current >= cost;
