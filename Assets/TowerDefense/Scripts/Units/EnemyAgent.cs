@@ -336,11 +336,13 @@ namespace RoyalSiege.Units
         /// <summary>
         /// Hard rule: an enemy's centre never enters a structure's footprint. The 10 Hz seek
         /// step can overshoot into the tower and crowd separation shoves attackers straight
-        /// through the mesh — this clamps them back onto a standoff ring. The ring sits so the
-        /// unit's BODY stays AttackStandoff clear of the footprint edge (a small visible gap, so
-        /// enemies strike from a little distance instead of clipping into the tower). The attack
-        /// reach (see Tick) is stretched to match, so every unit — fat ones included — can still
-        /// land its hits from the ring.
+        /// through the mesh — this clamps them back onto a standoff ring. For a SOLID structure
+        /// (tower/building, BlocksPlacement) the ring keeps the body AttackStandoff clear of the
+        /// footprint (a small visible gap so enemies strike from a little distance instead of
+        /// clipping into the mesh; the attack reach in Tick is stretched to match so every unit
+        /// can still hit). Against a NON-solid structure — a Knight — the gap is NOT applied:
+        /// enemies press to body contact so the knight's short melee reach connects and the two
+        /// actually fight instead of the enemy being perpetually shoved out of reach.
         /// </summary>
         private void ResolveStructureOverlap()
         {
@@ -348,7 +350,9 @@ namespace RoyalSiege.Units
             for (int i = 0; i < StructureBuffer.Count; i++)
             {
                 var s = StructureBuffer[i];
-                float standoff = s.FootprintRadius + BodyRadius + _deps.AttackStandoff;
+                float standoff = s.BlocksPlacement
+                    ? s.FootprintRadius + BodyRadius + _deps.AttackStandoff  // solid: keep a clear gap
+                    : s.FootprintRadius + BodyRadius + _deps.KnightStandoff; // knight: fight from a little distance
                 Vector3 center = RangeMath.Flatten(s.Position);
                 Vector3 delta = RangeMath.Flatten(_logicPosition) - center;
                 float distance = delta.magnitude;

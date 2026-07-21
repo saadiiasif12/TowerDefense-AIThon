@@ -22,6 +22,7 @@ namespace RoyalSiege.Units
         private const float RetargetHysteresis = 0.9f;
         private const float TurnSharpness = 10f;
         private const float SeparationSpring = 4f;
+        private const float AttackReachMargin = 0.05f; // reach stretched a hair past the combat standoff so a spaced enemy still reads in-range
         private const float SpawnPopSeconds = 0.22f;
         private const float LungePunch = 0.28f;
         private const float DeathDespawnSeconds = 1.6f; // hold the corpse so the death anim plays before pooling
@@ -112,6 +113,7 @@ namespace RoyalSiege.Units
             AcquireTarget();
             _previousPosition = _logicPosition;
 
+            bool seeking = false;
             if (_target == null)
             {
                 _attack.Tick(dt, false);
@@ -121,10 +123,11 @@ namespace RoyalSiege.Units
             else
             {
                 float edgeDistance = RangeMath.PlanarDistance(_logicPosition, _target.Position) - _target.BodyRadius;
-                bool inRange = edgeDistance <= _card.attackRange;
+                bool inRange = edgeDistance <= AttackReach();
                 _attack.Tick(dt, inRange);
+                seeking = !inRange && !_attack.IsSwinging;
 
-                if (!inRange && !_attack.IsSwinging)
+                if (seeking)
                 {
                     Vector3 seekDir = SteerAroundStructures(
                         RangeMath.PlanarDirection(_logicPosition, _target.Position), _target.Position);
@@ -141,6 +144,15 @@ namespace RoyalSiege.Units
                     _animator?.SetMoving(false);
                     _animator?.SetAttacking(true);
                 }
+            }
+
+            // Not actively seeking (attacking or idle): still gently spread off fellow knights so
+            // a group holds a visible gap and rings the target instead of merging into one blob
+            // (the full separation above only runs while seeking). Mirrors the enemy crowd shuffle.
+            if (!seeking)
+            {
+                Vector3 shuffle = Vector3.ClampMagnitude(ComputeSeparation() * SeparationSpring * 0.5f, _card.moveSpeed * 0.4f);
+                _logicPosition += shuffle * dt;
             }
 
             // ALWAYS enforced — target or not (an idle knight can still be shoved/deployed badly):
@@ -268,8 +280,17 @@ namespace RoyalSiege.Units
         {
             if (e == null || !e.IsAlive) return false;
             if (RangeMath.IsInside(_deps.MapCenter, e.Position, _deps.GuardRadius)) return true;
-            return RangeMath.PlanarDistance(_logicPosition, e.Position) - e.BodyRadius <= _card.attackRange;
+            return RangeMath.PlanarDistance(_logicPosition, e.Position) - e.BodyRadius <= AttackReach();
         }
+
+        /// <summary>
+        /// Melee reach: normally the card's attackRange, but stretched to clear the combat standoff
+        /// (see KnightRuntimeDeps.CombatStandoff) — the enemy rests FootprintRadius + standoff from
+        /// the knight's centre, so the reach must cover that or the knight would shove the enemy
+        /// out of its own range and never land a hit (the 21-Jul knight regression, generalised).
+        /// </summary>
+        private float AttackReach() =>
+            Mathf.Max(_card.attackRange, FootprintRadius + _deps.CombatStandoff + AttackReachMargin);
 
         /// <summary>Gentle push off fellow knights so a pair doesn't stack on one enemy.</summary>
         private Vector3 ComputeSeparation()
@@ -279,7 +300,7 @@ namespace RoyalSiege.Units
             for (int i = 0; i < structures.Count; i++)
             {
                 if (structures[i] is not KnightUnit other || ReferenceEquals(other, this) || !other.IsAlive) continue;
-                float minDistance = FootprintRadius + other.FootprintRadius;
+                float minDistance = FootprintRadius + other.FootprintRadius + _deps.Spacing;
                 Vector3 delta = RangeMath.Flatten(_logicPosition - other.Position);
                 float distance = delta.magnitude;
                 if (distance >= minDistance) continue;
@@ -298,7 +319,7 @@ namespace RoyalSiege.Units
         {
             if (_dead || _target == null || !_target.IsAlive) return;
             float edge = RangeMath.PlanarDistance(_logicPosition, _target.Position) - _target.BodyRadius;
-            if (edge > _card.attackRange + 0.3f) return; // target slipped away mid-swing
+            if (edge > AttackReach() + 0.3f) return; // target slipped away mid-swing
             _target.TakeDamage(_card.damage);
             _deps.Events.RaiseKnightStruck(_target.Position);
         }
@@ -372,6 +393,10 @@ namespace RoyalSiege.Units
         public Vector3 MapCenter;
         /// <summary>Knights guard THIS circle (= the white deployment ring / tower reach) — never leave it, never target outside it.</summary>
         public float GuardRadius = 5f;
+        /// <summary>Gap the knight keeps between its body and the enemy it fights (GameConfig.knightCombatStandoff). The attack reach is stretched to cover it.</summary>
+        public float CombatStandoff;
+        /// <summary>Extra space knights keep between each other via separation (GameConfig.knightSpacing).</summary>
+        public float Spacing;
         public System.Action<KnightUnit> Release;
     }
 }

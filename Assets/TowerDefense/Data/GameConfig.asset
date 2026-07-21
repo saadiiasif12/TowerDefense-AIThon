@@ -15,6 +15,8 @@ MonoBehaviour:
   towerHp: 2000
   towerFootprintRadius: 1.705
   enemyAttackStandoff: 0.55
+  knightCombatStandoff: 0.3
+  knightSpacing: 0.5
   kingAttack:
     damage: 93
     attackRate: 1
