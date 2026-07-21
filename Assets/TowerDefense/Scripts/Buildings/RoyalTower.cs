@@ -92,6 +92,18 @@ namespace RoyalSiege.Buildings
 
         private void OnHealthDamaged(float current, float max) => _events.RaiseTowerDamaged(current, max);
 
+        /// <summary>
+        /// Revive (fail screen): refill HP to full and un-ruin the tower visual so play resumes
+        /// from exactly where the tower fell. Nothing else about the match changes — the sim was
+        /// only paused, so enemies/waves/energy/buildings all carry on untouched. Healing fires
+        /// the Health.Damaged event, so the HP bar snaps back to full on its own.
+        /// </summary>
+        public void ReviveToFull()
+        {
+            _health?.ResetToFull();
+            _levelView?.RestoreFromFailed();
+        }
+
         private void BuildKingAttack(float damage)
         {
             var king = _config.kingAttack;

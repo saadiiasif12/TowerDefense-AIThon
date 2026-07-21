@@ -29,6 +29,20 @@ namespace RoyalSiege.Core
             _config = config;
             _events = events;
             _clock = clock;
+            _events.ReviveRequested += OnRevive;
+        }
+
+        /// <summary>
+        /// Fail-screen revive: refill the tower and resume from exactly where it fell. The sim
+        /// state (enemies, waves, energy, buildings) was only paused by <see cref="End"/>, so
+        /// clearing _ended + unpausing the clock is all it takes to carry on — no rebuild.
+        /// </summary>
+        private void OnRevive()
+        {
+            if (!_ended) return;
+            _ended = false;
+            _tower.ReviveToFull();
+            _clock.IsPaused = false;
         }
 
         public void Tick(float dt)

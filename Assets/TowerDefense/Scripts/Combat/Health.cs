@@ -30,5 +30,15 @@ namespace RoyalSiege.Combat
             Damaged?.Invoke(Current, Max);
             if (Current <= 0f) Died?.Invoke();
         }
+
+        /// <summary>
+        /// Refill to full — the Royal Tower revive (fail screen). Works even from 0 HP (brings
+        /// a dead structure back to life); fires Damaged so HP readouts snap to full.
+        /// </summary>
+        public void ResetToFull()
+        {
+            Current = Max;
+            Damaged?.Invoke(Current, Max);
+        }
     }
 }

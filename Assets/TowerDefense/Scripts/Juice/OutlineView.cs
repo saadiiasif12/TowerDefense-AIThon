@@ -25,7 +25,13 @@ namespace RoyalSiege.Juice
                 if (_outlineMaterial == null)
                 {
                     var shader = Shader.Find("RoyalSiege/Outline");
+                    // The shader is loaded ONLY via Shader.Find on this runtime-created material —
+                    // nothing references it as an asset, so it MUST be listed in Graphics ▸ Always
+                    // Included Shaders or the build strips it and this returns null on device
+                    // (outlines silently vanish on mobile while the editor still shows them).
                     if (shader != null) _outlineMaterial = new Material(shader) { name = "Mat_Outline (shared)" };
+                    else Debug.LogWarning("[OutlineView] Shader 'RoyalSiege/Outline' not found — " +
+                        "add RS_Outline to Graphics ▸ Always Included Shaders (it was stripped from this build).");
                 }
                 return _outlineMaterial;
             }
