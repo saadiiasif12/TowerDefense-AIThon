@@ -76,6 +76,7 @@ namespace RoyalSiege.UI
             _context.Events.HandChanged += Refresh;
             _context.Events.CardPlayed += OnCardPlayed;
             _context.Events.MatchEnded += OnMatchEnded;
+            _context.Events.ReviveRequested += OnReviveRequested;
             _context.Events.CheckpointReached += OnCheckpointReached;
             Refresh();
         }
@@ -86,6 +87,7 @@ namespace RoyalSiege.UI
             _context.Events.HandChanged -= Refresh;
             _context.Events.CardPlayed -= OnCardPlayed;
             _context.Events.MatchEnded -= OnMatchEnded;
+            _context.Events.ReviveRequested -= OnReviveRequested;
             _context.Events.CheckpointReached -= OnCheckpointReached;
         }
 
@@ -129,6 +131,9 @@ namespace RoyalSiege.UI
             CancelActiveDrag();
             _deckCycle?.CompleteAllInstantly(); // no flyers under the end panel
         }
+
+        /// <summary>Revive (fail screen): the battle resumes in place, so re-enable hand input.</summary>
+        private void OnReviveRequested() => _matchOver = false;
 
         private void OnCardPlayed(CardDefinitionSO card)
         {

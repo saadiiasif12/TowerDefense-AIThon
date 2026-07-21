@@ -60,6 +60,7 @@ namespace RoyalSiege.Core
         public event Action<Vector3> BossSlammed;
         public event Action<Vector3, IEnemyTarget> InstantShotFired;      // muzzle, victim (Tesla zap — target ref so VFX can track/attach)
         public event Action<MatchResult> MatchEnded;
+        public event Action ReviveRequested;                              // fail screen → in-place revive (tower refill, sim resumes)
         // ---- v4 journey ----
         public event Action<Vector3> KnightSpawned;                       // deploy flash
         public event Action<Vector3> KnightStruck;                        // a knight landed a hit (clash spark)
@@ -92,6 +93,7 @@ namespace RoyalSiege.Core
         public void RaiseBossSlammed(Vector3 position) => BossSlammed?.Invoke(position);
         public void RaiseInstantShotFired(Vector3 from, IEnemyTarget target) => InstantShotFired?.Invoke(from, target);
         public void RaiseMatchEnded(MatchResult result) => MatchEnded?.Invoke(result);
+        public void RaiseReviveRequested() => ReviveRequested?.Invoke();
         public void RaiseKnightSpawned(Vector3 position) => KnightSpawned?.Invoke(position);
         public void RaiseKnightStruck(Vector3 position) => KnightStruck?.Invoke(position);
         public void RaiseKnightDied(Vector3 position) => KnightDied?.Invoke(position);

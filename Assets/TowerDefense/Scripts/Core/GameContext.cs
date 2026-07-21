@@ -89,7 +89,9 @@ namespace RoyalSiege.Core
                 Clock = _tickSystem,
                 Events = Events,
                 MapCenter = center,
-                GuardRadius = _gameConfig.deploymentRadius // knights guard the tower's white circle
+                GuardRadius = _gameConfig.deploymentRadius, // knights guard the tower's white circle
+                CombatStandoff = _gameConfig.knightCombatStandoff,
+                Spacing = _gameConfig.knightSpacing
             };
             var knightFactory = new KnightFactory(_buildingRoot, knightDeps);
 
@@ -106,7 +108,9 @@ namespace RoyalSiege.Core
                 HpMultiplier = _gameConfig.enemyHpMultiplier,
                 DamageMultiplier = _gameConfig.enemyDamageMultiplier,
                 BountyMultiplier = _gameConfig.enemyBountyMultiplier,
-                WalkAnimMultiplier = _gameConfig.enemyWalkAnimSpeedMultiplier
+                WalkAnimMultiplier = _gameConfig.enemyWalkAnimSpeedMultiplier,
+                AttackStandoff = _gameConfig.enemyAttackStandoff,
+                KnightStandoff = _gameConfig.knightCombatStandoff
             };
             var enemyFactory = new EnemyFactory(_enemyRoot, enemyDeps);
             var spawnPoints = new SpawnPointProvider(center, _gameConfig.mapRadius);

@@ -152,6 +152,33 @@ namespace RoyalSiege.Buildings
         }
 
         /// <summary>
+        /// Revive (fail screen): undo the defeat ruin so the tower stands again exactly as it
+        /// did before the killing blow. Stops the collapse if it is still playing, hides the
+        /// ruin, re-shows the King (and anything hidden on fail) and the current level model.
+        /// Mirror of <see cref="ShowFailed"/>; no-op if the tower never failed.
+        /// </summary>
+        public void RestoreFromFailed()
+        {
+            if (!_failed) return;
+            CacheScales();
+            if (_running != null) { StopCoroutine(_running); _running = null; }
+            SetShakeBias(false);
+
+            if (_failModel != null) _failModel.gameObject.SetActive(false);
+            if (_hideOnFail != null)
+                foreach (var h in _hideOnFail) if (h != null) h.gameObject.SetActive(true);
+
+            for (int i = 0; i < _levelModels.Length; i++)
+                if (_levelModels[i] != null)
+                {
+                    _levelModels[i].localScale = _baseScales[i];
+                    _levelModels[i].gameObject.SetActive(i == _currentLevel - 1);
+                }
+            AlignKing(_currentLevel);
+            _failed = false;
+        }
+
+        /// <summary>
         /// 18-Jul defeat cinematic: the tower goes up in a FIRE BLAST + heavy camera shake;
         /// the ruin crashes in UNDER the explosion (the blast masks the swap), then
         /// TowerTransitionCompleted releases the fail screen.

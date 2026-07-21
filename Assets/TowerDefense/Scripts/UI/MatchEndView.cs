@@ -11,8 +11,9 @@ namespace RoyalSiege.UI
     /// (Prefabs/UI/MatchEndScreen) — banner, king illustration, wave circle, texts and the
     /// action button are serialized children UI can restyle freely in the editor. This
     /// component only swaps CONTENT per outcome and handles the action:
-    /// DEFEAT → "The tower was invaded!" + sad king + wave circle + Revive (v4 §9: the
-    /// profile was saved at the last checkpoint, so a scene reload IS the revive/retry).
+    /// DEFEAT → "The tower was invaded!" + sad king + wave circle + Revive. Revive refills the
+    /// Royal Tower and RESUMES the match in place (no scene reload) — enemies, waves, energy and
+    /// buildings carry on from the instant the tower fell; only its HP is restored to full.
     /// VICTORY → pass banner + happy king + stars + "Play Again" (clears the profile).
     /// All part refs are null-guarded so a partially-styled prefab never throws.
     /// </summary>
@@ -45,7 +46,7 @@ namespace RoyalSiege.UI
         [SerializeField] private Texture _kingSadSheet;     // fail_king_sheet
 
         [Header("Audio")]
-        [Tooltip("Played on the Revive tap — on a DontDestroyOnLoad temp source so the scene reload can't cut it.")]
+        [Tooltip("Played on the Revive tap (on a short-lived detached source so disabling this panel can't cut it).")]
         [SerializeField] private AudioClip _reviveSfx;
 
         private bool _victory;
@@ -150,16 +151,37 @@ namespace RoyalSiege.UI
         /// <summary>Wired to the action button (also callable from custom UI).</summary>
         public void OnAction()
         {
-            if (_victory) CampaignProfile.Clear();
-            else PlayPersistent(_reviveSfx);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            if (_victory)
+            {
+                // Campaign done: clear the profile and restart the run from wave 1.
+                CampaignProfile.Clear();
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+            else
+            {
+                Revive();
+            }
         }
 
-        private static void PlayPersistent(AudioClip clip)
+        /// <summary>
+        /// Refill the Royal Tower and continue from EXACTLY where it fell — no scene reload,
+        /// no checkpoint rollback. Gameplay hands the request to WinLoseEvaluator (heals the
+        /// tower, unpauses the sim); this view just drops its own panel and plays the sting.
+        /// </summary>
+        private void Revive()
+        {
+            PlayOneShot(_reviveSfx);
+            _showPending = false;
+            _transitionRunning = false;
+            if (_panel != null) _panel.SetActive(false);
+            if (_context != null && _context.Events != null) _context.Events.RaiseReviveRequested();
+        }
+
+        private void PlayOneShot(AudioClip clip)
         {
             if (clip == null) return;
+            // Detached source so the sting isn't cut if this view is disabled with the panel.
             var go = new GameObject("ReviveSfx");
-            DontDestroyOnLoad(go);
             var source = go.AddComponent<AudioSource>();
             source.spatialBlend = 0f;
             source.PlayOneShot(clip);

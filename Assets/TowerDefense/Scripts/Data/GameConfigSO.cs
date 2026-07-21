@@ -21,6 +21,21 @@ namespace RoyalSiege.Data
         [Header("Royal Tower")]
         public float towerHp = 4000f;
         public float towerFootprintRadius = 1.5f;
+        [Tooltip("Extra gap (world units) an enemy keeps between its BODY and a structure's " +
+                 "footprint edge when attacking — so melee enemies strike from a little distance " +
+                 "instead of clipping into the tower/buildings. 0 = flush against the footprint. " +
+                 "The attack reach auto-stretches to cover it, so every unit (fat ones included) " +
+                 "can still land its hits from the standoff ring.")]
+        public float enemyAttackStandoff = 0.4f;
+        [Tooltip("Gap (world units) a Knight and the enemy it fights keep between their BODIES, so " +
+                 "they trade blows from a little distance instead of clipping into each other. " +
+                 "Enforced on the enemy side (crowd-safe) and matched by a stretched knight reach. " +
+                 "Keep <= Enemy Attack Standoff so enemies can still reach knights.")]
+        public float knightCombatStandoff = 0.3f;
+        [Tooltip("Extra space (world units) knights keep between EACH OTHER via separation, on top " +
+                 "of their body radii — so a group holds a visible gap instead of merging into one " +
+                 "blob. Applied while moving AND while attacking/idle. 0 = bodies just touch.")]
+        public float knightSpacing = 0.5f;
         public AttackStats kingAttack;
         public AttackStats builtInCannon;
 
