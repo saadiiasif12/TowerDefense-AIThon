@@ -106,7 +106,8 @@ namespace RoyalSiege.Core
                 HpMultiplier = _gameConfig.enemyHpMultiplier,
                 DamageMultiplier = _gameConfig.enemyDamageMultiplier,
                 BountyMultiplier = _gameConfig.enemyBountyMultiplier,
-                WalkAnimMultiplier = _gameConfig.enemyWalkAnimSpeedMultiplier
+                WalkAnimMultiplier = _gameConfig.enemyWalkAnimSpeedMultiplier,
+                AttackStandoff = _gameConfig.enemyAttackStandoff
             };
             var enemyFactory = new EnemyFactory(_enemyRoot, enemyDeps);
             var spawnPoints = new SpawnPointProvider(center, _gameConfig.mapRadius);

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoyalSiege.Data.GameConfigSO
   towerHp: 2000
   towerFootprintRadius: 1.705
+  enemyAttackStandoff: 0.55
   kingAttack:
     damage: 93
     attackRate: 1

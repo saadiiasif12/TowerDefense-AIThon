@@ -21,11 +21,11 @@ namespace RoyalSiege.Units
         private const float RetargetHysteresis = 0.9f;  // switch only if the new target is >10% closer
         private const float SeparationSpring = 4f;       // push strength per unit of overlap
         private const float TurnSharpness = 8f;          // view rotation smoothing (1/s)
-        // Structure-overlap resolve: search span (covers tower footprint + largest body) and
-        // the fraction of attack range the standoff may consume — must stay < 1 so a clamped
-        // unit is always still within reach of its target.
+        // Structure-overlap resolve: search span (covers the largest footprint + body + standoff).
         private const float StructureSearchRadius = 4f;
-        private const float StandoffReachFraction = 0.9f;
+        // The attack reach is stretched a hair past the standoff ring so a unit clamped to the
+        // ring is never a floating-point jitter away from reading as out-of-range.
+        private const float AttackReachMargin = 0.05f;
 
         private static readonly List<IStructureTarget> SplashBuffer = new();
         private static readonly List<IStructureTarget> StructureBuffer = new();
@@ -283,7 +283,12 @@ namespace RoyalSiege.Units
             // 17-Jul rule: an enemy may only fight once it has actually ENTERED the territory
             // (inside engageRadiusFromCenter). Stops ranged units attacking from the outskirts.
             bool insideTerritory = RangeMath.IsInside(_deps.MapCenter, _logicPosition, _def.engageRadiusFromCenter);
-            bool inRange = insideTerritory && edgeDistance <= _def.attackRange;
+            // Enemies rest a standoff gap outside the footprint (see ResolveStructureOverlap), so
+            // the reach must cover BodyRadius + standoff or a clamped unit could never land a hit.
+            // For a normal melee unit attackRange already dominates; the max only matters for a
+            // fat/short-range unit (Ogre) whose body pushes it past its nominal reach.
+            float reach = Mathf.Max(_def.attackRange, BodyRadius + _deps.AttackStandoff + AttackReachMargin);
+            bool inRange = insideTerritory && edgeDistance <= reach;
             _attack.Tick(dt, inRange);
 
             // Armed throw waiting for its release frame — if the animation event never comes
@@ -331,9 +336,11 @@ namespace RoyalSiege.Units
         /// <summary>
         /// Hard rule: an enemy's centre never enters a structure's footprint. The 10 Hz seek
         /// step can overshoot into the tower and crowd separation shoves attackers straight
-        /// through the mesh — this clamps them back onto a standoff ring. The ring sits at
-        /// BodyRadius outside the footprint, capped just under the unit's attack reach so a
-        /// fat unit (Ogre: body 0.85 > range 0.8) can still land its hits.
+        /// through the mesh — this clamps them back onto a standoff ring. The ring sits so the
+        /// unit's BODY stays AttackStandoff clear of the footprint edge (a small visible gap, so
+        /// enemies strike from a little distance instead of clipping into the tower). The attack
+        /// reach (see Tick) is stretched to match, so every unit — fat ones included — can still
+        /// land its hits from the ring.
         /// </summary>
         private void ResolveStructureOverlap()
         {
@@ -341,7 +348,7 @@ namespace RoyalSiege.Units
             for (int i = 0; i < StructureBuffer.Count; i++)
             {
                 var s = StructureBuffer[i];
-                float standoff = s.FootprintRadius + Mathf.Min(BodyRadius, _def.attackRange * StandoffReachFraction);
+                float standoff = s.FootprintRadius + BodyRadius + _deps.AttackStandoff;
                 Vector3 center = RangeMath.Flatten(s.Position);
                 Vector3 delta = RangeMath.Flatten(_logicPosition) - center;
                 float distance = delta.magnitude;

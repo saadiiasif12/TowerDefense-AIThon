@@ -21,6 +21,12 @@ namespace RoyalSiege.Data
         [Header("Royal Tower")]
         public float towerHp = 4000f;
         public float towerFootprintRadius = 1.5f;
+        [Tooltip("Extra gap (world units) an enemy keeps between its BODY and a structure's " +
+                 "footprint edge when attacking — so melee enemies strike from a little distance " +
+                 "instead of clipping into the tower/buildings. 0 = flush against the footprint. " +
+                 "The attack reach auto-stretches to cover it, so every unit (fat ones included) " +
+                 "can still land its hits from the standoff ring.")]
+        public float enemyAttackStandoff = 0.4f;
         public AttackStats kingAttack;
         public AttackStats builtInCannon;
 
